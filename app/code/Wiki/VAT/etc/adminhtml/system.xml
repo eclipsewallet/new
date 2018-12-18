@@ -1,0 +1,21 @@
+<?xml version="1.0" ?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
+    <system>
+        <tab id="wiki" sortOrder="999" translate="label">
+            <label>WIKI</label>
+        </tab>
+        <section id="wiki" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="10" translate="label">
+            <label>VAT</label>
+            <tab>wiki</tab>
+            <resource>Wiki_VAT::config_wiki_vat</resource>
+            <group id="options" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="10" translate="label">
+                <label>Options</label>
+                <field id="enable" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="10" translate="label" type="select">
+                    <label>Enable</label>
+                    <comment/>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+            </group>
+        </section>
+    </system>
+</config>

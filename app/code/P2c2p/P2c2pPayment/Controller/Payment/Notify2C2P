@@ -1,0 +1,105 @@
+<?php
+
+namespace P2c2p\P2c2pPayment\Controller\Payment;
+
+class Notify2C2P extends \P2c2p\P2c2pPayment\Controller\AbstractCheckoutRedirectAction
+{
+	public function execute()
+	{
+		//If payment getway response is empty then redirect to home page directory.
+		if(empty($_REQUEST) || empty($_REQUEST['order_id'])){			
+			$this->_redirect('');
+			return;
+		}
+		
+		//Extract the Payment getaway resposne object.
+        extract($_REQUEST, EXTR_OVERWRITE); // Extract the response from 2c2p.
+		
+		$hashHelper   = $this->getHashHelper();
+		$configHelper = $this->getConfigSettings();
+		$objCustomerData = $this->getCustomerSession();
+		
+		$secretKey = array_key_exists("secretKey",$configHelper) ? $configHelper['secretKey'] : '';
+		$isValidHash  = $hashHelper->isValidHashValue($_REQUEST, $secretKey);
+		
+		//Get the object of current order.
+		$order = $this->getOrderDetailByOrderId($order_id);				
+
+		//Check whether hash value is valid or not If not valid then redirect to home page when hash value is wrong.
+		if(!$isValidHash) {
+			$order->setState(\Magento\Sales\Model\Order::STATUS_FRAUD);
+			$order->setStatus(\Magento\Sales\Model\Order::STATUS_FRAUD);
+			$order->save();
+
+			$this->_redirect('');
+			return;
+		}
+
+		$metaDataHelper = $this->getMetaDataHelper();		
+		$metaDataHelper->savePaymentGetawayResponse($_REQUEST,$order->getCustomerId());
+
+		//check payment status according to payment response.
+		if(strcasecmp($payment_status, "000") == 0) {			
+			//IF payment status code is success
+						
+			if(!empty($order->getCustomerId()) && !empty($stored_card_unique_id)) {
+				$intCustomerId = $order->getCustomerId();
+				$boolIsFound = false;
+
+				// Fetch data from database by using the customer ID.
+				$objTokenData = $metaDataHelper->getUserToken($intCustomerId);
+				
+				$arrayTokenData = array('user_id' => $intCustomerId,
+					'stored_card_unique_id' => $stored_card_unique_id,
+					'masked_pan' => $masked_pan,
+					'created_time' =>  date("Y-m-d H:i:s"));
+
+				/* 
+				   Iterate foreach and check whether token key is present into p2c2p_token table or not.
+				   If token key is already present into database then prevent insert entry otherwise insert token entry into database.
+				*/				   
+				foreach ($objTokenData as $key => $value) {
+					if(strcasecmp($value->getData('masked_pan'), $masked_pan) == 0 && 
+					   strcasecmp($value->getData('stored_card_unique_id'), $stored_card_unique_id) == 0) {
+						$boolIsFound = true;
+						break;
+					}
+				}
+
+				if(!$boolIsFound) {
+					$metaDataHelper->saveUserToken($arrayTokenData);
+				}
+			}					
+			
+			//Set the complete status when payment is completed.
+			$order->setState(\Magento\Sales\Model\Order::STATE_PROCESSING);
+			$order->setStatus(\Magento\Sales\Model\Order::STATE_PROCESSING);
+			$order->save();				
+
+			$this->executeSuccessAction($_REQUEST);
+			return;
+
+		} else if(strcasecmp($payment_status, "001") == 0) {
+			//Set the Pending payment status when payment is pending. like 123 payment type.			
+			$order->setState("Pending_2C2P");
+			$order->setStatus("Pending_2C2P");
+
+			$order->save();
+
+			$this->executeSuccessAction($_REQUEST);
+			return;
+
+		} else if(strcasecmp($payment_status, "002") == 0) {			
+			//002 = Rejected (Failed payment).
+			$this->messageManager->addSuccess( __($channel_response_desc) );
+			$this->executeCancelAction();						
+			return;
+		}
+		else {		
+			//If payment status code is cancel/Error/other.
+			$this->messageManager->addSuccess( __($channel_response_desc) );
+			$this->executeCancelAction();
+			return;
+		}
+	}
+}
