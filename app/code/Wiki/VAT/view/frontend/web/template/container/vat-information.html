@@ -1,0 +1,54 @@
+<div class="create-account-block">
+    <div class="field col-mp mp-12 vat-information">
+        <input type="checkbox" name="vat-information"
+               data-bind="checked: isRequireVatVisible, attr: {id: 'vat-information'}"/>
+        <label data-bind="attr: {for: 'vat-information'}">
+            <span data-bind="i18n: 'Request VAT Invoice'"></span>
+        </label>
+    </div>
+    <fieldset class="fieldset hidden-fields mp-clear" data-bind="fadeVisible: isRequireVatVisible">
+        <form class="form form-vat-information" id="vat-information-form">
+            <div class="field osc-password required col-mp mp-12">
+                <label for="wk-vat-number" class="label"><span data-bind="i18n: 'VAT Number'"></span></label>
+                <div class="control input-field">
+                    <input type="text" name="vat-number" id="wk-vat-number"
+                           class="input-text"
+                           data-validate="{required:true}"
+                           data-bind="value: vatNumber"
+                           autocomplete="off"/>
+                </div>
+            </div>
+            <div class="field osc-password required col-mp mp-12">
+                <label for="wk-vat-company" class="label"><span data-bind="i18n: 'Company'"></span></label>
+                <div class="control input-field">
+                    <input type="text" name="vat-company" id="wk-vat-company"
+                           class="input-text"
+                           data-validate="{required:true}"
+                           data-bind="value: vatCompany"
+                           autocomplete="off"/>
+                </div>
+            </div>
+            <div class="field osc-password required col-mp mp-12">
+                <label for="wk-vat-address" class="label"><span data-bind="i18n: 'Company Address'"></span></label>
+                <div class="control input-field">
+                    <input type="text" name="vat-address" id="wk-vat-address"
+                           class="input-text"
+                           data-validate="{required:true}"
+                           data-bind="value: vatAddress"
+                           autocomplete="off"/>
+                </div>
+            </div>
+            <!-- ko if: (isCustomerLoggedIn) -->
+            <div class="field osc-password required col-mp mp-12">
+                <div class="control input-field">
+                    <input type="checkbox" name="create-account-checkbox"
+                           data-bind="checked: vatSave, attr: {id: 'wk-vat-save'}" aria-checked="false"/>
+                    <label data-bind="attr: {for: 'wk-vat-save'}">
+                        <span data-bind="i18n: 'Save information for next order'"></span>
+                    </label>
+                </div>
+            </div>
+            <!-- /ko -->
+        </form>
+    </fieldset>
+</div>
