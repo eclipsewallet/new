@@ -109,4 +109,12 @@ atlassian*
 !/vendor/.htaccess
 /generated/*
 !/generated/.htaccess
+
+# Windows image file caches
+Thumbs.db
+
+# Folder config file
+Desktop.ini
+
+# Mac crap
 .DS_Store
