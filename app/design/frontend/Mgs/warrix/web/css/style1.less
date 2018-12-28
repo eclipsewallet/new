@@ -1,0 +1,197 @@
+.catalog-product-view{
+    .page-wrapper{
+        background: #fff;
+        .breadcrumbs{
+            background:#f8f8fa;
+            padding: unset!important;
+            margin: unset!important;
+            padding:20px 0!important;
+            margin-bottom: 50px!important;
+            .items{
+                float:right;
+            }
+        }
+        .horizontal-thumbnail{
+            .owl-nav{
+                div.disabled{
+                    box-shadow: none;
+                    border:none;
+                    background: #888888;
+                }
+                .owl-next{
+                    -webkit-clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+                    clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+                    background: #303030;
+                    box-shadow: none;
+                    border:none;
+                    color:#FFF;
+                }
+                .owl-prev{
+                    -webkit-clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+                    clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+                    background: #303030;
+                    box-shadow: none;
+                    color:#FFF;
+                    border:none;
+                }
+                .owl-next:hover{
+                    background: #000;
+                    color:#fff;
+                    
+                }
+                .owl-prev:hover{
+                    background: #000;
+                    color:#fff;
+                    
+                }
+            }
+        }
+        .social{
+            margin-top: 50px;
+            ul{
+                display: flex;
+                max-width: 250px;
+                margin: auto;
+                li{
+                    flex-grow: 2;
+                    text-align: center;
+                    a{
+                        color:#000;
+                        display: block;
+                        i{
+                            font-size: 20px;
+                        }
+                    }
+                    a:hover{
+                        color: #000;
+                    }
+                }
+            }
+        }
+        span.comma:last-child{
+            display: none;
+        }
+        .attribute{
+            strong.type{
+                font-weight: 400;
+                color: #222;
+            }
+        }
+        #owl-carousel-gallery{
+            .owl-nav{
+                display: none;
+            }
+        }
+        #product-carousel-related,#upsell-owl-carousel{
+            .owl-nav{
+                div{
+                    width: 70px!important;
+                    height: 70px!important;
+                    border-radius: unset!important;
+                    border:none!important;
+                    color: #fff!important;
+                    -webkit-clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+                    clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+                    background: #303030!important;
+                    font-size: 60px;
+                    i{
+                        line-height: 70px;
+                    }
+                }
+                div.disabled,div:hover{
+                    border:none!important;
+                }
+                div.disabled{
+                    background: #888888!important;
+                }
+                div:not(.disabled){
+                    background: #303030!important;
+                }
+                .owl-next{
+                    opacity: 1!important;
+                    visibility: visible!important;
+                    right: -23px!important;
+                    i{
+                        
+                    }
+                }
+                .owl-prev{
+                    opacity: 1!important;
+                    visibility: visible!important;
+                    left: -23px!important;
+                    i{
+                        
+                    }
+                }
+            }
+        }
+        #maincontent{
+            .product-detail-media{
+                .product-gallery-grid{
+                    #banner2{
+                        overflow: auto;
+                        margin-top:20px;
+                        .owl-stage-outer{
+                            .owl-stage{
+                                margin:auto;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        .product-add-form{
+            .product-options-wrapper{
+                .swatch-opt{
+                    display: flex;
+                    flex-direction: row-reverse;
+                    justify-content: space-between;
+                    align-items: baseline;
+                }
+            }
+            .actions{
+                button.tocart{
+                    background: transparent!important;
+                    border:1px solid #000!important;
+                    color:#000!important;
+                }
+            } 
+        }
+        .product-info-main{
+            
+            .swatch-attribute.color{
+                .swatch-attribute-options{
+                    .swatch-option{
+                        border-radius: unset;
+                        box-shadow: 0 0 0 1px rgba(0, 0, 0, 1);
+                    }
+                    .swatch-option.selected{
+                        border:1px solid #000;
+                        box-shadow: 0 0 0 2px rgba(0, 0, 0, 1)!important;
+                    }
+                    .swatch-option:hover{
+                        box-shadow: 0 0 0 2px rgba(0, 0, 0, 1)!important;
+                    }
+                }
+            }
+            .swatch-option.text{
+                border-radius: unset!important;
+                border: 1px solid #000;
+                color: #000!important;
+            }
+            .swatch-attribute-selected-option{
+                color: #000!important;
+            }
+            .swatch-option.text:hover{
+                background:#000!important;
+                color:#fff!important;
+                box-shadow: unset!important;
+            }
+            .swatch-option.text.selected{
+                background:#000!important;
+                color:#fff!important;
+                box-shadow: unset!important;
+            }
+        } 
+    }
+}
