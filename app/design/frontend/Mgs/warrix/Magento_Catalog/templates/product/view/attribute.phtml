@@ -32,6 +32,25 @@ if ($_attributeType && $_attributeType == 'text') {
     $_attributeValue = $_helper->productAttribute($_product, $_product->$_call(), $_code);
 }
 ?>
+<?php 
+		$objectManager = \Magento\Framework\App\ObjectManager::getInstance(); 
+		$product = $objectManager->get('Magento\Framework\Registry')->registry('product');//get current product
+		$cates = $product->getCategoryIds();
+		//print_r($cates);
+?>
+<div class="product attribute">
+				<strong class="type">Category :</strong>
+				<?php $i=0; ?>
+				<?php foreach($cates as $c){ ?>
+					
+						<?php $cata = $objectManager->create("Magento\Catalog\Model\Category")->load($c); ?>
+					<?php if($cata->getLevel()==2): ?>
+					<span class="value"><?php echo $cata->getName(); ?> </span>
+					<?php endif; ?>
+				<?php } ?>
+				
+</div>
+
 <?php if($_attributeValue): ?>
 	<?php if($_className == 'overview'): ?>
 		<?php if($themeHelper->getStoreConfig('mpanel/product_details/short_description')): ?>
@@ -54,3 +73,15 @@ if ($_attributeType && $_attributeType == 'text') {
 		</div>
 	<?php endif ?>
 <?php endif ?>
+<div class="product attribute tags">
+				<strong class="type">Tags :</strong>
+				<?php $i=0; ?>
+				<?php foreach($cates as $key => $c){ ?>
+					
+						<?php $cata = $objectManager->create("Magento\Catalog\Model\Category")->load($c); ?>
+						<?php if($cata->getLevel()==3): ?>
+							<span class="value"><?php echo $cata->getName(); ?></span><span class="comma">,</span>
+						<?php endif;?>
+				<?php } ?>
+				
+</div>
