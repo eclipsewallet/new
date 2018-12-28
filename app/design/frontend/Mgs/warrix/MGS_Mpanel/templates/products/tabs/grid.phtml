@@ -36,7 +36,7 @@
 			<ul class="nav nav-tabs menu-product-tabs">
 				<?php $i=0; foreach($tabs as $key=>$tab): ?>
 					<?php if(isset($labels[$key])): $i++; ?>
-						<li<?php if($i==1): ?> class="active"<?php endif ?>>
+						<li <?php if($i==1): ?> class="active"<?php endif ?>>
 							<a data-toggle="tab" href="#tab-<?php echo $tab.$blockId ?>"><?php echo $labels[$key]; ?></a>
 						</li>
 					<?php endif ?>

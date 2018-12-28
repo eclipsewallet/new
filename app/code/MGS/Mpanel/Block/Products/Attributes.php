@@ -58,13 +58,13 @@ class Attributes extends \MGS\Mpanel\Block\Products\AbstractProduct
         $collection = $this->_productCollectionFactory->create();
         $collection->setVisibility($this->_catalogProductVisibility->getVisibleInCatalogIds());
 		
-		if($categoryIds!=''){
-			$categoryIdArray = explode(',',$categoryIds);
-			if(count($categoryIdArray)>0){
-				$categoryFilter = ['eq'=>$categoryIdArray];
-				$collection->addCategoriesFilter($categoryFilter);
-			}
-		}
+		// if($categoryIds!=''){
+		// 	$categoryIdArray = explode(',',$categoryIds);
+		// 	if(count($categoryIdArray)>0){
+		// 		$categoryFilter = ['eq'=>$categoryIdArray];
+		// 		$collection->addCategoriesFilter($categoryFilter);
+		// 	}
+		// }
 		
 		
         $collection = $this->_addProductAttributesAndPrices($collection)
