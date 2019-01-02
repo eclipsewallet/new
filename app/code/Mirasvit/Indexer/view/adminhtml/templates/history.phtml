@@ -1,0 +1,105 @@
+<?php
+/** @var $block \Mirasvit\Indexer\Block\Adminhtml\History */
+
+?>
+
+<div class="grid-history-container">
+    <div style="padding-bottom: 1rem;">
+        <?= __('Last run: ') ?><span id="lastRunTime">-</span>
+    </div>
+    <div class="clearfix"></div>
+    <div class="admin__data-grid-wrap-static grid-history-wrap">
+        <table class="data-grid" id="gridHistory">
+            <thead>
+            <tr>
+                <th class="data-grid-th"></th>
+                <th class="data-grid-th"><?= __('Indexer') ?></th>
+                <th class="data-grid-th"><?= __('Action') ?></th>
+                <th class="data-grid-th"><?= __('Started At') ?></th>
+                <th class="data-grid-th"><?= __('Execution Time') ?></th>
+            </tr>
+            </thead>
+            <tbody>
+
+            </tbody>
+        </table>
+    </div>
+</div>
+<script>
+    require(['jquery', 'moment'], function ($, moment) {
+        function update(counter) {
+            if (counter > 10) {
+                counter = 1;
+            }
+
+            moment().utc();
+
+            $.ajax({
+                url: "<?=$block->getUrl('mst_indexer/indexer/listAction') ?>"
+            }).done(function (response) {
+
+                $.each(response['indexer'], function (indexer, data) {
+                    var $tr = $('.' + indexer, '#gridIndexer_table').closest('tr');
+
+                    $.each(data, function (column, value) {
+                        var $td = $('[data-column=' + column + ']', $tr);
+                        $td.html(value);
+                    });
+                });
+                moment()._isUTC = true;
+
+                $('#gridHistory tbody').html('');
+
+                $.each(response['history'], function (key, history) {
+                    var $tr = $('<tr />');
+                    var $td;
+
+                    $td = $('<td />');
+                    $td.addClass(history["status"]);
+                    if (history["status"] == "success") {
+                        $td.html("Completed");
+                    } else if (history["status"] == "error") {
+                        $td.html("Error");
+                    } else {
+                        $td.html("Processing");
+                    }
+
+                    $tr.append($td);
+
+                    $td = $('<td />');
+                    $td.html(history["indexer"]);
+                    $tr.append($td);
+
+                    $td = $('<td />');
+                    $td.html(history["summary"]);
+                    $tr.append($td);
+
+                    $td = $('<td />');
+                    $td.html(moment.utc(history["startedAt"]).fromNow());
+                    $tr.append($td);
+
+                    $td = $('<td />');
+                    $td.html(history["executionTime"]);
+                    $tr.append($td);
+
+                    $('#gridHistory tbody').append($tr);
+
+                });
+
+                if (response["lastRunTime"]) {
+                    $('#lastRunTime').html(
+                        moment.utc(response["lastRunTime"]).fromNow()
+                        + '&nbsp;&nbsp;&nbsp;&nbsp;<small>' + response["lastRunTime"] + '</small>'
+                        + '&nbsp;&nbsp;&nbsp;&nbsp;'+ '.'.repeat(counter)
+                    );
+                }
+            }).always(function () {
+                setTimeout(function () {
+                    update(counter + 1);
+                }, 500);
+            });
+        }
+
+        update(1);
+    });
+</script>

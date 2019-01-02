@@ -1,0 +1,46 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+
+    <preference for="Mirasvit\Indexer\Api\Data\HistoryInterface" type="Mirasvit\Indexer\Model\History"/>
+    <preference for="Mirasvit\Indexer\Api\Repository\HistoryRepositoryInterface"
+                type="Mirasvit\Indexer\Repository\HistoryRepository"/>
+    <preference for="Mirasvit\Indexer\Api\Service\HistoryServiceInterface"
+                type="Mirasvit\Indexer\Service\HistoryService"/>
+
+    <preference for="Mirasvit\Indexer\Api\Service\ValidatorServiceInterface"
+                type="Mirasvit\Indexer\Service\ValidatorService"/>
+
+    <type name="Mirasvit\Indexer\Api\Service\ValidatorServiceInterface">
+        <arguments>
+            <argument name="validators" xsi:type="array">
+                <item name="productFlat" xsi:type="object">Mirasvit\Indexer\Service\Validator\ProductFlat</item>
+            </argument>
+        </arguments>
+    </type>
+
+    <type name="Magento\Indexer\Model\Indexer">
+        <plugin name="indexer.reindexAll" type="Mirasvit\Indexer\Plugin\IndexerPlugin"/>
+    </type>
+
+    <type name="Magento\Framework\Indexer\ActionInterface">
+        <plugin name="indexer.indexer.action" type="Mirasvit\Indexer\Plugin\IndexerActionPlugin"/>
+    </type>
+
+    <type name="Magento\Indexer\Model\Indexer\State">
+        <plugin name="indexer" type="Mirasvit\Indexer\Plugin\StatePlugin"/>
+    </type>
+
+    <type name="Magento\Framework\Mview\ActionInterface">
+        <plugin name="indexer.mview.action" type="Mirasvit\Indexer\Plugin\MviewActionPlugin"/>
+    </type>
+
+    <type name="Magento\Framework\Console\CommandList">
+        <arguments>
+            <argument name="commands" xsi:type="array">
+                <item name="indexerCronCommand" xsi:type="object">Mirasvit\Indexer\Console\Command\CronCommand</item>
+            </argument>
+        </arguments>
+    </type>
+
+</config>

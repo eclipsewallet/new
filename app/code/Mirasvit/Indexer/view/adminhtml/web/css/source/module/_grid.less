@@ -1,0 +1,62 @@
+#gridIndexer_table {
+    td {
+        white-space: nowrap;
+
+        &.col-indexer_mode, &.col-indexer_status {
+            font-size: 1.1rem;
+        }
+        &.col-indexer_description {
+            font-size: 1.2rem;
+        }
+
+        &.col-indexer_queue {
+            text-align: center;
+        }
+    }
+}
+
+.grid-history-container {
+    position: relative;
+    min-height: 10rem;
+
+    &:after {
+        display: block;
+        height: 3rem;
+        width: 100%;
+        content: '';
+        background: linear-gradient(rgba(255, 255, 255, 0), rgba(255, 255, 255, 1));
+        position: absolute;
+        left: 0;
+        bottom: 0;
+    }
+
+    .grid-history-wrap {
+        max-height: 35rem;
+        overflow-y: scroll;
+    }
+}
+
+#gridHistory {
+    td {
+        padding: .7rem 1rem;
+
+        &.success, &.working {
+            position: relative;
+            width: 10rem !important;
+            text-align: center;
+            font-weight: bold;
+            text-transform: uppercase;
+            font-size: 1.2rem;
+        }
+
+        &.success {
+            background: #d0e5a9;
+            color: #185b00;
+        }
+
+        &.working {
+            background: #f9d4d4;
+            color: #e22626;
+        }
+    }
+}

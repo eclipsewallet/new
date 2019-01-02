@@ -1,0 +1,46 @@
+<?xml version="1.0"?>
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <body>
+        <referenceBlock name="adminhtml.indexer.grid.columnSet">
+            <block class="Magento\Backend\Block\Widget\Grid\Column" as="indexer_queue">
+                <arguments>
+                    <argument name="header" xsi:type="string" translate="true">Pending items</argument>
+                    <argument name="renderer" xsi:type="string">Mirasvit\Indexer\Block\Adminhtml\Grid\Column\Renderer\Queue</argument>
+                    <argument name="column_css_class" xsi:type="string">indexer-queue</argument>
+                </arguments>
+            </block>
+
+            <block class="Magento\Backend\Block\Widget\Grid\Column" as="actions">
+                <arguments>
+                    <argument name="header" xsi:type="string" translate="true">Actions</argument>
+                    <argument name="sortable" xsi:type="string">0</argument>
+                    <argument name="renderer" xsi:type="string">Mirasvit\Indexer\Block\Adminhtml\Grid\Column\Renderer\Actions</argument>
+                </arguments>
+            </block>
+        </referenceBlock>
+
+
+        <referenceBlock name="adminhtml.indexer.grid.grid.massaction">
+            <arguments>
+                <argument name="options" xsi:type="array">
+                    <item name="separator" xsi:type="array">
+                        <item name="label" xsi:type="string">——————————</item>
+                    </item>
+                    <item name="schedule_full_reindex" xsi:type="array">
+                        <item name="label" xsi:type="string" translate="true">Schedule Full Reindex</item>
+                        <item name="url" xsi:type="string">mst_indexer/indexer/massScheduleFullReindex</item>
+                    </item>
+                    <item name="run_full_reindex" xsi:type="array">
+                        <item name="label" xsi:type="string" translate="true">Run Full Reindex</item>
+                        <item name="url" xsi:type="string">mst_indexer/indexer/massRunFullReindex</item>
+                    </item>
+                    <item name="run_items_reindex" xsi:type="array">
+                        <item name="label" xsi:type="string" translate="true">Reindex Pending Items</item>
+                        <item name="url" xsi:type="string">mst_indexer/indexer/massChangelogReindex</item>
+                    </item>
+                </argument>
+            </arguments>
+        </referenceBlock>
+    </body>
+</page>
