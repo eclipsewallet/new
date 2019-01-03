@@ -1,0 +1,27 @@
+<?xml version="1.0" ?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
+	<system>
+		<tab id="Marvelic" sortOrder="300" translate="label">
+			<label>Marvelic</label>
+		</tab>
+		<section id="postcode" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="10" translate="label">
+			<label>Thai Postcode</label>
+			<tab>Marvelic</tab>
+			<resource>Marvelic_Postcode::config_Marvelic_postcode</resource>
+			<group id="options" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="10" translate="label">
+				<label>Options</label>
+				<field id="enable" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="10" translate="label" type="select">
+					<label>Enable</label>
+					<source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+				</field>
+			</group>
+
+			<group id="postcode_default" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="20" translate="label">
+				<label>Postcode Default</label>
+				<field id="value" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="10" translate="label" type="text">
+					<label>Postcode Value</label>
+				</field>
+			</group>
+		</section>
+	</system>
+</config>

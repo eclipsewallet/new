@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Backend:etc/menu.xsd">
+    <menu>
+        <!-- <add 
+            id="Marvelic_Postcode::postcode" title="Thai Postcode"
+            module="Marvelic_Postcode"
+            sortOrder="10" resource="Marvelic_Postcode::configuration" parent="Marvelic_Core::menu"/> -->
+        <!-- <add 
+            id="Marvelic_Postcode::configuration" title="Configuration"
+            module="Marvelic_Postcode"
+            sortOrder="50" action="adminhtml/system_config/edit/section/postcode" resource="Marvelic_Postcode::configuration" parent="Marvelic_Postcode::postcode"/> -->
+    </menu>
+</config>

@@ -1,0 +1,21 @@
+{
+    "name": "Marvelic/module-postcode",
+    "description": "Postcode Thailand Autocomplete",
+    "license": "proprietary",
+    "authors": [
+        {
+            "email": "info@marvelic.co.th",
+            "name": "Marvelic"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {},
+    "autoload": {
+        "files": [
+            "registration.php"
+        ],
+        "psr-4": {
+            "Marvelic\\Postcode\\": ""
+        }
+    }
+}
