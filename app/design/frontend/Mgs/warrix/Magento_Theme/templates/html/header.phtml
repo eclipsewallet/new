@@ -31,12 +31,12 @@
     <?php if($header == 'header_6' || $header == 'header_7'): ?>
         <?php $htmlTabMenu .= '<li class="hidden-lg"><a data-toggle="tab" href="#main-Accountcontent">'. __('Account') .'</a></li>'; ?>
         <?php if($storeSetting): ?>
-            <?php $htmlTabMenu .= '<li class="hidden-lg"><a data-toggle="tab" href="#main-Settingcontent">'. __('Setting') .'</a></li>'; ?>
+            <?php $htmlTabMenu .= '<li class="hidden-lg"><a data-toggle="tab" href="#main-Settingcontent">'. __('Language') .'</a></li>'; ?>
         <?php endif ?>
     <?php else: ?>
         <?php $htmlTabMenu .= '<li><a data-toggle="tab" href="#main-Accountcontent">'. __('Account') .'</a></li>'; ?>
         <?php if($storeSetting): ?>
-            <?php $htmlTabMenu .= '<li><a data-toggle="tab" href="#main-Settingcontent">'. __('Setting') .'</a></li>'; ?>
+            <?php $htmlTabMenu .= '<li><a data-toggle="tab" href="#main-Settingcontent">'. __('Language') .'</a></li>'; ?>
         <?php endif ?>
     <?php endif ?>
 <?php $htmlTabMenu .= '</ul>'; ?>
@@ -54,7 +54,7 @@
 <?php else:?>
     <?php $htmlTabContent = '<div class="tab-content mgt-menu"><div id="main-Menucontent" class="tab-pane active">'. $mgsMegamenu .'</div><div id="main-Accountcontent" class="tab-pane"><div class="top-links">'.$block->getChildHtml('top.links').'</div></div>'.$htmlTabSetting.'</div>' ; ?>
 <?php endif;?>
-                    
+
 <?php // Wishlist link ?>
 <?php $htmlWishlist = "" ?>
 <?php if($this->helper('Magento\Wishlist\Helper\Data')->isAllow()): ?>
@@ -73,7 +73,7 @@
     <?php // Header 1, 2 , 3 ?>
     <?php $topLeftBlock = $this->getLayout()->createBlock('Magento\Cms\Block\Block')->setBlockId('header_1_top_left_link')->setCanUsePanel($canUsePanel)->toHtml(); ?>
     <?php $topMiddleBlock = $this->getLayout()->createBlock('Magento\Cms\Block\Block')->setBlockId('header_1_top_middle_block')->setCanUsePanel($canUsePanel)->toHtml(); ?>
-    
+
     <div class="top-header-content">
         <div class="container<?php if($header != 'header_3'): ?>-fluid<?php endif ?>">
             <div class="row">
@@ -103,28 +103,28 @@
     <div class="middle-header-content">
         <div class="container<?php if($header != 'header_3'): ?>-fluid<?php endif ?>">
             <div class="row">
-                <div class="col-lg-2 col-md-4 col-sm-4 mobile-item-col">
+                <div class="col-lg-1 col-md-4 col-sm-4 mobile-item-col">
                     <button class="action nav-toggle hidden-lg"><?php echo $imgToggleMenu ?></button>
-                    
+
                     <div class="visible-lg<?php if($header == 'header_2' || $header == 'header_3'): ?> logo-left-header<?php endif ?>">
                         <?php echo $header == 'header_2' || $header == 'header_3' ?  $logo : $headerSocialBlock; ?>
                     </div>
                 </div>
-                
+
                 <div class="hidden-lg col-md-4 col-sm-4 logo-header mobile-item-col"><?php echo $logo ?></div>
-                
-                <div class="col-lg-8 col-xs-12 megamenu-content">
+
+                <div class="col-lg-9 col-xs-12 megamenu-content">
                     <?php echo $htmlTabMenu ?><?php echo $htmlTabContent ?>
                 </div>
-                
+
                 <div class="col-lg-2 col-md-4 col-sm-4 col-xs-auto mobile-item-col">
                     <div class="table-icon-menu pull-right">
                         <?php echo $topSearch ?>
-                        
+
                         <?php echo $htmlTopLink ?>
-                        
+
                         <?php echo $htmlWishlist; ?>
-                        
+
                         <?php echo $miniCart ?>
                     </div>
                 </div>
@@ -136,7 +136,7 @@
     <?php // Header 4 ?>
     <?php $topLeftBlock = $this->getLayout()->createBlock('Magento\Cms\Block\Block')->setBlockId('header_1_top_left_link')->setCanUsePanel($canUsePanel)->toHtml(); ?>
     <?php $topMiddleBlock = $this->getLayout()->createBlock('Magento\Cms\Block\Block')->setBlockId('header_1_top_middle_block')->setCanUsePanel($canUsePanel)->toHtml(); ?>
-    
+
     <div class="top-header-content">
         <div class="container<?php if($header != 'header_3'): ?>-fluid<?php endif ?>">
             <div class="row">
@@ -168,23 +168,23 @@
             <div class="row">
                 <div class="col-md-4 col-sm-4 mobile-item-col">
                     <button class="action nav-toggle hidden-lg"><?php echo $imgToggleMenu ?></button>
-                    
+
                     <div class="visible-lg">
                         <?php echo $headerSocialBlock; ?>
                     </div>
                 </div>
-                
+
                 <div class="col-md-4 col-sm-4 logo-header mobile-item-col"><?php echo $logo ?></div>
-                
+
                 <div class="col-md-4 col-sm-4 col-xs-auto mobile-item-col">
                     <div class="table-icon-menu pull-right">
-                    
+
                         <?php echo $topSearch ?>
-                        
+
                         <?php echo $htmlTopLink ?>
-                        
+
                         <?php echo $htmlWishlist; ?>
-                        
+
                         <?php echo $miniCart ?>
                     </div>
                 </div>
@@ -211,16 +211,16 @@
                 <div class="action-menu-responsive hidden-lg">
                     <button class="action nav-toggle"><?php echo $imgToggleMenu ?></button>
                 </div>
-                
+
                 <?php echo $logo ?>
-               
+
                 <div class="table-icon-menu">
                     <?php echo $topSearch ?>
-                    
+
                     <?php echo $htmlTopLink ?>
-                    
+
                     <?php echo $htmlWishlist; ?>
-                    
+
                     <?php echo $miniCart ?>
                     <div class="switchers">
 		                <?php echo $storeLanguage ?>
@@ -231,7 +231,7 @@
                 <div class="megamenu-content">
                     <?php echo $htmlTabMenu ?><?php echo $htmlTabContent ?>
                 </div>
-                
+
                 <?php if($headerSocialBlock): ?>
                     <div class="bottom-header-custom-block visible-lg">
                         <!-- Static block: header_1_social_block -->
@@ -258,7 +258,7 @@
                     }
                 });
             });
-            
+
             $(window).scroll(function () {
                 var headerLeftHeight = $(".header.header5").innerHeight();
                 var window_height = $(this).height();
@@ -313,17 +313,17 @@
                 <div class="col-md-4 col-sm-4 mobile-item-col">
                     <button class="action nav-toggle"><?php echo $imgToggleMenu ?></button>
                 </div>
-                
+
                 <div class="col-md-4 col-sm-4 logo-header mobile-item-col"><?php echo $logo ?></div>
-                
+
                 <div class="col-md-4 col-sm-4 col-xs-auto mobile-item-col">
                     <div class="table-icon-menu pull-right">
                         <?php echo $topSearch ?>
-                        
+
                         <?php echo $htmlTopLink ?>
-                        
+
                         <?php echo $htmlWishlist; ?>
-                        
+
                         <?php echo $miniCart ?>
                     </div>
                 </div>
@@ -373,19 +373,19 @@
                         <?php echo $headerSocialBlock; ?>
                     </div>
                 </div>
-                
+
                 <div class="col-md-4 col-sm-4 logo-header mobile-item-col"><?php echo $logo ?></div>
-                
+
                 <div class="col-md-4 col-sm-4 col-xs-auto mobile-item-col">
                     <div class="table-icon-menu pull-right">
                         <?php echo $topSearch ?>
-                        
+
                         <?php echo $htmlTopLink ?>
-                        
+
                         <?php echo $htmlWishlist; ?>
-                        
+
                         <?php echo $miniCart ?>
-                        
+
                         <button class="action nav-toggle hidden-xs margin-left20"><?php echo $imgToggleMenu ?></button>
                     </div>
                 </div>
@@ -421,23 +421,23 @@
     <div class="middle-header-content">
         <div class="container">
             <div class="row">
-            
+
                 <div class="col-lg-3 col-md-2 col-xs-6 logo-header"><?php echo $logo ?></div>
-                
+
                 <div class="col-lg-6 col-md-8 col-xs-12 parent__search"><?php echo $topSearch ?></div>
-                
+
                 <div class="col-lg-3 col-md-2 col-xs-6">
                     <div class="table-icon-menu pull-right">
                         <?php echo $htmlTopLink ?>
-                        
+
                         <?php echo $htmlWishlist; ?>
-                        
+
                         <div class="search-form select-search">
                             <div class="actions-search visible-sm visible-xs">
                                 <button class="action-search" onclick="showHideFormSearch()"><i class="pe-7s-search"></i></button>
                             </div>
                         </div>
-                        
+
                         <?php echo $miniCart ?>
                     </div>
                 </div>
@@ -489,9 +489,9 @@
     <div class="middle-header-content">
         <div class="container">
             <div class="row">
-            
+
                 <div class="col-lg-3 col-md-3 col-xs-6 logo-header"><?php echo $logo ?></div>
-                
+
                 <div class="col-lg-9 col-md-9 col-xs-6 parent__megameu">
                     <div class="megamenu-content">
                         <?php echo $htmlTabMenu ?><?php echo $htmlTabContent ?>
@@ -514,15 +514,15 @@
                         <?php echo $topSearch ?>
                         <div class="table-icon-menu">
                             <?php echo $htmlTopLink ?>
-                            
+
                             <?php echo $htmlWishlist; ?>
-                            
+
                             <div class="search-form select-search">
                                 <div class="actions-search visible-sm visible-xs">
                                     <button class="action-search" onclick="showHideFormSearch()"><i class="pe-7s-search"></i></button>
                                 </div>
                             </div>
-                            
+
                             <?php echo $miniCart ?>
                         </div>
                     </div>
@@ -542,27 +542,27 @@
                         <?php echo $currency ?>
                     </div>
                 </div>
-                
+
                 <div class="hidden-lg col-md-4 col-sm-4 logo-header mobile-item-col"><?php echo $logo ?></div>
-                
+
                 <div class="col-lg-8 col-xs-12 megamenu-content">
                     <?php echo $htmlTabMenu ?><?php echo $htmlTabContent ?>
                 </div>
                 <div class="col-lg-2 col-md-4 col-sm-4 col-xs-auto mobile-item-col">
                     <div class="table-icon-menu pull-right">
                         <?php echo $topSearch ?>
-                        
+
                         <?php echo $htmlTopLink ?>
-                        
+
                         <?php echo $htmlWishlist; ?>
-                        
+
                         <?php echo $miniCart ?>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-	
+
 <?php endif ?>
 
 <?php if(!($header == 'header_5')){echo $subCategories;}?>

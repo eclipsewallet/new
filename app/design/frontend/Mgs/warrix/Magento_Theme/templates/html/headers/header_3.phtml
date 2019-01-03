@@ -39,7 +39,7 @@
 <div class="middle-header-content">
 	<div class="container">
 		<div class="row">
-			<div class="col-lg-2 col-md-4 col-sm-4 mobile-item-col">
+			<div class="col-lg-1 col-md-4 col-sm-4 mobile-item-col">
 				<button class="action nav-toggle hidden-lg">
 					<img src="<?php echo $block->getViewFileUrl('images/hamburger-black.svg'); ?>" alt="<?php echo __('Toogle Menu') ?>">
 				</button>
@@ -50,11 +50,11 @@
 			<div class="hidden-lg col-md-4 col-sm-4 logo-header mobile-item-col">
 				<?php echo $block->getChildHtml('logo') ?>
 			</div>
-			<div class="col-lg-8 col-xs-12 megamenu-content<?php if($block->getChildHtml('store.settings') == ""): ?> no-menu-settings<?php endif ?>">
+			<div class="col-lg-9 col-xs-12 megamenu-content<?php if($block->getChildHtml('store.settings') == ""): ?> no-menu-settings<?php endif ?>">
 				<ul class="nav nav-tabs">
 					<li class="active"><a data-toggle="tab" href="#main-Menucontent"><?php echo __('Menu'); ?></a></li>
 					<li><a data-toggle="tab" href="#main-Accountcontent"><?php echo __('Account'); ?></a></li>
-					<li class="settings-menu-tab"><a data-toggle="tab" href="#main-Settingcontent"><?php echo __('Setting'); ?></a></li>
+					<li class="settings-menu-tab"><a data-toggle="tab" href="#main-Settingcontent"><?php echo __('Language'); ?></a></li>
 				</ul>
 				<div class="tab-content">
 					<div id="main-Menucontent" class="tab-pane active">
@@ -72,20 +72,20 @@
 					<div id="main-Settingcontent" class="tab-pane">
 						<?php echo $block->getChildHtml('store.settings') ?>
 					</div>
-					
+
 				</div>
 			</div>
 			<div class="col-lg-2 col-md-4 col-sm-4 col-xs-auto mobile-item-col">
 				<div class="table-icon-menu pull-right">
 					<?php echo $block->getChildHtml('top.search') ?>
-					
+
 					<div class="dropdown dropdown-toplinks">
 						<button class="dropdown-toggle" type="button" data-toggle="dropdown"><i class="pe-7s-user"></i></button>
 						<div class="dropdown-menu">
 							<?php echo $block->getChildHtml('top.links') ?>
 						</div>
 					</div>
-					
+
 					<?php if($this->helper('Magento\Wishlist\Helper\Data')->isAllow()): ?>
 						<div class="header-wl" data-bind="scope: 'wishlist'">
 							<a href="<?php /* @escapeNotVerified */ echo $this->helper('Magento\Wishlist\Helper\Data')->getListUrl() ?>">
@@ -96,7 +96,7 @@
 							</a>
 						</div>
 					<?php endif ?>
-					
+
 					<?php echo $block->getChildHtml('minicart') ?>
 				</div>
 			</div>
