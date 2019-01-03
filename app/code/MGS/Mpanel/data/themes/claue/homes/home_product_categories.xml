@@ -222,7 +222,7 @@
 		<setting><![CDATA[{"title":"LATEST FROM BLOG","additional_content":"The freshest and most exciting news","animation":"","animation_delay":"","post_category":["1","2","3","4","5"],"number_of_posts":"3","items":"3","template":"default.phtml","show_thumbnail":"1","show_short_content":"1","limit_characters_short_content":"120","view_as":"1","number_row":"1","navigation":"1","text_colour":"","link_colour":"","link_hover_colour":"","button_colour":"","button_hover_colour":"","button_text_colour":"","button_text_hover_colour":"","button_border_colour":"","button_border_hover_colour":"","autoplay":0,"stop_auto":0,"pagination":0}]]></setting>
 		<col><![CDATA[12]]></col>
 		<class><![CDATA[col-xs-12]]></class>
-		<block_content><![CDATA[{{widget type="MGS\Blog\Block\Widget\Latest" mgs_panel_title="LATEST FROM BLOG" post_category="" number_of_posts="3" items="3" show_thumbnail="1" mgs_panel_note="The freshest and most exciting news" template="widget/default.phtml" show_short_content="1" limit_characters_short_content="120" view_as="owl_carousel" autoplay="0" stop_auto="0" navigation="1" pagination="0" number_row="1"}}]]></block_content>
+		<block_content><![CDATA[{{widget type="MGS\Blog\Block\Widget\Latest" mgs_panel_title="LATEST FROM BLOG" post_category="1,2,3,4,5" number_of_posts="3" items="3" show_thumbnail="1" mgs_panel_note="The freshest and most exciting news" template="widget/default.phtml" show_short_content="1" limit_characters_short_content="120" view_as="owl_carousel" autoplay="0" stop_auto="0" navigation="1" pagination="0" number_row="1"}}]]></block_content>
 	</block>
 	<block>
 		<block_name><![CDATA[block32-0]]></block_name>
