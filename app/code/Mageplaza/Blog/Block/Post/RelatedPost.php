@@ -97,10 +97,10 @@ class RelatedPost extends Template
             /** @var \Mageplaza\Blog\Model\ResourceModel\Post\Collection $collection */
             $collection = $this->helperData->getPostList();
             $collection->getSelect()
-                ->join([
-                    'related' => $collection->getTable('mageplaza_blog_post_product')],
-                    'related.post_id=main_table.post_id AND related.entity_id=' . $this->getProductId()
-                )
+                // ->join([
+                //     'related' => $collection->getTable('mageplaza_blog_post_product')],
+                //     'related.post_id=main_table.post_id AND related.entity_id=' . $this->getProductId()
+                // )
                 ->limit($this->getLimitPosts());
 
             $this->_relatedPosts = $collection;

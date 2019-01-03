@@ -20,12 +20,21 @@
  */
 
 /** @var \Mageplaza\Blog\Model\ResourceModel\Post\Collection $posts */
+$objectManager =\Magento\Framework\App\ObjectManager::getInstance();
+$store = $objectManager->get('Magento\Store\Model\StoreManagerInterface')->getStore();
 $posts = $block->getRelatedPostList();
+
 if ($posts): ?>
     <h2><?php echo $posts->getSize() ? __('Related Posts') : __('No Related Posts') ?></h2>
     <ul>
-        <?php foreach ($posts as $post): ?>
-            <li><a href="<?php echo $post->getUrl() ?>"><?php echo $post->getName(); ?></a></li>
+        <?php foreach ($posts as $post): 
+            $imageUrl = $store->getBaseUrl(\Magento\Framework\UrlInterface::URL_TYPE_MEDIA).'mageplaza/blog/post/'.$post->getImage();
+            ?>
+            <li>
+                <a href="<?php echo $post->getUrl() ?>"><?php echo $post->getName(); ?>
+                    <img src="<?php echo ($imageUrl) ?>">
+                </a>
+            </li>
         <?php endforeach; ?>
     </ul>
 <?php endif; ?>
