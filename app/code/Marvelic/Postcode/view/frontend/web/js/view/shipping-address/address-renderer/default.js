@@ -11,8 +11,9 @@ define([
     'Magento_Checkout/js/model/quote',
     'Magento_Checkout/js/model/shipping-address/form-popup-state',
     'Magento_Checkout/js/checkout-data',
-    'Magento_Customer/js/customer-data'
-], function ($, ko, Component, selectShippingAddressAction, quote, formPopUpState, checkoutData, customerData) {
+    'Magento_Customer/js/customer-data',
+    'uiRegistry'
+], function ($, ko, Component, selectShippingAddressAction, quote, formPopUpState, checkoutData, customerData, uiRegistry) {
     'use strict';
 
     var countryData = customerData.get('directory-data');
@@ -35,7 +36,7 @@ define([
 
                 return isSelected;
             }, this);
-            var vatId = registry.get("checkout.steps.shipping-step.shippingAddress.shipping-address-fieldset.vat_id");
+            var vatId = uiRegistry.get("checkout.steps.shipping-step.shippingAddress.shipping-address-fieldset.vat_id");
             vatId.value(this.address().vatId);
             return this;
         },
