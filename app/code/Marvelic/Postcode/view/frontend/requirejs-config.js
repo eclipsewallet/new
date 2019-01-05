@@ -2,7 +2,7 @@ var config = {
   map: {
     '*': {      
       thailand: 'Marvelic_Postcode/js/Thailand',
-      'Magento_Checkout/js/view/shipping-address/address-renderer/default': 'Marvelic_Postcode/js/view/shipping-address/address-renderer/default'
+      // 'Magento_Checkout/js/view/billing-address': 'Marvelic_Postcode/js/view/billing-address'
     }
   },
   paths: {

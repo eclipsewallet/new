@@ -1,8 +1,7 @@
 define([
     'jquery',
-    'uiRegistry',
-    'Magento_Checkout/js/model/quote'
-], function ($ ,registry ,quote) {
+    'uiRegistry'
+], function ($ ,registry) {
     'use strict';
 
     return function (validator) {
@@ -50,12 +49,6 @@ define([
             }
         });
 
-        $(document).on("change","[name='shippingAddress.vat_id'] [name='vat_id']",function(){
-            var shippingAddress = quote.shippingAddress();
-            var billingAddress = quote.billingAddress();
-            shippingAddress['vatId'] = registry.get("checkout.steps.shipping-step.shippingAddress.shipping-address-fieldset.vat_id").value();
-            billingAddress['vatId'] = registry.get("checkout.steps.shipping-step.shippingAddress.shipping-address-fieldset.vat_id").value();
-        });
         return validator;
         
     };
