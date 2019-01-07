@@ -5,7 +5,27 @@ $store_url = $objectManager->get('Magento\Store\Model\StoreManagerInterface')->g
 
 $store = $objectManager->get('Mageplaza\Blog\Block\Widget\Posts');
 $collection = $store->getCollection();
-// echo ('<pre>'); print_r($collection->getData());
+
+$cate = $objectManager->get('Mageplaza\Blog\Model\CategoryFactory');
+$author = $objectManager->get('Mageplaza\Blog\Model\AuthorFactory');
+
+
+// echo "<pre>"; 
+// 	var_dump($cate->create()->load(2)->getData());die();
+// foreach($collection as $a){
+// 	// echo '<pre>';
+	
+// 	//vong lap $a 
+// 	//chay
+// 	var_dump($cate->create()->load($a->getCategoryIds())->getName());
+// 	//quay lai
+
+// }die();
+
+
+
+// echo ('<pre>'); var_dump($collection);die();
+// echo ('<pre>'); print_r($collection_author->getData());
 ?>
 
 <div class="content-block blog-block blog-grid-block">
@@ -42,16 +62,46 @@ $collection = $store->getCollection();
 				<div class="block-content">
 					<div class="owl-carousel mgs-carousel-<?php echo $blockId; ?>">
 						<?php $i=0; foreach ($collection as $post): $i++ ?>
-									<div class="item">
+								<div class="item">
+								<?php
 								
+								$date = date("m-d-Y", strtotime($post->getpublish_date()));
+								$date_sub =  substr($date,0,2);
+								$space = " ";
+								$conti=".............";
+								//set locale, 
+								setlocale(LC_ALL,"US");
+
+								$arrAuthor = $post->getAuthorId();
+								
+								$arrAuthorName = $author->create()->load($arrAuthor)->getName();
+							
+								
+								$arrCate = $post->getCategoryIds();
+								$arrName = [];
+
+								if(empty($arrCate)){
+									$arrName[]	= "None";
+								}else{
+									foreach($arrCate as $idCate){
+										$arrName[] = $cate->create()->load($idCate)->getName();
+									}
+								}
+								
+								//set the date to be converted
+								
+
+								//convert date to month name
+								$month_name =  ucfirst(strftime("%B", strtotime($date)));
+								?>
 								<?php $imageUrl = $store_url->getBaseUrl(\Magento\Framework\UrlInterface::URL_TYPE_MEDIA).'mageplaza/blog/post/'.$post->getImage(); ?>
-								<img src="<?php echo ($imageUrl) ?>">
+								<img class="img_mage_post" src="<?php echo ($imageUrl) ?>">
 
 								<div class="title"><a href="<?php echo $post->getPostUrlWithNoCategory(); ?>" title="<?php echo $post->getName(); ?>"><?php echo $post->getName() ?></a></div>
-								<div class="author_id"> by :<?php echo $post->getAuthor_id(); ?> </div>
-								<div class="publish_date"> date :<?php echo $post->getpublish_date(); ?> </div>
-								<div class="category"> in :<?php echo $post->getpublish_date(); ?> </div>
-								<div class="short_description"> <?php echo $post->getshort_description(); ?> </div>
+								<div class="author_id"> by <strong class="Author_color"><?php echo $arrAuthorName; ?></strong> </div>
+								<div class="publish_date"> on <strong class="date_color"><?php echo $month_name.$space.$date_sub ?></strong> </div>
+								<div class="category"> in <strong class="cate_color"><?php echo  implode(', ', $arrName) ?></strong> </div>
+								<div class="short_description"> <?php echo substr($post->getshort_description(),0,100).$conti; ?> </div>
 							</div>
 						<?php endforeach ?>
 					</div>
