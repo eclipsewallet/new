@@ -1,0 +1,7 @@
+<?xml version="1.0" ?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Backend:etc/menu.xsd">
+	<menu>
+		<add id="Marvelic::top_level" module="Marvelic_Job" resource="Magento_Backend::content" sortOrder="12" title="Marvelic"/>
+		<add action="marvelic_job/export/index" id="Marvelic_Job::marvelic_job_export" module="Marvelic_Job" parent="Marvelic::top_level" resource="Magento_Backend::content" sortOrder="9999" title="Export"/>
+	</menu>
+</config>

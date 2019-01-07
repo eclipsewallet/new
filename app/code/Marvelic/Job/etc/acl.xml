@@ -1,0 +1,15 @@
+<?xml version="1.0" ?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:Acl/etc/acl.xsd">
+	<acl>
+		<resources>
+			<resource id="Magento_Backend::admin">
+				<resource id="Marvelic_Job::Export" sortOrder="10" title="Export">
+					<resource id="Marvelic_Job::Export_save" sortOrder="10" title="Save Export"/>
+					<resource id="Marvelic_Job::Export_delete" sortOrder="20" title="Delete Export"/>
+					<resource id="Marvelic_Job::Export_update" sortOrder="30" title="Update Export"/>
+					<resource id="Marvelic_Job::Export_view" sortOrder="40" title="View Export"/>
+				</resource>
+			</resource>
+		</resources>
+	</acl>
+</config>
