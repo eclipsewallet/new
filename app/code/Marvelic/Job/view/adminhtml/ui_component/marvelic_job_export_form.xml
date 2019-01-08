@@ -1,0 +1,290 @@
+<?xml version="1.0" ?>
+<form xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Ui:etc/ui_configuration.xsd">
+	<argument name="data" xsi:type="array">
+		<item name="js_config" xsi:type="array">
+			<item name="provider" xsi:type="string">marvelic_job_export_form.export_form_data_source</item>
+		</item>
+		<item name="label" translate="true" xsi:type="string">General Information</item>
+		<item name="template" xsi:type="string">templates/form/collapsible</item>
+	</argument>
+	<settings>
+		<buttons>
+			<button class="Marvelic\Job\Block\Adminhtml\Export\Edit\BackButton" name="back"/>
+			<button class="Marvelic\Job\Block\Adminhtml\Export\Edit\DeleteButton" name="delete"/>
+			<button class="Marvelic\Job\Block\Adminhtml\Export\Edit\SaveButton" name="save"/>
+			<button class="Marvelic\Job\Block\Adminhtml\Export\Edit\SaveAndContinueButton" name="save_and_continue"/>
+		</buttons>
+		<namespace>marvelic_job_export_form</namespace>
+		<dataScope>data</dataScope>
+		<deps>
+			<dep>marvelic_job_export_form.export_form_data_source</dep>
+		</deps>
+	</settings>
+	<dataSource name="export_form_data_source">
+		<argument name="data" xsi:type="array">
+			<item name="js_config" xsi:type="array">
+				<item name="component" xsi:type="string">Magento_Ui/js/form/provider</item>
+			</item>
+		</argument>
+		<settings>
+			<submitUrl path="*/*/save"/>
+		</settings>
+		<dataProvider class="Marvelic\Job\Model\Export\DataProvider" name="export_form_data_source">
+			<settings>
+				<requestFieldName>export_id</requestFieldName>
+				<primaryFieldName>export_id</primaryFieldName>
+			</settings>
+		</dataProvider>
+	</dataSource>
+	<fieldset name="general">
+		<argument name="data" xsi:type="array">
+			<item name="config" xsi:type="array">
+				<item name="label" xsi:type="string" translate="true">General Settings</item>
+				<item name="sortOrder" xsi:type="number">10</item>
+			</item>
+		</argument>
+		<field name="is_active">
+			<argument name="data" xsi:type="array">
+				<item name="config" xsi:type="array">
+					<item name="dataType" xsi:type="string">boolean</item>
+					<item name="label" xsi:type="string" translate="true">Enable Job</item>
+					<item name="formElement" xsi:type="string">checkbox</item>
+					<item name="source" xsi:type="string">export</item>
+					<item name="sortOrder" xsi:type="number">10</item>
+					<item name="dataScope" xsi:type="string">is_active</item>
+					<item name="prefer" xsi:type="string">toggle</item>
+					<item name="valueMap" xsi:type="array">
+						<item name="true" xsi:type="number">1</item>
+						<item name="false" xsi:type="number">0</item>
+					</item>
+					<item name="default" xsi:type="number">0</item>
+				</item>
+			</argument>
+		</field>
+		<field formElement="input" name="title" sortOrder="20">
+			<argument name="data" xsi:type="array">
+				<item name="config" xsi:type="array">
+					<item name="source" xsi:type="string">Export</item>
+					<item name="validation" xsi:type="array">
+						<item name="required-entry" xsi:type="boolean">true</item>
+					</item>
+				</item>
+			</argument>
+			<settings>
+				<dataType>text</dataType>
+				<label translate="true">Job Title</label>
+				<dataScope>title</dataScope>
+			</settings>
+		</field>
+		<field name="frequency">
+			<argument name="data" xsi:type="array">
+				<item name="options" xsi:type="object">
+					Marvelic\Job\Ui\Component\Listing\Column\Frequency\Options
+				</item>
+				<item name="config" xsi:type="array">
+					<item name="component" xsi:type="string">Marvelic_Job/js/form/element/frequency-select
+					</item>
+					<item name="elementTmpl" xsi:type="string">Marvelic_Job/form/element/frequency-select
+					</item>
+					<item name="dataType" xsi:type="string">text</item>
+					<item name="label" xsi:type="string" translate="true">Frequency</item>
+					<item name="formElement" xsi:type="string">select</item>
+					<item name="source" xsi:type="string">export</item>
+					<item name="sortOrder" xsi:type="number">30</item>
+					<item name="dataScope" xsi:type="string">frequency</item>
+					<item name="validation" xsi:type="array">
+						<item name="required-entry" xsi:type="boolean">true</item>
+					</item>
+				</item>
+			</argument>
+		</field>
+		<field name="cron">
+			<argument name="data" xsi:type="array">
+				<item name="options" xsi:type="object">Marvelic\Job\Ui\Component\Listing\Column\Cron\Options
+				</item>
+				<item name="config" xsi:type="array">
+					<item name="component" xsi:type="string">Marvelic_Job/js/form/element/cron</item>
+					<item name="elementTmpl" xsi:type="string">Marvelic_Job/form/element/cron</item>
+					<item name="dataType" xsi:type="string">text</item>
+					<item name="label" xsi:type="string" translate="true">Cron Schedule</item>
+					<item name="formElement" xsi:type="string">select</item>
+					<item name="source" xsi:type="string">export</item>
+					<item name="sortOrder" xsi:type="number">40</item>
+					<item name="dataScope" xsi:type="string">cron</item>
+					<item name="notice" xsi:type="string">↑ Use this field if you have good cron knowledge.</item>
+					<item name="validation" xsi:type="array">
+						<item name="required-entry" xsi:type="boolean">true</item>
+					</item>
+				</item>
+			</argument>
+		</field>
+        <field name="entity">
+            <argument name="data" xsi:type="array">
+                <item name="options" xsi:type="object">
+                    Marvelic\Job\Ui\Component\Listing\Column\EntityType\Options
+                </item>
+                <item name="config" xsi:type="array">
+                    <item name="dataType" xsi:type="string">text</item>
+                    <item name="label" xsi:type="string" translate="true">Entity Type</item>
+                    <item name="formElement" xsi:type="string">select</item>
+                    <item name="source" xsi:type="string">export</item>
+                    <item name="sortOrder" xsi:type="number">50</item>
+                    <item name="dataScope" xsi:type="string">entity</item>
+                    <item name="validation" xsi:type="array">
+                        <item name="required-entry" xsi:type="boolean">true</item>
+                    </item>
+                </item>
+            </argument>
+        </field>
+	</fieldset>
+    <fieldset name="date">
+        <argument name="data" xsi:type="array">
+            <item name="config" xsi:type="array">
+                <item name="collapsible" xsi:type="boolean">true</item>
+                <item name="label" xsi:type="string" translate="true">Date Config</item>
+                <item name="sortOrder" xsi:type="number">20</item>
+            </item>
+        </argument>
+        <field name="type_time">
+            <argument name="data" xsi:type="array">
+                <item name="options" xsi:type="object">
+                    Marvelic\Job\Ui\Component\Listing\Column\DateConfig\Options
+                </item>
+                <item name="config" xsi:type="array">
+                    <item name="dataType" xsi:type="string">text</item>
+                    <item name="label" xsi:type="string" translate="true">Type Time</item>
+                    <item name="formElement" xsi:type="string">select</item>
+                    <item name="source" xsi:type="string">export</item>
+                    <item name="sortOrder" xsi:type="number">10</item>
+                    <item name="dataScope" xsi:type="string">type_time</item>
+                    <item name="validation" xsi:type="array">
+                        <item name="required-entry" xsi:type="boolean">true</item>
+                    </item>
+                </item>
+            </argument>
+        </field>
+        <field formElement="input" name="period" sortOrder="20">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="source" xsi:type="string">export</item>
+                    <item name="validation" xsi:type="array">
+                        <item name="validate-number" xsi:type="boolean">true</item>
+                    </item>
+                </item>
+            </argument>
+            <settings>
+                <dataType>text</dataType>
+                <label translate="true">Period Time</label>
+                <dataScope>period</dataScope>
+            </settings>
+        </field>
+    </fieldset>
+    <fieldset name="source">
+		<argument name="data" xsi:type="array">
+			<item name="config" xsi:type="array">
+				<item name="component" xsi:type="string">
+					Marvelic_Job/js/components/visible-on-options/fieldset
+				</item>
+				<item name="collapsible" xsi:type="boolean">true</item>
+				<item name="label" xsi:type="string" translate="true">Export Source</item>
+				<item name="sortOrder" xsi:type="number">30</item>
+			</item>
+		</argument>
+		<field name="export_source">
+			<argument name="data" xsi:type="array">
+				<item name="options" xsi:type="object">
+					Marvelic\Job\Ui\Component\Listing\Column\ExportSource\Options
+				</item>
+				<item name="config" xsi:type="array">
+					<item name="component" xsi:type="string">Marvelic_Job/js/form/element/additional-select
+					</item>
+					<item name="dataType" xsi:type="string">text</item>
+					<item name="label" xsi:type="string" translate="true">Export Source</item>
+					<item name="formElement" xsi:type="string">select</item>
+					<item name="source" xsi:type="string">Export</item>
+					<item name="sortOrder" xsi:type="number">10</item>
+					<item name="dataScope" xsi:type="string">export_source_job</item>
+					<item name="validation" xsi:type="array">
+						<item name="required-entry" xsi:type="boolean">true</item>
+					</item>
+				</item>
+			</argument>
+		</field>
+        <field formElement="input" name="file_path" sortOrder="20">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="source" xsi:type="string">export</item>
+                    <item name="validation" xsi:type="array">
+                        <item name="required-entry" xsi:type="boolean">true</item>
+                    </item>
+                </item>
+            </argument>
+            <settings>
+                <dataType>text</dataType>
+                <label translate="true">File path</label>
+                <dataScope>file_path</dataScope>
+                <notice>The file must match the format. Use relative path to Magento installation, e.g. var/import/products.csv (Make sure folder have correct write permissions - 775 , for more details please see Magento 2 Permissions guide)</notice>
+            </settings>
+        </field>
+        <field formElement="input" name="host" sortOrder="30">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="source" xsi:type="string">export</item>
+                    <item name="validation" xsi:type="array">
+                        <item name="required-entry" xsi:type="boolean">true</item>
+                    </item>
+                </item>
+            </argument>
+            <settings>
+                <dataType>text</dataType>
+                <label translate="true">Host</label>
+                <dataScope>host</dataScope>
+            </settings>
+        </field>
+        <field formElement="input" name="port" sortOrder="40">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="source" xsi:type="string">export</item>
+                    <item name="validation" xsi:type="array">
+                        <item name="required-entry" xsi:type="boolean">true</item>
+                    </item>
+                </item>
+            </argument>
+            <settings>
+                <dataType>text</dataType>
+                <label translate="true">Port</label>
+                <dataScope>port</dataScope>
+            </settings>
+        </field>
+        <field formElement="input" name="username" sortOrder="50">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="source" xsi:type="string">export</item>
+                    <item name="validation" xsi:type="array">
+                        <item name="required-entry" xsi:type="boolean">true</item>
+                    </item>
+                </item>
+            </argument>
+            <settings>
+                <dataType>text</dataType>
+                <label translate="true">Username</label>
+                <dataScope>username</dataScope>
+            </settings>
+        </field>
+        <field formElement="input" name="password" sortOrder="60">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="source" xsi:type="string">export</item>
+                    <item name="validation" xsi:type="array">
+                        <item name="required-entry" xsi:type="boolean">true</item>
+                    </item>
+                </item>
+            </argument>
+            <settings>
+                <dataType>text</dataType>
+                <label translate="true">Password</label>
+                <dataScope>password</dataScope>
+            </settings>
+        </field>
+	</fieldset>
+</form>

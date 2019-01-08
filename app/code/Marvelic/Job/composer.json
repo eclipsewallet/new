@@ -1,0 +1,26 @@
+{
+    "name": "marvelic/module-job",
+    "description": "",
+    "type": "magento2-module",
+    "license": "proprietary",
+    "authors": [
+        {
+            "email": "info@mage2gen.com",
+            "name": "Mage2Gen"
+        },
+        {
+            "email": "phnguyentri@gmail.com",
+            "name": "Phan Nguy\u00ean Tr\u00ed"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {},
+    "autoload": {
+        "psr-4": {
+            "Marvelic\\Job\\": ""
+        },
+        "files": [
+            "registration.php"
+        ]
+    }
+}
