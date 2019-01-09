@@ -121,7 +121,7 @@
                                             <?php $block->getImage($_item, 'product_small_image')->toHtml(); ?>
                                             <?php break;
                                         default: ?>
-                                        <?php /* @escapeNotVerified */ echo $_helper->productAttribute($_item, $block->getProductAttributeValue($_item, $_attribute), $_attribute->getAttributeCode()) ?>
+                                        <?php /* @escapeNotVerified */ echo $block->getProductAttributeValue($_item, $_attribute); ?>
                                         <?php break;
                                     } ?>
                                 </div>
