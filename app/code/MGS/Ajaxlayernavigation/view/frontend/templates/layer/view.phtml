@@ -17,7 +17,7 @@
 				<?php endif; ?>
 				<?php $wrapOptions = false; ?>
 				<?php foreach ($block->getFilters() as $filter): ?>
-					
+					<?php if(($block->escapeHtml($filter->getName())) != 'Category'):  ?>
 					<?php if (!$wrapOptions): ?>
 						
 							<dl class="filter-options" id="narrow-by-list">
@@ -26,7 +26,7 @@
 							<?php
 								if ($filter->getFilterItemsCount()) {
 									$itemIds = $filter->getFilterItemsCount();
-									$attributteId = $filter->getAttributeModel()->getAttributeId();
+									$attrzibutteId = $filter->getAttributeModel()->getAttributeId();
 									$itemProductIds[$attributteId] = $itemIds[$attributteId];
 								}
 								
@@ -63,6 +63,7 @@
 								</dd>
 							</div>
 						<?php endif; ?>
+								<?php endif; ?>
 				<?php endforeach; ?>
 				<?php if ($wrapOptions): ?>
 					</dl>
