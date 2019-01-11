@@ -5,7 +5,7 @@ define([
     'Magento_Checkout/js/checkout-data',
     'uiRegistry',
     'Marvelic_Postcode/js/Thailand_loader',
-    'text!Marvelic_Postcode/js/database/db.json'
+    'text!Marvelic_Postcode/js/database/raw_database/raw_database1.json'
 ], function ($,
              Thailand,
              Component,
@@ -48,8 +48,8 @@ define([
                                 var postcodeAddress = uiRegistry.get("checkout.steps.shipping-step.shippingAddress.shipping-address-fieldset.postcode").uid;
                             }
                             
-                            var dbUrl = require.toUrl('') + '/Marvelic_Postcode/js/database/'+country_code+'.json';
-                            
+                            //var dbUrl = require.toUrl('') + '/Marvelic_Postcode/js/database/'+country_code+'.json';
+                            var dbUrl = require.toUrl('') + '/Marvelic_Postcode/js/database/raw_database/raw_database1.json';
                             $.ajax({
                                 url: dbUrl,
                                 error: function()
@@ -62,9 +62,9 @@ define([
                                         database: dbUrl // path หรือ url ไปยัง database
                                     });
                                     $.Thailand({
-                                        $district: $('#' + districtAddress), // input ของตำบล
-                                        $amphoe: $('#' + cityAddress), // input ของอำเภอ
-                                        $province: $('#' + provinceAddress), // input ของจังหวัด
+                                        $district_en: $('#' + districtAddress), // input ของตำบล
+                                        $amphoe_en: $('#' + cityAddress), // input ของอำเภอ
+                                        $province_en: $('#' + provinceAddress), // input ของจังหวัด
                                         $zipcode: $('#' + postcodeAddress), // input ของรหัสไปรษณีย์
                                         onLoad: function () {
                                             console.info('Autocomplete is ready!');
