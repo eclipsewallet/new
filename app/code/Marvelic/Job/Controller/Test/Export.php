@@ -1,8 +1,8 @@
 <?php
 
-namespace Marvelic\Job\Cron;
+namespace Marvelic\Job\Controller\Test;
 
-class Export
+class Export extends \Magento\Framework\App\Action\Action
 {
     /**
      * @var \Psr\Log\LoggerInterface
@@ -92,9 +92,11 @@ class Export
                                 \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
                                 \Magento\Customer\Api\CustomerRepositoryInterface $customerRepositoryInterface,
                                 \Marvelic\Job\Model\ExportFactory $exportFactory,
-                                \Magento\Framework\ObjectManagerInterface $objectManager
+                                \Magento\Framework\ObjectManagerInterface $objectManager,
+                                \Magento\Framework\App\Action\Context $context
     )
     {
+        parent::__construct($context);
         $this->logger                   = $logger;
         $this->_orderCollectionFactory  = $orderCollectionFactory;
         $this->_order                   = $order;
@@ -115,13 +117,14 @@ class Export
      *
      * @return void
      */
-    public function execute($schedule)
+    public function execute()
     {
-        $jobCode = $schedule->getJobCode();
+        $jobCode = 1;
         preg_match('/_id_([0-9]+)/', $jobCode, $matches);
         $this->logger->info('matches', ['matches' => $matches]);
-        if (isset($matches[1]) && (int)$matches[1] > 0) {
-            $jobId  = (int)$matches[1];
+        if (/*isset($matches[1]) && (int)$matches[1] > 0*/ true) {
+            // $jobId  = (int)$matches[1];
+            $jobId = 1;
 
             $dataExport         = $this->_exportFactory->create()->load($jobId)->getData();
             $dataDateConfig     = json_decode($dataExport['date_config'], true);
@@ -178,24 +181,7 @@ class Export
                 ->setKeywords("office PHPExcel php")
                 ->setCategory("Result file");
 
-            // $objPHPExcel->setActiveSheetIndex(0)
-            //     ->setCellValue('A1', 'Sale id')
-            //     ->setCellValue('B1', 'Sale date')
-            //     ->setCellValue('C1', 'Product id')
-            //     ->setCellValue('D1', 'Product title')
-            //     ->setCellValue('E1', 'Sale quatity')
-            //     ->setCellValue('F1', 'Customer id card')
-            //     ->setCellValue('G1', 'Shipping address to')
-            //     ->setCellValue('H1', 'Shipping address name')
-            //     ->setCellValue('I1', 'Shipping tombol name')
-            //     ->setCellValue('J1', 'Shipping amphur name')
-            //     ->setCellValue('K1', 'Shipping province name')
-            //     ->setCellValue('L1', 'Shipping postcode')
-            //     ->setCellValue('M1', 'Shipping phone')
-            //     ->setCellValue('N1', 'ประเภทการจัดส่ง (Delivery type)')
-            //     ->setCellValue('O1', 'ปณ.ที่รับสินค้า (PostCode Name)');
-
-            $objPHPExcel->setActiveSheetIndex(0)
+                $objPHPExcel->setActiveSheetIndex(0)
                 ->setCellValue('A1', 'shopId')
                 ->setCellValue('B1', 'Consignee Name')
                 ->setCellValue('C1', 'Address Line 1')
@@ -244,6 +230,23 @@ class Export
             $objPHPExcel->getActiveSheet()->getColumnDimension('M')->setWidth(20);
             $objPHPExcel->getActiveSheet()->getColumnDimension('N')->setWidth(25);
             $objPHPExcel->getActiveSheet()->getColumnDimension('O')->setWidth(25);
+            $objPHPExcel->getActiveSheet()->getColumnDimension('P')->setWidth(25);
+            $objPHPExcel->getActiveSheet()->getColumnDimension('Q')->setWidth(25);
+            $objPHPExcel->getActiveSheet()->getColumnDimension('R')->setWidth(25);
+            $objPHPExcel->getActiveSheet()->getColumnDimension('S')->setWidth(25);
+            $objPHPExcel->getActiveSheet()->getColumnDimension('T')->setWidth(25);
+            $objPHPExcel->getActiveSheet()->getColumnDimension('U')->setWidth(25);
+            $objPHPExcel->getActiveSheet()->getColumnDimension('V')->setWidth(25);
+            $objPHPExcel->getActiveSheet()->getColumnDimension('W')->setWidth(25);
+            $objPHPExcel->getActiveSheet()->getColumnDimension('X')->setWidth(25);
+            $objPHPExcel->getActiveSheet()->getColumnDimension('Y')->setWidth(25);
+            $objPHPExcel->getActiveSheet()->getColumnDimension('Z')->setWidth(25);
+            $objPHPExcel->getActiveSheet()->getColumnDimension('AA')->setWidth(25);
+            $objPHPExcel->getActiveSheet()->getColumnDimension('AB')->setWidth(25);
+            $objPHPExcel->getActiveSheet()->getColumnDimension('AC')->setWidth(25);
+            $objPHPExcel->getActiveSheet()->getColumnDimension('AD')->setWidth(25);
+            $objPHPExcel->getActiveSheet()->getColumnDimension('AE')->setWidth(25);
+            $objPHPExcel->getActiveSheet()->getColumnDimension('AF')->setWidth(25);
 
             $periodTime = $dataDateConfig['period'];
             $typeTime   = $dataDateConfig['type_time'];
@@ -256,24 +259,55 @@ class Export
             $ordColA    = ord('A');
             $row        = 2;
             $dataExcel  = [
-                'orderIncrementId'      => '',
-                'saleDate'              => '',
-                'productId'             => '',
-                'productTitle'          => '',
-                'saleQuantity'          => '',
-                'customerCardId'        => '',
-                'shippingAddressTo'     => '',
-                'shippingAddressName'   => '',
-                'shippingTumbolName'    => '',
-                'shippingAmphurName'    => '',
-                'shippingProvinceName'  => '',
-                'shippingPostcode'      => '',
-                'shippingPhone'         => '',
-                'deliveryType'          => '',
-                'postCodeName'          => ''
-            ];
+                'shopId'                => '',
+                'ConsigneeName'         => '',
+                'AddressLine1'          => '',
+                'Province'              => '',
+                'District'              => '',
+                'SubDistrict'           => '',
+                'PostCode'              => '',
+                'Email'                 => '',
+                'Tel'                   => '',
+                'DeliveryMode'          => '',
+                'Note'                  => '',
+                'SaleAgentCode'         => '',
+                'CustomerRef'           => '',
+                'OrderNumber'           => '',
+                'OrderID'               => '',
+                'Sms'                   => '',
+                'billingTitle'          => '',
+                'deliveryDate'          => '',
+                'CreateDateTime'        => '',
+                'PaymentMethod'         => '',
+                'paymentDate'           => '',
+                'paymentTime'           => '',
+                'paymentAmount'         => '',
+                // 'urgent'                => '',
+                // 'status'                => ''
+                // 'serviceId1'            => '',
+                // 'serviceId2'            => '',
+                // 'serviceId3'            => '',
+                // 'itemId'                => '',
+                // 'amount'                => '',
+                // 'price'                 => '',
+                // 'itemType'              => ''
 
-            foreach ($invoices as $invoice) {
+
+                // 'productId'             => '',
+                // 'productTitle'          => '',
+                // 'saleQuantity'          => '',
+                // 'customerCardId'        => '',
+                // 'shippingAddressTo'     => '',
+                // 'shippingAddressName'   => '',
+                // 'shippingTumbolName'    => '',
+                // 'shippingAmphurName'    => '',
+                // 'shippingProvinceName'  => '',
+                // 'shippingPostcode'      => '',
+                // 'shippingPhone'         => '',
+                // 'deliveryType'          => '',
+                // 'postCodeName'          => ''
+            ];
+            foreach ($invoices as $key => $invoice) {
                 $order      = $this->_order->load($invoice->getOrderId());
                 $customerId = $order->getCustomerId();
 
@@ -294,20 +328,43 @@ class Export
                     $province       = 'None';
                     $customerCardId = 'None';
                 }
-
-                $dataExcel['orderIncrementId']      = $order->getIncrementId();
-                $dataExcel['saleDate']              = date("Y/m/d h:i:s A", strtotime('+7 hours', strtotime($order->getCreatedAt())));
-                $dataExcel['shippingAddressTo']     = $order->getShippingAddress()->getFirstName().' '
-                    .$order->getShippingAddress()->getLastName();
-                $dataExcel['shippingAddressName']   = $order->getShippingAddress()->getStreet()[0].' '
-                    .$order->getShippingAddress()->getCity();
-                $dataExcel['shippingTumbolName']    = $tumbon;
-                $dataExcel['shippingProvinceName']  = $province;
-                $dataExcel['shippingAmphurName']    = $order->getShippingAddress()->getCity();
-                $dataExcel['shippingPostcode']      = $order->getShippingAddress()->getPostcode();
-                $dataExcel['shippingPhone']         = $order->getShippingAddress()->getTelephone();
-                $dataExcel['customerCardId']        = $customerCardId;
-
+                $shipment = $invoice->getData();
+                //echo("<pre>");print_r($shipment);
+                $time = strtotime($shipment["created_at"]);
+                
+                $dataExcel['shopId']                = $order->getStoreId();
+                $dataExcel['ConsigneeName']         = $order->getShippingAddress()->getFirstName().' '.$order->getShippingAddress()->getLastName();
+                $dataExcel['AddressLine1']          = $order->getShippingAddress()->getStreet()[0];
+                $dataExcel['Province']              = $order->getShippingAddress()->getProvince();
+                $dataExcel['District']              = $order->getShippingAddress()->getDistrict();
+                $dataExcel['SubDistrict']           = $order->getShippingAddress()->getSubDistrict();
+                $dataExcel['PostCode']              = $order->getShippingAddress()->getPostCode();
+                $dataExcel['Email']                 = $order->getShippingAddress()->getEmail();
+                $dataExcel['Tel']                   = $order->getShippingAddress()->getTelephone();
+                $dataExcel['DeliveryMode']          = "";
+                $dataExcel['Note']                  = $order->getCustomerNote();
+                $dataExcel['SaleAgentCode']         = "";
+                $dataExcel['CustomerRef']         = "";
+                $dataExcel['OrderNumber']           = $key;
+                $dataExcel['OrderID']               = $order->getId();
+                $dataExcel['Sms']                   = $order->getStoreId();
+                $dataExcel['billingTitle']          = $order->getBillingAddress()->getFirstName();
+                $dataExcel['deliveryDate']          = date('Y-m-d',$time);
+                $dataExcel['CreateDateTime']        = date('Y-m-d H:i:s',$time);
+                $dataExcel['PaymentMethod']         = $order->getPayment()->getMethod();
+                $dataExcel['paymentDate']           = date('Y-m-d',$time);
+                $dataExcel['paymentTime']           = date('H:i:s',$time);
+                $dataExcel['paymentAmount']         = $order->getPayment()->getBaseAmountPaid();
+                // $dataExcel['urgent']                = "";
+                // // $dataExcel['status']                = "";
+                // $dataExcel['serviceId1']            = $order->getStoreId();
+                // $dataExcel['serviceId2']            = $order->getStoreId();
+                // $dataExcel['serviceId3']            = $order->getStoreId();
+                // $dataExcel['itemId']                = $order->getStoreId();
+                // $dataExcel['amount']                = $order->getStoreId();
+                // $dataExcel['price']                 = $order->getStoreId();
+                // $dataExcel['itemType']              = $order->getStoreId();
+                
                 foreach ($order->getAllItems() as $item) {
                     $dataExcel['productId']     = $item->getProductId();
                     $dataExcel['productTitle']  = $item->getName();
@@ -336,8 +393,9 @@ class Export
             }
 
             $fileCreatedAt = date("F j, Y h:i:s A", strtotime('+7 hours', strtotime($to)));
-            $pathSave = $this->_dir->getPath('media').'/ktb/'.$dataExport['title']."-".$fileCreatedAt.'.xlsx';
+            $pathSave = $this->_dir->getPath('media').'/ktb/'.$dataExport['title']."-".$fileCreatedAt.'-Rin.xlsx';
             $io->save($pathSave);
+            //echo "Success";
 
             // Upload SFTP
             if ($dataExportSource['type'] == 'sftp'){
@@ -360,7 +418,6 @@ class Export
         }
 
         return false;
-
 
     }
 }
