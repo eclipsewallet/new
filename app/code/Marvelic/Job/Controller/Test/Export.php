@@ -282,15 +282,16 @@ class Export extends \Magento\Framework\App\Action\Action
                 'paymentDate'           => '',
                 'paymentTime'           => '',
                 'paymentAmount'         => '',
-                // 'urgent'                => '',
-                // 'status'                => ''
-                // 'serviceId1'            => '',
-                // 'serviceId2'            => '',
-                // 'serviceId3'            => '',
-                // 'itemId'                => '',
-                // 'amount'                => '',
-                // 'price'                 => '',
-                // 'itemType'              => ''
+                'urgent'                => '',
+                'status'                => '',
+                'serviceId1'            => '',
+                'serviceId2'            => '',
+                'serviceId2'            => '',
+                'serviceId3'            => '',
+                'itemId'                => '',
+                'amount'                => '',
+                'price'                 => '',
+                'itemType'              => ''
 
 
                 // 'productId'             => '',
@@ -344,7 +345,7 @@ class Export extends \Magento\Framework\App\Action\Action
                 $dataExcel['DeliveryMode']          = "";
                 $dataExcel['Note']                  = $order->getCustomerNote();
                 $dataExcel['SaleAgentCode']         = "";
-                $dataExcel['CustomerRef']         = "";
+                $dataExcel['CustomerRef']           = "";
                 $dataExcel['OrderNumber']           = $key;
                 $dataExcel['OrderID']               = $order->getId();
                 $dataExcel['Sms']                   = $order->getStoreId();
@@ -355,33 +356,34 @@ class Export extends \Magento\Framework\App\Action\Action
                 $dataExcel['paymentDate']           = date('Y-m-d',$time);
                 $dataExcel['paymentTime']           = date('H:i:s',$time);
                 $dataExcel['paymentAmount']         = $order->getPayment()->getBaseAmountPaid();
-                // $dataExcel['urgent']                = "";
-                // // $dataExcel['status']                = "";
-                // $dataExcel['serviceId1']            = $order->getStoreId();
-                // $dataExcel['serviceId2']            = $order->getStoreId();
-                // $dataExcel['serviceId3']            = $order->getStoreId();
-                // $dataExcel['itemId']                = $order->getStoreId();
-                // $dataExcel['amount']                = $order->getStoreId();
-                // $dataExcel['price']                 = $order->getStoreId();
-                // $dataExcel['itemType']              = $order->getStoreId();
+                $dataExcel['urgent']                = "XXX";
+                $dataExcel['status']                = $order->getStatus();
+                $dataExcel['serviceId1']            = "0";
+                $dataExcel['serviceId2']            = "0";
+                $dataExcel['serviceId3']            = "0";
                 
+                $str = "";
                 foreach ($order->getAllItems() as $item) {
-                    $dataExcel['productId']     = $item->getProductId();
-                    $dataExcel['productTitle']  = $item->getName();
-                    $dataExcel['saleQuantity']  = $item->getQtyOrdered();
-                    $colPosition                = $ordColA;
-
+                    
+                    $dataExcel['itemId']        = $item->getProductId();
+                    $dataExcel['amount']        = $item->getQtyOrdered();
+                    $dataExcel['price']         = $item->getPrice();
+                    $dataExcel['itemType']        = $item->getProductType();
+                    
+                    $colPosition                = 0;
+                    $alph = 0;
                     foreach ($dataExcel as $key => $data) {
-                        if ($key === 'saleQuantity' || $key === 'customerCardId' || $key === 'deliveryType'){
-                            $objPHPExcel->getActiveSheet()->getStyle(chr($colPosition).$row)->applyFromArray($styleLightYellow);
-                        }
-                        if ($key === 'postCodeName'){
-                            $objPHPExcel->getActiveSheet()->getStyle(chr($colPosition).$row)->applyFromArray($styleYellow);
-                        }
-                        $objPHPExcel->getActiveSheet()->SetCellValue(chr($colPosition).$row, $data);
+                        // if ($key === 'saleQuantity' || $key === 'customerCardId' || $key === 'deliveryType'){
+                        //     $objPHPExcel->getActiveSheet()->getStyle(chr($colPosition).$row)->applyFromArray($styleLightYellow);
+                        // }
+                        // if ($key === 'postCodeName'){
+                        //     $objPHPExcel->getActiveSheet()->getStyle(chr($colPosition).$row)->applyFromArray($styleYellow);
+                        // }
+                        $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($colPosition,$row, $data);
                         $colPosition++;
+                        $str .= $data;
                     }
-
+                    echo "".$str."\r\n";
                     $row++;
                 }
             }

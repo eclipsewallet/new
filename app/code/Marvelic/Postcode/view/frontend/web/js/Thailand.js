@@ -201,7 +201,7 @@ define([
                         if (data.zipcode) {
                             data.zipcode = ' » ' + data.zipcode;
                         }
-                        return '<div>' + data.district + ' » ' + data.amphoe + ' » ' + data.province + data.zipcode + '</div>';
+                        return '<div>' + data.district_en + ' » ' + data.amphoe_en + ' » ' + data.province_en + data.zipcode + '</div>';
                     }
                 },
                 autocomplete_handler = function (e, v) { // set value when user selected autocomplete choice
