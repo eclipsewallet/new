@@ -284,3 +284,4 @@ div[class^="swatch-opt-"] .swatch-attribute {
 	background-color: #fff;
 	color: #222;
 }
+.product-item form .swatch-input, .product-options-wrapper .swatch-attribute .swatch-input{display:none}

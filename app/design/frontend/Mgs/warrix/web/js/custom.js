@@ -262,6 +262,13 @@ require([
 								}
 							});
 						}
+
+						$("img.lazy").unveil(25, function(){
+			                var self = $(this);
+			                setTimeout(function(){
+			                    self.removeClass('lazy');
+			                }, 0);
+			            });
 						
 						if(result.url){
 							el.attr('href', result.url);
