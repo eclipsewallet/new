@@ -284,9 +284,8 @@ div[class^="swatch-opt-"] .swatch-attribute {
 	background-color: #fff;
 	color: #222;
 }
-.super-attribute-select{
-	height:0px !important;
-	line-height:0px !important;
-	opacity:0;
+.product-item form .swatch-input, .product-options-wrapper .swatch-attribute .swatch-input{
+    position: absolute;
+    display: block;
+    left: -999em;
 }
-.product-item form .swatch-input, .product-options-wrapper .swatch-attribute .swatch-input{position:absolute}

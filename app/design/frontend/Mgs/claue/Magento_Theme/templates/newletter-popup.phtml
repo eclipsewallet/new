@@ -56,7 +56,7 @@
 			],
 			function( $, modal ) {
 				$(window).load(function () {
-					<?php if(!$themeHelper->getStoreConfig('mpanel/newsletter_popup/mobile')):?>if($(window).width() > 991) { <?php endif;?>
+					if($(window).width() > 991) {
 						if(getCookie('newsletterpopup')!='nevershow'){
 							if ($('#newsletter-popup').length) {
 								var options = {
@@ -75,7 +75,7 @@
                                 <?php endif ?>
 							}
 						}
-					<?php if(!$themeHelper->getStoreConfig('mpanel/newsletter_popup/mobile')):?>}<?php endif;?>
+					}
 				});
 			});
 			function getCookie(cname) {
