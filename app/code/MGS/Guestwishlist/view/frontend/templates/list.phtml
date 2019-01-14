@@ -43,7 +43,7 @@ $size = $themeHelper->getImageSize();
 								<?php if ($_product->isSaleable()): ?>
 									<div class="product-item-actions">
                                         <div class="actions-primary">
-                                            <button type="button" data-role="tocart" data-post='<?php echo $item['data_post'] ?>' title="<?php echo __('Add to Cart') ?>" data-item-id="<?php echo $item['item_id'] ?>" class="action btn-cart primary">
+                                            <button type="button" data-role="tocart" data-post='<?php echo $item['data_post'] ?>' title="<?php echo __('Add to Cart') ?>" data-item-id="<?php echo $item['item_id'] ?>" class="action btn-cart tocart primary">
 												<span class="icon pe-7s-shopbag"></span>
                                                 <span class="text"><?php echo $block->escapeHtml(__('Add to Cart')) ?></span>
                                             </button>
@@ -78,7 +78,7 @@ $size = $themeHelper->getImageSize();
             </ol>
 			<div class="actions-toolbar">
 				<div class="primary">
-					<button type="button" data-role="tocart" data-post='<?php echo $helper->getAddAllCartParams() ?>' title="<?php echo __('Add All to Cart') ?>" class="action btn btn-primary">
+					<button type="button" data-role="tocart" data-post='<?php echo $helper->getAddAllCartParams() ?>' title="<?php echo __('Add All to Cart') ?>" class="action btn btn-primary tocart">
 						<span><?php echo __('Add All to Cart') ?></span>
 					</button>
 				</div>

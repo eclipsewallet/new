@@ -56,7 +56,7 @@ class Collection extends PostCollection
                 'main_table.post_id = category_table.post_id',
                 []
             )
-            ->where('category_table.category_id = ?', $categoryId);
+            ->where('category_table.category_id IN('.$categoryId .')');
         return $this;
     }
 
