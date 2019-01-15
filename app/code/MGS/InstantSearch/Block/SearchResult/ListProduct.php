@@ -7,6 +7,7 @@ namespace MGS\InstantSearch\Block\SearchResult;
 use Magento\Framework\DataObject\IdentityInterface;
 use MGS\InstantSearch\Helper\Data;
 use Magento\Catalog\Model\Layer\Resolver;
+use Magento\Search\Model\QueryFactory;
 
 /**
  * Search result block
@@ -38,6 +39,11 @@ class ListProduct extends \Magento\Catalog\Block\Product\AbstractProduct impleme
     protected $_imageBuilder;
 
     /**
+     * @var QueryFactory
+     */
+    private $_queryFactory;
+
+    /**
      * @var \Magento\Framework\Url\Helper\Data
      */
     protected $urlHelper;
@@ -54,6 +60,7 @@ class ListProduct extends \Magento\Catalog\Block\Product\AbstractProduct impleme
         \Magento\Catalog\Block\Product\Context $context,
         Data $inSearchHelper,
         Resolver $layerResolver,
+        QueryFactory $queryFactory,
         \Magento\Framework\Url\Helper\Data $urlHelper,
         array $data = []
     ) {
@@ -62,6 +69,7 @@ class ListProduct extends \Magento\Catalog\Block\Product\AbstractProduct impleme
         $this->_inSearchHelper = $inSearchHelper;
         $this->_layerResolver = $layerResolver;
         $this->urlHelper = $urlHelper;
+        $this->_queryFactory = $queryFactory;
     }
 
     /**
@@ -188,7 +196,7 @@ class ListProduct extends \Magento\Catalog\Block\Product\AbstractProduct impleme
      */
     public function getResultUrl()
     {
-    	$query = $this->_getQuery()->getQueryText();
+    	$query = $this->_queryFactory->get()->getQueryText();
         $url = 'catalogsearch/result';
         return $this->_inSearchHelper->getResultUrl($url,$query);
     }

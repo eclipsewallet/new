@@ -40,7 +40,6 @@ class Fonts extends \Magento\Config\Block\System\Config\Form\Field
                 }
             }
         }
-		
 		$output.="<script type='text/javascript'>
 			require([
 				'jquery'
