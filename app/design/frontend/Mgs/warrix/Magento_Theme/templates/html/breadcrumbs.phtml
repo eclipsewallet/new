@@ -32,3 +32,19 @@
 	</div>
 </div>
 <?php endif; ?>
+<?php 
+	$objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+	$category = $objectManager->get('Magento\Framework\Registry')->registry('current_category');
+	
+?>
+<?php if($category->getLevel()==1): ?>
+<script type="text/javascript">
+	require(["jquery"],function($){
+		$(document).ready(function(){
+        	$('.row').find('.sidebar').css({"display": "none", "width": "0%"});
+			$('.row').find('.column').removeClass('col-lg-9 col-md-9 col-sm-12 col-xs-12 pull-right');
+			$('.row').find('.column').addClass('col-lg-12 col-md-12 col-sm-12 col-xs-12');
+		});
+	});
+</script>
+<?php endif;?>
