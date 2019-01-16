@@ -37,6 +37,7 @@
 	$category = $objectManager->get('Magento\Framework\Registry')->registry('current_category');
 	
 ?>
+<?php if(!empty($category)): ?>
 <?php if($category->getLevel()==1): ?>
 <script type="text/javascript">
 	require(["jquery"],function($){
@@ -47,4 +48,5 @@
 		});
 	});
 </script>
+<?php endif;?>
 <?php endif;?>
