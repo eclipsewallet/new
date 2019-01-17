@@ -12,6 +12,13 @@
  * @var $block \Magento\Customer\Block\Address\Edit
  */
 ?>
+<?php 
+    $objectManager = \Magento\Framework\App\ObjectManager::getInstance(); 
+    $store = $objectManager->get('Magento\Store\Model\StoreManagerInterface'); 
+    
+    
+    //echo $this->storeManager->getStore()->getId();
+?>
 <form class="form-address-edit" action="<?php /* @escapeNotVerified */ echo $block->getSaveUrl() ?>" method="post" id="form-validate" enctype="multipart/form-data" data-hasrequired="<?php /* @escapeNotVerified */ echo __('* Required Fields') ?>">
     <fieldset class="fieldset">
         <legend class="legend"><span><?php /* @escapeNotVerified */ echo __('Contact Information') ?></span></legend><br>
@@ -145,20 +152,45 @@
         }
     }
 </script>
+<?php $lang = $store->getStore()->getCode(); ?>
+<?php //if($countrycode=="default"): ?>
 <script type="text/javascript">
-    require(['jquery','thailand'],function($, Thailand){
+    require(['jquery','thaieng'],function($, ThaiAddressEnTh){
         var config = <?php echo $block->getConfig('postcode/options/enable') ?>;
+        var countrystore = <?php echo $store->getStore()->getId(); ?>;
+        var lang="";
+        if(countrystore==1){
+            lang= "TH";
+        }
+        else{
+            lang = "EN";
+        }
+        var selectcountry = document.getElementById('country_id');
         if(config == 1) {
-            $.Thailand({
-                database: '<?php echo $this->getViewFileUrl('Marvelic_Postcode::database/db.json'); ?>', // ฐานข้อมูลเป็นไฟล์ zip
-                $district: $('#district'), // input ของตำบล
-                $amphoe: $('#city'), // input ของอำเภอ
-                $province: $('#region'), // input ของจังหวัด
-                $zipcode: $('#zip'), // input ของรหัสไปรษณีย์
+            $.ThaiAddressEnTh({
+                lang: lang,
+                database: '<?php echo $this->getViewFileUrl('Marvelic_Postcode::js/thai_address_database_en_th.js'); ?>',
+                district: $('#district'),
+                amphoe: $('#city'),
+                province: $('#region'),
+                zipcode: $('#zip'),
+                
                 onLoad: function(){
-                    console.info('Autocomplete is ready!');
+                     console.info('Autocomplete is ready!');
                 }
             });
+            s.value = "TH";
+            
+        //     $.Thailand({
+        //         database: '<?php echo $this->getViewFileUrl('Marvelic_Postcode::js/database/raw_database/thai_address_database_en_th.json'); ?>', // ฐานข้อมูลเป็นไฟล์ zip
+        //         $district: $('#district'), // input ของตำบล
+        //         $amphoe: $('#city'), // input ของอำเภอ
+        //         $province: $('#region'), // input ของจังหวัด
+        //         $zipcode: $('#zip'), // input ของรหัสไปรษณีย์
+        //         onLoad: function(){
+        //             console.info('Autocomplete is ready!');
+        //         }
+        //     });
         }
     });
 
