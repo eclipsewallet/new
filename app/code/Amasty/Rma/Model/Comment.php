@@ -242,7 +242,7 @@ class Comment extends AbstractModel
         return $file->getId() ? $file : null;
     }
 
-    public function getFileUrl($file = null)
+    public function getFileUrl($file)
     {
         if ($file) {
             $url = $this->urlBuilder->getUrl(

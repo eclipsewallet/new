@@ -18,7 +18,7 @@
             <?php endforeach; ?>
         </select>
         <button type="button"
-                class="action primary btn-secondary"
+                class="action primary"
                 onclick="window.location=jQuery('#amasty_rma_orders').val()"
         >
             <?= __("Return")?>
@@ -55,7 +55,7 @@
                                 <a href="<?= $block->getViewUrl($_request) ?>" class="action view">
                                     <span><?= __('View') ?></span>
                                 </a>
-                                <span>|</span>
+
                                 <a href="<?= $block->getDeleteUrl($_request) ?>"
                                    class="action delete"
                                    onclick="if (!confirm('<?= __("Delete")?>?')) return false;">

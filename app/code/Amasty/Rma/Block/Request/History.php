@@ -11,6 +11,7 @@ namespace Amasty\Rma\Block\Request;
 use Amasty\Rma\Model\Request;
 use Magento\Framework\Model\ResourceModel\Db\Collection\AbstractCollection;
 use Magento\Framework\ObjectManagerInterface;
+use Magento\Store\Model\ScopeInterface;
 use Magento\Sales\Model\ResourceModel\Order\Collection as OrderCollection;
 
 class History extends \Magento\Framework\View\Element\Template
@@ -19,6 +20,11 @@ class History extends \Magento\Framework\View\Element\Template
 
     const MODE_CUSTOMER = 'customer';
     const MODE_GUEST = 'guest';
+
+    /**
+     * @var \Magento\Framework\App\Config\ScopeConfigInterface
+     */
+    protected $scopeConfig;
 
     /**
      * @var ObjectManagerInterface
@@ -57,6 +63,7 @@ class History extends \Magento\Framework\View\Element\Template
 
         array $data = []
     ) {
+        $this->scopeConfig = $context->getScopeConfig();
         $this->objectManager = $objectManager;
 
         $this->customerSession = $customerSession;
@@ -196,7 +203,16 @@ class History extends \Magento\Framework\View\Element\Template
         $this->addFilter($collection);
 
         $collection->addOrder('entity_id', 'desc');
-        $collection->addFieldToFilter('status', 'complete');
+
+        $allowedOrderStatuses = $this->scopeConfig->getValue(
+            'amrma/general/allowed_statuses',
+            ScopeInterface::SCOPE_STORE
+        );
+
+        if (!empty($allowedOrderStatuses)) {
+            $allowedOrderStatuses = explode(',', $allowedOrderStatuses);
+            $collection->addFieldToFilter('status', ['in' => $allowedOrderStatuses]);
+        }
 
         $tpl = __('Order #%s - %s - %s');
 

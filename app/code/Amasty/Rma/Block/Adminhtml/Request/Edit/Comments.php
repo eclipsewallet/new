@@ -8,8 +8,8 @@
 
 namespace Amasty\Rma\Block\Adminhtml\Request\Edit;
 
-use Magento\Framework\ObjectManagerInterface;
 use Magento\Store\Model\ScopeInterface;
+use Amasty\Rma\Model\ResourceModel\Comment\CollectionFactory;
 
 class Comments extends \Magento\Backend\Block\Template
 {
@@ -20,9 +20,9 @@ class Comments extends \Magento\Backend\Block\Template
     protected $registry;
 
     /**
-     * @var ObjectManagerInterface
+     * @var CollectionFactory
      */
-    protected $objectManager;
+    protected $commentsCollection;
     
     /**
      * @var \Amasty\Rma\Model\Source\Status
@@ -39,7 +39,7 @@ class Comments extends \Magento\Backend\Block\Template
      *
      * @param \Magento\Backend\Block\Template\Context $context
      * @param \Magento\Framework\Registry             $registry
-     * @param ObjectManagerInterface                  $objectManager
+     * @param CollectionFactory                       $commentsCollectionFactory
      * @param \Amasty\Rma\Model\Source\Status         $statusSource
      * @param \Amasty\Rma\Model\Comment               $commentModel
      * @param array                                   $data
@@ -47,17 +47,17 @@ class Comments extends \Magento\Backend\Block\Template
     public function __construct(
         \Magento\Backend\Block\Template\Context $context,
         \Magento\Framework\Registry $registry,
-        ObjectManagerInterface $objectManager,
+        CollectionFactory $commentsCollectionFactory,
         \Amasty\Rma\Model\Source\Status $statusSource,
         \Amasty\Rma\Model\Comment $commentModel,
         array $data = []
     ) {
         $this->registry = $registry;
-        $this->objectManager = $objectManager;
 
         parent::__construct($context, $data);
         $this->statusSource = $statusSource;
         $this->commentModel = $commentModel;
+        $this->commentsCollection = $commentsCollectionFactory->create();
     }
 
     public function _construct()
@@ -81,14 +81,19 @@ class Comments extends \Magento\Backend\Block\Template
         $request = $this->getRequest();
 
         /** @var \Amasty\Rma\Model\ResourceModel\Comment\Collection $commentCollection */
-        $commentCollection = $this->objectManager
-            ->create('\Amasty\Rma\Model\ResourceModel\Comment\Collection');
 
-        $commentCollection
+        $commentCollection = $this->commentsCollection
             ->addFilter('request_id', $request->getId())
             ->setOrder('created_at', 'DESC');
 
         return $commentCollection;
+    }
+
+    public function getComment()
+    {
+        $comment = $this->commentsCollection->getLastItem();
+
+        return $comment;
     }
 
     /**

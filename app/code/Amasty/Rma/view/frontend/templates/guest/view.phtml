@@ -46,7 +46,7 @@ $_shippingConfirmation = $block->getShippingConfirmation();
 
 <div class="block block-dashboard-info">
     <div class="block-content">
-        <div class="box box-information col-lg-6 no-padding">
+        <div class="box box-information">
             <strong class="box-title">
                 <span><?= __('Request Information') ?></span>
             </strong>
@@ -61,7 +61,7 @@ $_shippingConfirmation = $block->getShippingConfirmation();
                 <?php endif ?>
             </div>
         </div>
-        <div class="box box-address col-lg-6 no-padding">
+        <div class="box box-address">
             <strong class="box-title">
                 <span><?= __('Shipping Address') ?></span>
             </strong>
@@ -71,9 +71,9 @@ $_shippingConfirmation = $block->getShippingConfirmation();
         </div>
     </div>
 </div>
-<div class="clearfix"></div>
+
 <?php if ($fields = $_request->getExtraFields()) : ?>
-<div class="block block-dashboard-info margin-top20">
+<div class="block block-dashboard-info">
     <div class="block-title"><strong><?= __($block->getExtraTitle());?></strong></div>
     <div class="block-content">
         <div class="box box-information">
@@ -87,7 +87,7 @@ $_shippingConfirmation = $block->getShippingConfirmation();
 </div>
 <?php endif ?>
 
-<h5 class="box-title margin-top30"><?= __('Items') ?></h5>
+<h3 class="box-title"><?= __('Items') ?></h3>
 <div class="table-wrapper">
     <table class="data table table-order-items history" id="my-rma-table">
         <thead>
@@ -132,7 +132,7 @@ $_shippingConfirmation = $block->getShippingConfirmation();
                     <?= __('Use CTRL + click to select multiple files for upload') ?>
                 </label>
                 <div class="box-content buttons-set">
-                    <button type="submit" class="action primary btn-secondary" id="submit.save"><?= __('Submit Comment')?></button>
+                    <button type="submit" class="action primary" id="submit.save"><?= __('Submit Comment')?></button>
                 </div>
                 <ul class="note-list box-content">
                     <?php $lastShow = $_request->getLastShow();?>
