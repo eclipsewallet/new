@@ -1,7 +1,7 @@
 <?php
 /**
  * @author Amasty Team
- * @copyright Copyright (c) 2018 Amasty (https://www.amasty.com)
+ * @copyright Copyright (c) 2019 Amasty (https://www.amasty.com)
  * @package Amasty_Shopby
  */
 
@@ -88,6 +88,11 @@ class Content extends AbstractHelper implements CategoryDataSetterInterface
      */
     private $amshopbyRequest;
 
+    /**
+     * @var \Amasty\ShopbyBase\Helper\Meta
+     */
+    private $metaHelper;
+
     public function __construct(
         \Magento\Framework\App\Helper\Context $context,
         \Magento\Catalog\Model\Layer\Resolver $layerResolver,
@@ -97,7 +102,8 @@ class Content extends AbstractHelper implements CategoryDataSetterInterface
         \Magento\Framework\View\Page\Config $pageConfig,
         \Amasty\ShopbyBase\Helper\OptionSetting $optionHelper,
         \Amasty\Shopby\Model\Request $amshopbyRequest,
-        Data $dataHelper
+        Data $dataHelper,
+        \Amasty\ShopbyBase\Helper\Meta $metaHelper
     ) {
         parent::__construct($context);
         $this->pageConfig = $pageConfig;
@@ -108,6 +114,7 @@ class Content extends AbstractHelper implements CategoryDataSetterInterface
         $this->_helper = $dataHelper;
         $this->_optionHelper = $optionHelper;
         $this->amshopbyRequest = $amshopbyRequest;
+        $this->metaHelper = $metaHelper;
         $this->initCategoryDataSettings();
     }
 
@@ -227,6 +234,7 @@ class Content extends AbstractHelper implements CategoryDataSetterInterface
             ->setDescription($data['description'])
             ->setImg($data['img_url'])
             ->setCmsBlock($data['cms_block'])
+            ->setBottomCmsBlock($data['bottom_cms_block'])
             ->setMetaTitle($data['meta_title'])
             ->setMetaDescription($data['meta_description'])
             ->setMetaKeywords($data['meta_keywords']);
@@ -244,6 +252,7 @@ class Content extends AbstractHelper implements CategoryDataSetterInterface
             'title' => [],
             'description' => [],
             'cms_block' => null,
+            'bottom_cms_block' => null,
             'img_url' => null,
             'meta_title' => [],
             'meta_description' => [],
@@ -264,6 +273,9 @@ class Content extends AbstractHelper implements CategoryDataSetterInterface
                 }
                 if ($opt->getTopCmsBlockId() && $result['cms_block'] === null) {
                     $result['cms_block'] = $opt->getTopCmsBlockId();
+                }
+                if ($opt->getBottomCmsBlockId() && $result['bottom_cms_block'] === null) {
+                    $result['bottom_cms_block'] = $opt->getBottomCmsBlockId();
                 }
                 if ($opt->getImageUrl() && $result['img_url'] === null) {
                     $result['img_url'] = $opt->getImageUrl();
@@ -312,24 +324,13 @@ class Content extends AbstractHelper implements CategoryDataSetterInterface
     {
         $position = $this->_settings['meta']['add_title'];
         $metaTitle = $this->insertContent(
-            $this->getOriginPageMetaTitle(),
+            $this->metaHelper->getOriginPageMetaTitle($this->category),
             $metaTitles,
             $position,
             $this->_settings['meta']['title_separator']
         );
         $this->category->setData('meta_title', $metaTitle);
         return $this;
-    }
-
-    /**
-     * @return string
-     */
-    private function getOriginPageMetaTitle()
-    {
-        return $this->category->getData('meta_title')
-            ? $this->category->getData('meta_title')
-            : (string) $this->registry
-                ->registry(\Amasty\ShopbyBase\Plugin\View\Page\Title::PAGE_META_TITLE_MAIN_PART);
     }
 
     /**
@@ -365,23 +366,13 @@ class Content extends AbstractHelper implements CategoryDataSetterInterface
     {
         $position = $this->_settings['meta']['add_description'];
         $metaDescription = $this->insertContent(
-            $this->getOriginPageMetaDescription(),
+            $this->metaHelper->getOriginPageMetaDescription($this->category),
             $metaDescriptions,
             $position,
             $this->_settings['meta']['description_separator']
         );
         $this->category->setData('meta_description', $metaDescription);
         return $this;
-    }
-
-    /**
-     * @return string
-     */
-    private function getOriginPageMetaDescription()
-    {
-        return $this->category->getData('meta_description')
-            ? $this->category->getData('meta_description')
-            : $this->pageConfig->getDescription();
     }
 
     /**
@@ -435,6 +426,21 @@ class Content extends AbstractHelper implements CategoryDataSetterInterface
     {
         if ($blockId !== null && $this->_settings['heading']['replace_cms_block']) {
             $this->category->setData('landing_page', $blockId);
+            $this->category->setData(CategoryManager::CATEGORY_FORCE_MIXED_MODE, 1);
+        }
+
+        return $this;
+    }
+
+    /**
+     * Set category bottom CMS block.
+     * @param string|null $blockId
+     * @return $this
+     */
+    private function setBottomCmsBlock($blockId)
+    {
+        if ($blockId !== null) {
+            $this->category->setData('bottom_cms_block', $blockId);
             $this->category->setData(CategoryManager::CATEGORY_FORCE_MIXED_MODE, 1);
         }
 

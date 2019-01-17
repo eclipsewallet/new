@@ -1,7 +1,7 @@
 <?php
 /**
  * @author Amasty Team
- * @copyright Copyright (c) 2018 Amasty (https://www.amasty.com)
+ * @copyright Copyright (c) 2019 Amasty (https://www.amasty.com)
  * @package Amasty_Shopby
  */
 ?>
@@ -20,7 +20,7 @@ if (!$block->canShowBlock()) {
                 "submitByClick": <?= (int) $block->submitByClick();?>,
                 "scrollUp": <?= /* @escapeNotVerified */ ($block->scrollUp() ? '1' : '0');?>,
                 "clearUrl": "<?= /* @escapeNotVerified */ $block->getClearUrl();?>",
-                "baseCategoryId": "<?= /* @escapeNotVerified */ $block->getCurrentCategoryId();?>",
+                "currentCategoryId": "<?= /* @escapeNotVerified */ $block->getCurrentCategoryId();?>",
                 "isCategorySingleSelect": "<?= /* @escapeNotVerified */ $block->isCategorySingleSelect();?>"
             }
         }

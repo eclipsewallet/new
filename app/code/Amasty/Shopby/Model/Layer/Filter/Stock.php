@@ -1,7 +1,7 @@
 <?php
 /**
  * @author Amasty Team
- * @copyright Copyright (c) 2018 Amasty (https://www.amasty.com)
+ * @copyright Copyright (c) 2019 Amasty (https://www.amasty.com)
  * @package Amasty_Shopby
  */
 
@@ -14,6 +14,7 @@ use Magento\Catalog\Model\Layer\Filter\AbstractFilter;
 use Amasty\Shopby\Model\Layer\Filter\Traits\CustomTrait;
 use \Magento\Store\Model\ScopeInterface;
 use Magento\CatalogSearch\Model\ResourceModel\EngineInterface;
+use Magento\CatalogInventory\Api\StockConfigurationInterface as StockConfigurationInterface;
 
 /**
  * Layer category filter
@@ -54,6 +55,11 @@ class Stock extends AbstractFilter
      */
     private $filterOutStock = 0;
 
+    /**
+     * @var StockConfigurationInterface
+     */
+    private $stockConfiguration;
+
     public function __construct(
         \Magento\Catalog\Model\Layer\Filter\ItemFactory $filterItemFactory,
         \Magento\Store\Model\StoreManagerInterface $storeManager,
@@ -62,6 +68,7 @@ class Stock extends AbstractFilter
         \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
         \Amasty\Shopby\Model\Search\Adapter\Mysql\AggregationAdapter $aggregationAdapter,
         \Amasty\Shopby\Model\Request $shopbyRequest,
+        StockConfigurationInterface $stockConfiguration,
         SearchEngine $searchEngine,
         array $data = []
     ) {
@@ -76,6 +83,7 @@ class Stock extends AbstractFilter
         $this->scopeConfig = $scopeConfig;
         $this->aggregationAdapter = $aggregationAdapter;
         $this->shopbyRequest = $shopbyRequest;
+        $this->stockConfiguration = $stockConfiguration;
         $this->searchEngine = $searchEngine;
         $searchEngineType = $scopeConfig->getValue(EngineInterface::CONFIG_ENGINE_PATH, ScopeInterface::SCOPE_STORE);
         if (strpos($searchEngineType, 'elasticsearch') !== false) {
@@ -100,8 +108,25 @@ class Stock extends AbstractFilter
         }
 
         $this->setCurrentValue($filter);
-        $applyFilter = $filter == self::FILTER_OUT_OF_STOCK ? $this->filterOutStock : self::FILTER_IN_STOCK;
-        $this->getLayer()->getProductCollection()->addFieldToFilter($this->attributeCode, $applyFilter);
+        $isFilterOutOfStock = $filter == self::FILTER_OUT_OF_STOCK;
+        if ($this->isStockSourceQty()) {
+            $this->getLayer()->getProductCollection()
+                ->joinField(
+                    'qty',
+                    'cataloginventory_stock_item',
+                    'qty',
+                    'product_id=entity_id',
+                    '{{table}}.stock_id=1',
+                    'left'
+                );
+            $qty = $this->stockConfiguration->getMinQty($this->getStoreId());
+            $condition = $isFilterOutOfStock ? ['lt' => $qty] : ['gteq' => $qty];
+            $this->getLayer()->getProductCollection()->addAttributeToFilter('qty', $condition);
+        } else {
+            $applyFilter = $isFilterOutOfStock ? $this->filterOutStock : self::FILTER_IN_STOCK;
+            $this->getLayer()->getProductCollection()->addFieldToFilter($this->attributeCode, $applyFilter);
+        }
+
         $name = $filter == self::FILTER_IN_STOCK ? __('In Stock') : __('Out of Stock');
         $this->getLayer()->getState()->addFilter($this->_createItem($name, $filter));
         return $this;
@@ -124,6 +149,16 @@ class Stock extends AbstractFilter
         $position = (int) $this->scopeConfig
             ->getValue('amshopby/stock_filter/position', ScopeInterface::SCOPE_STORE);
         return $position;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isStockSourceQty()
+    {
+         $stockSource = $this->scopeConfig
+            ->getValue('amshopby/stock_filter/stock_source', ScopeInterface::SCOPE_STORE);
+        return $stockSource === \Amasty\Shopby\Model\Source\StockFilterSource::QTY;
     }
 
     /**

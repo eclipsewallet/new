@@ -1,7 +1,7 @@
 <?php
 /**
  * @author Amasty Team
- * @copyright Copyright (c) 2018 Amasty (https://www.amasty.com)
+ * @copyright Copyright (c) 2019 Amasty (https://www.amasty.com)
  * @package Amasty_ShopbySeo
  */
 
@@ -14,18 +14,28 @@ use Magento\Eav\Model\ResourceModel\Entity\Attribute\Option;
 use Magento\Framework\App\Cache;
 use Magento\Framework\App\Helper\Context;
 use Magento\Framework\App\Helper\AbstractHelper;
+use Magento\Framework\App\RequestInterface;
 use Magento\Store\Model\ScopeInterface;
 use Magento\Store\Model\StoreManager;
 use Amasty\ShopbyBase\Model\ResourceModel\FilterSetting\CollectionFactory;
 use Amasty\Shopby\Helper\Group;
 use Amasty\ShopbyBase\Model\ResourceModel\OptionSetting\CollectionFactory as OptionSettingCollectionFactory;
-use Amasty\ShopbyBase\Model\Integration\IntegrationFactory;
 
 class Data extends AbstractHelper
 {
     const CANONICAL_ROOT = 'amasty_shopby_seo/canonical/root';
     const CANONICAL_CATEGORY = 'amasty_shopby_seo/canonical/category';
     const AMASTY_SHOPBY_SEO_URL_SPECIAL_CHAR = 'amasty_shopby_seo/url/special_char';
+    const AMASTY_SHOPBY_SEO_URL_ATTRIBUTE_NAME = 'amasty_shopby_seo/url/attribute_name';
+    const AMASTY_SHOPBY_SEO_URL_FILTER_WORD = 'amasty_shopby_seo/url/filter_word';
+    const AMSHOPBY_ROOT_GENERAL_URL = 'amshopby_root/general/url';
+    const AMSHOPBY_SEO_PAGE_META_TITLE = 'amasty_shopby_seo/other/page_meta_title';
+    const AMSHOPBY_SEO_PAGE_META_DESCR = 'amasty_shopby_seo/other/page_meta_descriprion';
+    const AMSHOPBY_SEO_REL_NOFOLLOW = 'amasty_shopby_seo/robots/rel_nofollow';
+    const SKIP_REQUEST_FLAG = 'shopby_seo_skip_request_flag';
+    const SEO_REDIRECT_FLAG = 'shopby_seo_redirect_flag';
+    const SEO_REDIRECT_MISSED_SUFFIX_FLAG = 'shopby_seo_missed_suffix_redirect_flag';
+    const HAS_PARSED_PARAMS = 'shopby_seo_has_parsed_params_flag';
 
     /**
      * @var CollectionFactory
@@ -78,14 +88,27 @@ class Data extends AbstractHelper
     private $optionsSeoData;
 
     /**
-     * @var IntegrationFactory
-     */
-    private $integrationFactory;
-
-    /**
      * @var Url
      */
     private $urlHelper;
+
+    /**
+     * @var \Amasty\ShopbyBase\Helper\Data
+     */
+    private $baseHelper;
+
+    /**
+     * @var array
+     */
+    private $skipRequestIdentifiers = [
+        'catalog/category/',
+        'catalog/product/',
+        'cms/page/',
+        'amasty_xsearch/',
+        'customer/',
+        'checkout/',
+        'catalogsearch'
+    ];
 
     public function __construct(
         Context $context,
@@ -96,9 +119,9 @@ class Data extends AbstractHelper
         StoreManager $storeManager,
         Cache $cache,
         Group $groupHelper,
-        IntegrationFactory $integrationFactory,
         \Amasty\ShopbySeo\Helper\Url\Proxy $urlHelper,
-        Cache\StateInterface $cacheState
+        Cache\StateInterface $cacheState,
+        \Amasty\ShopbyBase\Helper\Data $baseHelper
     ) {
         parent::__construct($context);
         $this->settingCollectionFactory = $settingCollectionFactory;
@@ -109,8 +132,8 @@ class Data extends AbstractHelper
         $this->cache = $cache;
         $this->cacheState = $cacheState;
         $this->groupHelper = $groupHelper;
-        $this->integrationFactory = $integrationFactory;
         $this->urlHelper = $urlHelper;
+        $this->baseHelper = $baseHelper;
     }
 
     public function getOptionsSeoData()
@@ -126,23 +149,12 @@ class Data extends AbstractHelper
             $this->optionsSeoData = [];
             $aliasHash = [];
 
-            $hardcodedAliases = $this->loadHardcodedAliases();
-            foreach ($hardcodedAliases as $row) {
-                $alias = $this->buildUniqueAlias($row['url_alias'], $aliasHash);
-                if (strpos($row['filter_code'], 'attr_') === 0) {
-                    $attributeCode = substr($row['filter_code'], strlen('attr_'));
-                } else {
-                    $attributeCode = '';
-                }
-
-                $this->optionsSeoData[$attributeCode][$row['value']] = $alias;
-                $aliasHash[$alias] = $row['value'];
-            }
             $dynamicAliases = $this->loadDynamicAliasesExcluding(array_values($aliasHash));
             $ids = [];
             foreach ($dynamicAliases as $row) {
+                $attributeCode = isset($row['attribute_code']) ? $row['attribute_code'] : '';
                 if (!array_key_exists($row['attribute_id'], $ids)) {
-                    $ids[$row['attribute_id']] = $row['attribute_code'];
+                    $ids[$row['attribute_id']] = $attributeCode;
                 }
 
                 $alias = $this->buildUniqueAlias($row['value'], $aliasHash);
@@ -150,11 +162,25 @@ class Data extends AbstractHelper
                 $this->optionsSeoData[$row['attribute_code']][$optionId] = $alias;
                 $aliasHash[$alias] = $optionId;
             }
+            $hardcodedAliases = $this->loadHardcodedAliases();
+            foreach ($hardcodedAliases as $row) {
+                if (strpos($row['filter_code'], 'attr_') === 0) {
+                    $attributeCode = substr($row['filter_code'], strlen('attr_'));
+                } else {
+                    $attributeCode = '';
+                }
+                if (in_array($attributeCode, $ids)) {
+                    $alias = $this->buildUniqueAlias($row['url_alias'], $aliasHash, $row['value']);
+                    $this->optionsSeoData[$attributeCode][$row['value']] = $alias;
+                    $aliasHash[$alias] = $row['value'];
+                }
+            }
             foreach ($ids as $id => $code) {
                 $data = $this->groupHelper->getAliasGroup($id);
                 if ($data) {
                     foreach ($data as $key => $record) {
-                        $this->optionsSeoData[$code][$key] = $record;
+                        $alias = $this->buildUniqueAlias($record, $aliasHash);
+                        $this->optionsSeoData[$code][$key] = $alias;
                         $aliasHash[$record] = $key;
                     }
                 }
@@ -221,19 +247,22 @@ class Data extends AbstractHelper
                 });
             }
 
-            $brandCode = $this->getBrandAttributeCode();
-            if (!in_array($brandCode, $filterCodes)) {
-                $filterCodes[] = $brandCode;
-            }
-
             $this->seoSignificantAttributeCodes = $filterCodes;
         }
 
         return $this->seoSignificantAttributeCodes;
     }
 
-    private function buildUniqueAlias($value, $hash)
+    /**
+     * @param $value
+     * @param $hash
+     * @param string $optionId
+     * @return mixed|string
+     */
+    private function buildUniqueAlias($value, $hash, $optionId = '')
     {
+        $value = html_entity_decode($value, ENT_QUOTES);
+
         if (preg_match('@^[\d\.]+$@s', $value)) {
             $format = $value;
         } else {
@@ -248,8 +277,13 @@ class Data extends AbstractHelper
 
         $unique = $format;
         for ($i=1; array_key_exists($unique, $hash); $i++) {
-            $unique = $format . '-' . $i;
+            if ($hash[$unique] !== $optionId) {
+                $unique = $format . $this->getSpecialChar() . $i;
+            } else {
+                unset($hash[$unique]);
+            }
         }
+        
         return $unique;
     }
 
@@ -259,6 +293,14 @@ class Data extends AbstractHelper
     public function getSpecialChar()
     {
         return $this->scopeConfig->getValue(self::AMASTY_SHOPBY_SEO_URL_SPECIAL_CHAR, ScopeInterface::SCOPE_STORE);
+    }
+
+    /**
+     * @return string
+     */
+    public function getOptionSeparator()
+    {
+        return $this->scopeConfig->getValue('amasty_shopby_seo/url/option_separator', ScopeInterface::SCOPE_STORE);
     }
 
     /**
@@ -282,17 +324,47 @@ class Data extends AbstractHelper
      */
     public function getGeneralUrl()
     {
-        return $this->scopeConfig->getValue('amshopby_root/general/url', ScopeInterface::SCOPE_STORE);
+        return $this->scopeConfig->getValue(self::AMSHOPBY_ROOT_GENERAL_URL, ScopeInterface::SCOPE_STORE);
+    }
+
+    /**
+     * @return bool
+     */
+    public function isIncludeAttributeName()
+    {
+        return $this->scopeConfig->getValue(self::AMASTY_SHOPBY_SEO_URL_ATTRIBUTE_NAME, ScopeInterface::SCOPE_STORE);
     }
 
     /**
      * @return string
      */
-    public function getBrandAttributeCode()
+    public function getFilterWord()
     {
-        /** @var \Amasty\ShopbyBrand\Helper\Data|\Amasty\ShopbyBase\Model\Integration\DummyObject $brandHelper */
-        $brandHelper = $this->integrationFactory->get(\Amasty\ShopbyBrand\Helper\Data::class, true);
-        return (string)$brandHelper->getBrandAttributeCode();
+        return $this->scopeConfig->getValue(self::AMASTY_SHOPBY_SEO_URL_FILTER_WORD, ScopeInterface::SCOPE_STORE);
+    }
+
+    /**
+     * @return string
+     */
+    public function isAddPageToMetaTitleEnabled()
+    {
+        return $this->scopeConfig->getValue(self::AMSHOPBY_SEO_PAGE_META_TITLE, ScopeInterface::SCOPE_STORE);
+    }
+
+    /**
+     * @return string
+     */
+    public function isEnableRelNofollow()
+    {
+        return $this->scopeConfig->getValue(self::AMSHOPBY_SEO_REL_NOFOLLOW, ScopeInterface::SCOPE_STORE);
+    }
+
+    /**
+     * @return string
+     */
+    public function isAddPageToMetaDescriprionEnabled()
+    {
+        return $this->scopeConfig->getValue(self::AMSHOPBY_SEO_PAGE_META_DESCR, ScopeInterface::SCOPE_STORE);
     }
 
     /**
@@ -301,5 +373,31 @@ class Data extends AbstractHelper
     public function getUrlBuilder()
     {
         return $this->_urlBuilder;
+    }
+
+    /**
+     * @param RequestInterface $request
+     * @param bool $allowEmptyModuleName = false
+     * @return bool;
+     */
+    public function isAllowedRequest(RequestInterface $request, $allowEmptyModuleName = false)
+    {
+        if (!$allowEmptyModuleName && !$request->getModuleName()) {
+            return false;
+        }
+
+        $isScroll = $request->getParam('is_scroll', false);
+        if (!$request->isAjax() || $isScroll) {
+            $identifier = trim($request->getOriginalPathInfo(), '/');
+            if (!empty($identifier)) {
+                foreach ($this->skipRequestIdentifiers as $skipRequestIdentifier) {
+                    if (strpos($identifier, $skipRequestIdentifier) === 0) {
+                        return false;
+                    }
+                }
+                return true;
+            }
+        }
+        return false;
     }
 }

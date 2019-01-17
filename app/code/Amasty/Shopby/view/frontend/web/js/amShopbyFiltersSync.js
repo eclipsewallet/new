@@ -5,16 +5,16 @@ define([
     'use strict';
     return function(options){
         var beforeValue = [];
-        $(document).on("sync", "[data-amshopby-filter]", function () {
-            syncFilters(this);
+        $(document).on("sync", "[data-amshopby-filter]", function (event, clearFilter) {
+            syncFilters(this, clearFilter);
         });
 
-        function syncFilters(element) {
+        function syncFilters(element, clearFilter) {
             var currentForm = $(element);
             var attributeCode = currentForm.attr('data-amshopby-filter');
 
             $('[data-amshopby-filter="' + attributeCode + '"]').each(function(){
-                if (this !== currentForm.get(0)){
+                if (this !== currentForm.get(0) || clearFilter){
                     beforeValue = $(this).serializeArray();
 
                     var data = normalizeData(currentForm.serializeArray());
@@ -22,25 +22,9 @@ define([
                     delete data['amshopby[attr_price_to][]'];
 
                     _(data).each(function(values, name){
-                        var element = $(this).find('[name="' + name + '"]'),
-                            rate = element.parent().find('.range').attr('rate');
+                        var element = $(this).find('[name="' + name + '"]');
 
-                        if (name == 'amshopby[price][]'
-                            && values[0]
-                            && !element.closest('.am-filter-items-attr_price').find('[data-am-js="slider-container"]').length
-                        ) {
-                            var splitValues = values[0].split('-');
-                            if (!rate) {
-                                rate = element.parent('ol').find('.range').attr('rate');
-                            }
-                            rate = rate ? rate : 1;
-                            var fromValue = splitValues[0] === "" ? splitValues[0] : splitValues[0] * rate,
-                                toValue = splitValues[1] === "" ? splitValues[1] : splitValues[1] * rate;
-                            values[0] = fromValue + '-' + toValue;
-                        }
-
-                        //disabled sync from dropdown to from-to
-                        if (!($('[name="' + name + '"]').is('select') && element.is('input[type="hidden"]'))) {
+                        if (values[0] || clearFilter) {
                             element.val(values);
                             element.trigger("amshopby:sync_change", [values]);
                             element.trigger("chosen:updated");

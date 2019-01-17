@@ -1,7 +1,7 @@
 <?php
 /**
  * @author Amasty Team
- * @copyright Copyright (c) 2018 Amasty (https://www.amasty.com)
+ * @copyright Copyright (c) 2019 Amasty (https://www.amasty.com)
  * @package Amasty_ShopbySeo
  */
 
@@ -45,6 +45,11 @@ class Meta extends AbstractHelper
      * @var Config
      */
     private $pageConfig;
+
+    /**
+     * @var \Magento\Framework\App\Request\Http
+     */
+    private $request;
     
     /**
      * @var Resolver
@@ -56,13 +61,15 @@ class Meta extends AbstractHelper
         \Amasty\Shopby\Helper\Data $dataHelper,
         \Magento\Framework\View\LayoutInterface\Proxy $layout,
         Registry $registry,
+        \Magento\Framework\App\Request\Http $request,
         Resolver $layerResolver
     ) {
         parent::__construct($context);
         $this->dataHelper = $dataHelper;
-        $this->registry = $registry;
-        $this->layerResolver = $layerResolver;
         $this->layout = $layout;
+        $this->registry = $registry;
+        $this->request = $request;
+        $this->layerResolver = $layerResolver;
     }
 
     /**
@@ -82,11 +89,14 @@ class Meta extends AbstractHelper
      */
     private function setRobots()
     {
-        $index = true;
-        $follow = true;
-        $robots = $this->pageConfig->getRobots();
         $appliedFiltersSettings = $this->dataHelper->getSelectedFiltersSettings();
+        $index = $this->getIndexTag($appliedFiltersSettings);
+        $follow = $this->getFollowTag();
         foreach ($appliedFiltersSettings as $row) {
+            if (!$index && !$follow) {
+                break;
+            }
+
             $data = new DataObject([
                 'setting' => $row['setting'],
                 'filter' => $row['filter']
@@ -94,21 +104,48 @@ class Meta extends AbstractHelper
             $index = $index ? $this->getIndexTagByData($index, $data) : $index;
             $follow = $follow ? $this->getFollowTagByData($follow, $data) : $follow;
         }
-        $isNoIndexWithMultiple = $this->scopeConfig->getValue(
-            'amasty_shopby_seo/robots/noindex_multiple',
-            ScopeInterface::SCOPE_STORE
-        );
 
-        if (!$index || ($isNoIndexWithMultiple && count($appliedFiltersSettings) > 1)) {
-            $robots = preg_replace('/\w*index/i', 'noindex', $robots);
-        }
-
-        if (!$follow) {
-            $robots = preg_replace('/\w*follow/i', 'nofollow', $robots);
-        }
-
+        $robots = $this->pageConfig->getRobots();
+        $robots = $index ? $robots : preg_replace('/\w*index/i', 'noindex', $robots);
+        $robots = $follow ? $robots : preg_replace('/\w*follow/i', 'nofollow', $robots);
         $this->isFollowingAllowed = $follow;
         $this->pageConfig->setRobots($robots);
+    }
+
+    /**
+     * @param array[] $appliedFiltersSettings
+     * @return bool
+     */
+    private function getIndexTag(array $appliedFiltersSettings)
+    {
+        $result = true;
+        if ($this->request->getParam('p', 0) > 0) {
+            $noIndexPagedCategory = $this->scopeConfig->getValue(
+                'amasty_shopby_seo/robots/noindex_paginated',
+                ScopeInterface::SCOPE_STORE
+            );
+            $result = !$noIndexPagedCategory;
+        }
+
+        if ($result) {
+            $isNoIndexWithMultiple = $this->scopeConfig->getValue(
+                'amasty_shopby_seo/robots/noindex_multiple',
+                ScopeInterface::SCOPE_STORE
+            );
+            if ($isNoIndexWithMultiple && count($appliedFiltersSettings) > 1) {
+                $result = false;
+            }
+        }
+
+        return $result;
+    }
+
+    /**
+     * @return bool
+     */
+    private function getFollowTag()
+    {
+        return true;
     }
 
     /**

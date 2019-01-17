@@ -30,7 +30,7 @@ define([
                 }
             });
 
-            $(window).keydown(function(event){
+            $('.entry-edit').keydown(function(event){
                 if(event.keyCode == 13) {
                     event.preventDefault();
                     return false;
@@ -61,6 +61,9 @@ define([
                         }
                     ]
                 });
+
+                /*fix magento 2.2.6+ popup width*/
+                $(modalListSettings).parents('.modal-inner-wrap').addClass('am-popup');
 
                 var functionUpdateModal = function(data){
                     $(modalListSettings).html(data);

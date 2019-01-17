@@ -1,7 +1,7 @@
 <?php
 /**
  * @author Amasty Team
- * @copyright Copyright (c) 2018 Amasty (https://www.amasty.com)
+ * @copyright Copyright (c) 2019 Amasty (https://www.amasty.com)
  * @package Amasty_Shopby
  */
 ?>
@@ -25,13 +25,17 @@
     require(["jquery", "jquery/ui"], function ($) {
         $(window).load( function(){
             $(document).trigger('baseCategory', <?= $block->getCurrentCategoryId();?>);
+            addFlyOut();
+        });
+        $(document).ajaxComplete( function(){
+            addFlyOut();
+            $(document).trigger('baseCategory', <?= $block->getCurrentCategoryId();?>);
+        });
 
+        function addFlyOut() {
             $(".am-filter-items-<?= $filterCode;?>").menu({
                 position: { my: "left top", at: "center top+20" }
             });
-        });
-        $(document).ajaxComplete( function(){
-            $(document).trigger('baseCategory', <?= $block->getCurrentCategoryId();?>);
-        });
+        }
     });
 </script>

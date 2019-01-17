@@ -1,7 +1,7 @@
 <?php
 /**
  * @author Amasty Team
- * @copyright Copyright (c) 2018 Amasty (https://www.amasty.com)
+ * @copyright Copyright (c) 2019 Amasty (https://www.amasty.com)
  * @package Amasty_ShopbySeo
  */
 
@@ -18,7 +18,7 @@ class OptionSeparator implements \Magento\Framework\Option\ArrayInterface
     {
         $options = [];
         foreach ($this->_getOptions() as $optionValue => $optionLabel) {
-            $options[] = ['value'=>$optionValue, 'label'=>$optionLabel];
+            $options[] = ['value' => $optionValue, 'label' => $optionLabel];
         }
         return $options;
     }
@@ -33,6 +33,9 @@ class OptionSeparator implements \Magento\Framework\Option\ArrayInterface
         return $this->_getOptions();
     }
 
+    /**
+     * @return array
+     */
     protected function _getOptions()
     {
         $options = [

@@ -1,7 +1,7 @@
 <?php
 /**
  * @author Amasty Team
- * @copyright Copyright (c) 2018 Amasty (https://www.amasty.com)
+ * @copyright Copyright (c) 2019 Amasty (https://www.amasty.com)
  * @package Amasty_ShopbyBase
  */
 
@@ -47,7 +47,7 @@ class UpgradeData implements UpgradeDataInterface
         ModuleContextInterface $context
     ) {
         $this->state->emulateAreaCode(
-            'adminhtml',
+            \Magento\Framework\App\Area::AREA_ADMINHTML,
             [$this, 'upgradeData'],
             [$setup, $context]
         );

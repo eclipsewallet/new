@@ -2,7 +2,7 @@
 <!--
 /**
  * @author Amasty Team
- * @copyright Copyright (c) 2018 Amasty (https://www.amasty.com)
+ * @copyright Copyright (c) 2019 Amasty (https://www.amasty.com)
  * @package Amasty_ShopbySeo
  */
 -->
@@ -18,11 +18,11 @@
                 <mode>1</mode>
                 <special_char>_</special_char>
                 <option_separator>-</option_separator>
-                <seo_redirect>1</seo_redirect>
             </url>
             <robots>
                 <control_robots>1</control_robots>
                 <rel_nofollow>1</rel_nofollow>
+                <noindex_paginated>0</noindex_paginated>
             </robots>
             <canonical>
                 <category>category_brand_filter</category>

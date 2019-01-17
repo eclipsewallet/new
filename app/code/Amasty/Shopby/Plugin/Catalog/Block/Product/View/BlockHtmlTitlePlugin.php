@@ -1,7 +1,7 @@
 <?php
 /**
  * @author Amasty Team
- * @copyright Copyright (c) 2018 Amasty (https://www.amasty.com)
+ * @copyright Copyright (c) 2019 Amasty (https://www.amasty.com)
  * @package Amasty_Shopby
  */
 
@@ -27,9 +27,9 @@ class BlockHtmlTitlePlugin extends BlockHtmlTitlePluginAbstract
      */
     private $filterCollection;
     /**
-     * @var \Amasty\ShopbyBrand\Helper\Data
+     * @var \Amasty\ShopbyBase\Helper\Data
      */
-    private $brandHelper;
+    private $baseHelper;
 
     public function __construct(
         OptionCollectionFactory $optionCollectionFactory,
@@ -38,11 +38,11 @@ class BlockHtmlTitlePlugin extends BlockHtmlTitlePluginAbstract
         BlockFactory $blockFactory,
         Configurable $configurableType,
         FilterCollectionFactory $filterCollectionFactory,
-        \Amasty\ShopbyBrand\Helper\Data $brandHelper
+        \Amasty\ShopbyBase\Helper\Data $baseHelper
     ) {
         parent::__construct($optionCollectionFactory, $registry, $storeManager, $blockFactory, $configurableType);
         $this->filterCollection = $filterCollectionFactory->create();
-        $this->brandHelper = $brandHelper;
+        $this->baseHelper = $baseHelper;
     }
 
     /**
@@ -59,7 +59,8 @@ class BlockHtmlTitlePlugin extends BlockHtmlTitlePluginAbstract
             $attributeCodes[] = substr($filter->getFilterCode(), strlen(FilterHelper::ATTR_PREFIX));
         }
 
-        $brandCode = $this->brandHelper->getBrandAttributeCode() ? [$this->brandHelper->getBrandAttributeCode()] : [];
+        $brandCode = $this->baseHelper->getBrandAttributeCode();
+        $brandCode = $brandCode ? [$brandCode] : [];
 
         $attributeCodes = array_diff($attributeCodes, $brandCode);
 

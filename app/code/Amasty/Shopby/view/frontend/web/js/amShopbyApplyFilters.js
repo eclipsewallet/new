@@ -126,7 +126,8 @@ define([
                 $element = $(element),
                 oneColumnWrapper = $($.mage.amShopbyApplyFilters.prototype.oneColumnFilterWrapper),
                 topFiltersWrapper = $('.amasty-catalog-topnav'),
-                self = this;
+                self = this,
+                elementPosition = element.offset ? element.offset() : [];
 
             // get orientation
             if ($element.parents('.amasty-catalog-topnav').length || oneColumn) {
@@ -143,7 +144,8 @@ define([
 
             //get position
             if (orientation) {
-                posTop = e.pageY - buttonHeight / 2;
+                elementPosition['top'] = elementPosition ? elementPosition['top'] : 0;
+                posTop = (e.pageY ? e.pageY : elementPosition['top']) - buttonHeight / 2;
                 rightSidebar ?
                     posLeft = leftPosition.offset().left - button.outerWidth() - marginWidth :
                     posLeft = leftPosition.offset().left + leftPosition.outerWidth() + marginWidth;
@@ -156,7 +158,8 @@ define([
                     posTop = topFiltersWrapper.offset().top - buttonHeight - marginHeight;
                 }
 
-                posLeft = e.pageX - button.outerWidth() / 2;
+                elementPosition['left'] = elementPosition ? elementPosition['left'] : 0;
+                posLeft = (e.pageX ? e.pageX : elementPosition['left']) - button.outerWidth() / 2;
             }
 
             elementType = self.getShowButtonType($element);

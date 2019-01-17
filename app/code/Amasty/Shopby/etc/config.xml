@@ -2,7 +2,7 @@
 <!--
 /**
  * @author Amasty Team
- * @copyright Copyright (c) 2018 Amasty (https://www.amasty.com)
+ * @copyright Copyright (c) 2019 Amasty (https://www.amasty.com)
  * @package Amasty_Shopby
  */
 -->
@@ -40,8 +40,12 @@
                 <description_separator>, </description_separator>
                 <add_keywords>before</add_keywords>
             </meta>
+            <category_filter>
+                <position>0</position>
+            </category_filter>
             <stock_filter>
                 <enabled>0</enabled>
+                <stock_source>stock_status</stock_source>
                 <placed_block>1</placed_block>
                 <position>0</position>
                 <label>Stock</label>
@@ -89,5 +93,11 @@
                 <image>amasty/shopby/images/tooltip.png</image>
             </tooltips>
         </amshopby>
+        <amshopby_root>
+            <general>
+                <enabled>1</enabled>
+                <url>all-products</url>
+            </general>
+        </amshopby_root>
     </default>
 </config>

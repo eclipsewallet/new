@@ -2,7 +2,7 @@
 <!--
 /**
  * @author Amasty Team
- * @copyright Copyright (c) 2018 Amasty (https://www.amasty.com)
+ * @copyright Copyright (c) 2019 Amasty (https://www.amasty.com)
  * @package Amasty_ShopbyBase
  */
 -->
@@ -14,6 +14,7 @@
                 type="Amasty\ShopbyBase\Model\OptionSettingRepository" />
     <preference for="Amasty\ShopbyBase\Api\Data\FilterSettingInterface" type="Amasty\ShopbyBase\Model\FilterSetting" />
     <preference for="Amasty\ShopbyBase\Api\Data\OptionSettingInterface" type="Amasty\ShopbyBase\Model\OptionSetting" />
+    <preference for="Amasty\ShopbyBase\Api\UrlBuilderInterface" type="Amasty\ShopbyBase\Model\UrlBuilder" />
 
     <type name="Amasty\XmlSitemap\Model\Sitemap">
         <plugin name="Amasty_ShopbyBase::add-brand-pages" type="Amasty\ShopbyBase\Plugin\XmlSitemap\Model\Sitemap" />

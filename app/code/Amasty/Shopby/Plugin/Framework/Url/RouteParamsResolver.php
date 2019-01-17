@@ -1,7 +1,7 @@
 <?php
 /**
  * @author Amasty Team
- * @copyright Copyright (c) 2018 Amasty (https://www.amasty.com)
+ * @copyright Copyright (c) 2019 Amasty (https://www.amasty.com)
  * @package Amasty_Shopby
  */
 
@@ -99,18 +99,6 @@ class RouteParamsResolver
             $filterParam = $this->shopbyRequest->getFilterParam($filter->getFilter());
             if (!empty($filterParam)) {
                 $queryParams[$filter->getFilter()->getRequestVar()] = $filterParam;
-            }
-        }
-
-        //Brand is missing in State
-        $attributeCode = $this->scopeConfig->getValue(
-            'amshopby_brand/general/attribute_code',
-            ScopeInterface::SCOPE_STORE
-        );
-        if ($attributeCode != '') {
-            $brand = $this->contentHelper->getCurrentBranding();
-            if ($brand) {
-                $queryParams[$attributeCode] = $brand->getValue();
             }
         }
 

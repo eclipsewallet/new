@@ -1,7 +1,7 @@
 <?php
 /**
  * @author Amasty Team
- * @copyright Copyright (c) 2018 Amasty (https://www.amasty.com)
+ * @copyright Copyright (c) 2019 Amasty (https://www.amasty.com)
  * @package Amasty_Shopby
  */
 namespace Amasty\Shopby\Model\Layer\Filter;
@@ -227,6 +227,7 @@ class Decimal extends \Magento\CatalogSearch\Model\Layer\Filter\Decimal implemen
             $requestBuilder = clone $productCollection->getMemRequestBuilder();
             $requestBuilder->removePlaceholder($attribute->getAttributeCode() . '.from');
             $requestBuilder->removePlaceholder($attribute->getAttributeCode() . '.to');
+            $requestBuilder->setAggregationsOnly($attribute->getAttributeCode());
             $queryRequest = $requestBuilder->create();
             $alteredQueryResponse = $this->searchEngine->search($queryRequest);
         }

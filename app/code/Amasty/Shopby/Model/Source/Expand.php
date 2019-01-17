@@ -1,7 +1,7 @@
 <?php
 /**
  * @author Amasty Team
- * @copyright Copyright (c) 2018 Amasty (https://www.amasty.com)
+ * @copyright Copyright (c) 2019 Amasty (https://www.amasty.com)
  * @package Amasty_Shopby
  */
 
@@ -11,7 +11,8 @@ namespace Amasty\Shopby\Model\Source;
 class Expand implements \Magento\Framework\Option\ArrayInterface
 {
     const AUTO_LABEL = 0;
-    const YES_LABEL = 1;
+    const DESKTOP_AND_MOBILE_LABEL = 1;
+    const DESKTOP_LABEL = 2;
 
     /**
      * @return array
@@ -24,8 +25,12 @@ class Expand implements \Magento\Framework\Option\ArrayInterface
                 'label' => __('Auto (based on custom theme)')
             ],
             [
-                'value' => self::YES_LABEL,
-                'label' => __('Yes')
+                'value' => self::DESKTOP_AND_MOBILE_LABEL,
+                'label' => __('Expand for desktop and mobile')
+            ],
+            [
+                'value' => self::DESKTOP_LABEL,
+                'label' => __('Expand for desktop only')
             ]
         ];
     }

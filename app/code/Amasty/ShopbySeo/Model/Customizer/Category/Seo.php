@@ -1,7 +1,7 @@
 <?php
 /**
  * @author Amasty Team
- * @copyright Copyright (c) 2018 Amasty (https://www.amasty.com)
+ * @copyright Copyright (c) 2019 Amasty (https://www.amasty.com)
  * @package Amasty_ShopbySeo
  */
 
@@ -29,6 +29,11 @@ class Seo implements \Amasty\ShopbyBase\Model\Customizer\Category\CustomizerInte
      * @var \Amasty\ShopbySeo\Helper\Data
      */
     protected $helper;
+
+    /**
+     * @var \Amasty\ShopbyBase\Helper\Data
+     */
+    private $baseHelper;
 
     /**
      * @var \Amasty\ShopbyBase\Model\Category\Manager
@@ -62,6 +67,7 @@ class Seo implements \Amasty\ShopbyBase\Model\Customizer\Category\CustomizerInte
 
     public function __construct(
         \Amasty\ShopbySeo\Helper\Data $helper,
+        \Amasty\ShopbyBase\Helper\Data $baseHelper,
         \Amasty\ShopbyBase\Model\Category\Manager $categoryManager,
         \Magento\Framework\UrlInterface $url,
         \Amasty\Shopby\Helper\UrlBuilder $urlBuilder,
@@ -69,6 +75,7 @@ class Seo implements \Amasty\ShopbyBase\Model\Customizer\Category\CustomizerInte
         \Amasty\Shopby\Model\Request $amshopbyRequest
     ) {
         $this->helper = $helper;
+        $this->baseHelper = $baseHelper;
         $this->categoryManager = $categoryManager;
         $this->url = $url;
         $this->urlBuilder = $urlBuilder;
@@ -144,7 +151,7 @@ class Seo implements \Amasty\ShopbyBase\Model\Customizer\Category\CustomizerInte
         }
 
         $brandPageUrl = $this->getAttributeValueUrl(
-            $this->helper->getBrandAttributeCode()
+            $this->baseHelper->getBrandAttributeCode()
         );
 
         if ($brandPageUrl) {
@@ -167,7 +174,7 @@ class Seo implements \Amasty\ShopbyBase\Model\Customizer\Category\CustomizerInte
                 break;
             case self::CATEGORY_BRAND_FILTER:
                 $canonical = $this->getAttributeValueUrl(
-                    $this->helper->getBrandAttributeCode()
+                    $this->baseHelper->getBrandAttributeCode()
                 );
                 break;
             case self::CATEGORY_FIRST_ATTRIBUTE:

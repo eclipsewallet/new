@@ -1,7 +1,7 @@
 <?php
 /**
  * @author Amasty Team
- * @copyright Copyright (c) 2018 Amasty (https://www.amasty.com)
+ * @copyright Copyright (c) 2019 Amasty (https://www.amasty.com)
  * @package Amasty_ShopbySeo
  */
 
@@ -34,22 +34,30 @@ class FollowResolver
      */
     private $metaHelper;
 
-    private $enableRelNofollow;
+    /**
+     * @var \Amasty\ShopbyBase\Helper\Data
+     */
+    private $baseHelper;
 
-    public function __construct(Context $context, FilterHelper $filterHelper, Meta $meta)
-    {
+    public function __construct(
+        Context $context,
+        FilterHelper $filterHelper,
+        Meta $meta,
+        \Amasty\ShopbyBase\Helper\Data $baseHelper
+    ) {
         $this->filterHelper = $filterHelper;
         $this->request = $context->getRequest();
         $this->metaHelper = $meta;
-        $this->enableRelNofollow = $context->getScopeConfig()->isSetFlag(
-            'amasty_shopby_seo/robots/rel_nofollow',
-            ScopeInterface::SCOPE_STORE
-        );
+        $this->baseHelper = $baseHelper;
     }
 
+    /**
+     * @param Item $item
+     * @return bool
+     */
     public function relFollow(Item $item)
     {
-        if (!$this->enableRelNofollow) {
+        if (!$this->baseHelper->isEnableRelNofollow()) {
             return true;
         }
 
@@ -74,6 +82,7 @@ class FollowResolver
         $currentValue = $currentValue ? explode(',', $currentValue) : [];
 
         $deltaDeep = in_array($value, $currentValue) ? -1 : 1;
+        $deltaDeep = !$setting->isMultiselect() ? $deltaDeep - 1 : $deltaDeep;
         $targetDeep = count($currentValue) + $deltaDeep;
 
         if ($targetDeep == 0) {
@@ -84,6 +93,10 @@ class FollowResolver
         return $targetDeep <= $allowedDeep;
     }
 
+    /**
+     * @param FilterSettingInterface $filterSetting
+     * @return mixed
+     */
     protected function getAllowedFilterDeep(FilterSettingInterface $filterSetting)
     {
         $deepByMode = [

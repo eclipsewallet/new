@@ -1,7 +1,7 @@
 <?php
 /**
  * @author Amasty Team
- * @copyright Copyright (c) 2018 Amasty (https://www.amasty.com)
+ * @copyright Copyright (c) 2019 Amasty (https://www.amasty.com)
  * @package Amasty_ShopbyPage
  */
 
@@ -247,6 +247,7 @@ class Page implements CustomizerInterface
         $this->modifyCategoryData($page, $category, 'meta_description', 'meta_description', ' ');
         $this->modifyCategoryData($page, $category, 'meta_keywords', 'meta_keywords', ',');
         $this->modifyCategoryData($page, $category, 'top_block_id', 'landing_page');
+        $this->modifyCategoryData($page, $category, 'bottom_block_id', 'bottom_cms_block');
         $this->modifyCategoryData($page, $category, 'url', 'url');
 
         if ($page->getImage()) {

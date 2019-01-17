@@ -1,7 +1,7 @@
 <?php
 /**
  * @author Amasty Team
- * @copyright Copyright (c) 2018 Amasty (https://www.amasty.com)
+ * @copyright Copyright (c) 2019 Amasty (https://www.amasty.com)
  * @package Amasty_Shopby
  */
 
@@ -41,16 +41,44 @@ class UpgradeData implements UpgradeDataInterface
      */
     private $resourceConfig;
 
+    /**
+     * @var \Magento\Framework\App\State
+     */
+    private $appState;
+
+    /**
+     * @var \Magento\Framework\Module\Status
+     */
+    private $moduleStatus;
+
+    /**
+     * @var \Magento\Framework\Filesystem
+     */
+    private $filesystem;
+
+    /**
+     * @var \Magento\Framework\Module\Manager
+     */
+    private $moduleManager;
+
     public function __construct(
         DeployHelper $deployHelper,
         CategorySetupFactory $categorySetupFactory,
         CategoryCollectionFactory $categoryFactory,
-        \Magento\Framework\App\Config\ConfigResource\ConfigInterface $resourceConfig
+        \Magento\Framework\App\Config\ConfigResource\ConfigInterface $resourceConfig,
+        \Magento\Framework\App\State $appState,
+        \Magento\Framework\Filesystem $filesystem,
+        \Magento\Framework\Module\Status $moduleStatus,
+        \Magento\Framework\Module\Manager $moduleManager
     ) {
         $this->deployHelper = $deployHelper;
         $this->categorySetupFactory = $categorySetupFactory;
         $this->categoryCollectionFactory = $categoryFactory;
         $this->resourceConfig = $resourceConfig;
+        $this->appState = $appState;
+        $this->filesystem = $filesystem;
+        $this->moduleStatus = $moduleStatus;
+        $this->moduleManager = $moduleManager;
     }
 
     /**
@@ -59,6 +87,22 @@ class UpgradeData implements UpgradeDataInterface
      * @return void
      */
     public function upgrade(
+        ModuleDataSetupInterface $setup,
+        ModuleContextInterface $context
+    ) {
+        $this->appState->emulateAreaCode(
+            \Magento\Framework\App\Area::AREA_ADMINHTML,
+            [$this, 'upgradeCallback'],
+            [$setup, $context]
+        );
+    }
+
+    /**
+     * @param ModuleDataSetupInterface $setup
+     * @param ModuleContextInterface   $context
+     * @return void
+     */
+    public function upgradeCallback(
         ModuleDataSetupInterface $setup,
         ModuleContextInterface $context
     ) {
@@ -72,6 +116,10 @@ class UpgradeData implements UpgradeDataInterface
 
         if (version_compare($context->getVersion(), '2.6.0', '<')) {
             $this->setMobileSubmitFilters();
+        }
+
+        if (version_compare($context->getVersion(), '2.9.5', '<')) {
+            $this->backupShopbyRoot();
         }
     }
 
@@ -154,5 +202,27 @@ class UpgradeData implements UpgradeDataInterface
                 ]
             );
         }
+    }
+
+    /**
+     * @throws \Magento\Framework\Exception\LocalizedException
+     */
+    private function backupShopbyRoot()
+    {
+        if ($this->moduleManager->isEnabled('Amasty_ShopbyRoot')) {
+            $pathToModule = $this->filesystem->getDirectoryRead('app')->getAbsolutePath()
+                . 'code/Amasty/ShopbyRoot';
+
+            try {
+                $this->moduleStatus->setIsEnabled(false, ['Amasty_ShopbyRoot']);
+            } catch (\Exception $e) {
+                throw new \Magento\Framework\Exception\LocalizedException(
+                    __('Please remove "%1" folder manually.', $pathToModule)
+                );
+            }
+        }
+
+        $connection = $this->resourceConfig->getConnection();
+        $connection->delete($this->resourceConfig->getTable('setup_module'), 'module = "Amasty_ShopbyRoot"');
     }
 }

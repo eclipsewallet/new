@@ -1,7 +1,7 @@
 <?php
 /**
  * @author Amasty Team
- * @copyright Copyright (c) 2018 Amasty (https://www.amasty.com)
+ * @copyright Copyright (c) 2019 Amasty (https://www.amasty.com)
  * @package Amasty_ShopbyPage
  */
 
@@ -168,6 +168,12 @@ class Text extends Generic implements TabInterface
         $fieldset->addField('top_block_id', 'select', [
             'name'     => 'top_block_id',
             'label'    => __('Top CMS Block'),
+            'values' => $this->_categoryAttributeSourcePage->getAllOptions()
+        ]);
+
+        $fieldset->addField('bottom_block_id', 'select', [
+            'name'     => 'bottom_block_id',
+            'label'    => __('Bottom CMS Block'),
             'values' => $this->_categoryAttributeSourcePage->getAllOptions()
         ]);
 

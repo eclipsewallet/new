@@ -10,7 +10,8 @@ define([
     'mage/validation',
     'mage/translate',
     "Amasty_Shopby/js/jquery.ui.touch-punch.min",
-    'Amasty_ShopbyBase/js/chosen/chosen.jquery'
+    'Amasty_ShopbyBase/js/chosen/chosen.jquery',
+    'amShopbyFiltersSync'
 ], function ($) {
     'use strict';
 
@@ -58,24 +59,27 @@ define([
             }
 
             var existFields = [],
-                priceCounter = 0,
-                savedFilter;
+                savedFilters = [];
             forms.each(function (index, item) {
                 var $item = $(item);
+                var className = '';
                 if ($item.closest('[class*="am-filter-items"]').length) {
-                    var className = $item.closest('[class*="am-filter-items"]')[0].className,
-                        startPos = className.indexOf('am-filter-items'),
-                        endPos = className.indexOf(' ', startPos + 1) == -1 ? 100 : className.indexOf(' ', startPos + 1),
-                        filterClass = className.substring(startPos, endPos);
-
-                    if (existFields[filterClass] && filterClass !== 'am-filter-items-attr_price') {
-                        forms[index] = '';
-                    } else {
-                        existFields[filterClass] = true;
-                    }
+                    className = $item.closest('[class*="am-filter-items"]')[0].className;
+                } else if ($item.find('[class*="am-filter-items"]').length) {
+                    className = $item.find('[class*="am-filter-items"]')[0].className;
                 }
+                var startPos = className.indexOf('am-filter-items'),
+                    endPos = className.indexOf(' ', startPos + 1) == -1 ? 100 : className.indexOf(' ', startPos + 1),
+                    filterClass = className.substring(startPos, endPos);
+
+                if (filterClass && existFields[filterClass] && filterClass !== 'am-filter-items-attr_price') {
+                    forms[index] = '';
+                } else {
+                    existFields[filterClass] = true;
+                }
+
                 if ($item.hasClass('am_saved_filter_values')) {
-                    savedFilter = forms[index];
+                    savedFilters.push(forms[index]);
                     forms[index] = '';
                 }
             });
@@ -89,8 +93,10 @@ define([
                }
             });
 
-            if (!isPriceExist && savedFilter) {
-                serializeForms.push($(savedFilter).serializeArray()[0]);
+            if (!isPriceExist && savedFilters) {
+                savedFilters.forEach(function (element) {
+                    serializeForms.push($(element).serializeArray()[0]);
+                });
             }
 
             var data = this.normalizeData(serializeForms, isSorting, clearFilter);
@@ -103,24 +109,13 @@ define([
         normalizeData: function(data, isSorting, clearFilter) {
             var normalizedData = [],
                 ajaxOptions = $("body.page-with-filter, body.catalogsearch-result-index, body.cms-index-index").amShopbyAjax('option'),
-                clearUrl,
-                self = this,
-                rateSelector = ".amshopby_currency_rate";
+                clearUrl;
             _.each(data, function(item) {
-                if (item.value.trim() != '' && item.value != '-1') {
+                if (item && item.value.trim() != '' && item.value != '-1') {
                     var isNormalizeItem = _.find(normalizedData, function (normalizeItem) {
                         return normalizeItem.name === item.name && normalizeItem.value === item.value
                             || item.name == 'amshopby[price][]' && normalizeItem.name === item.name;
                     });
-
-                    if (isSorting && item.name == 'amshopby[price][]') {
-                        var values = item.value.split('-'),
-                            rate = $(rateSelector).attr('rate') ? $(rateSelector).attr('rate') : 1,
-                            from = values[0] ? self.fixPriceForCurrency(parseFloat(values[0]), 'from', rate).toFixed(4) : values[0],
-                            to = values[1] ? self.fixPriceForCurrency(parseFloat(values[1]), 'to', rate).toFixed(4) : values[1];
-
-                        item.value = from + "-" + to;
-                    }
 
                     if (!isNormalizeItem) {
                         if (item.name == 'amshopby[price][]') {
@@ -129,8 +124,9 @@ define([
                         normalizedData.push(item);
                         if (ajaxOptions.isCategorySingleSelect == '1'
                             && item.name === 'amshopby[cat][]'
-                            && item.value != ajaxOptions.baseCategoryId
+                            && item.value != ajaxOptions.currentCategoryId
                             && !clearFilter
+                            && !isSorting
                         ) {
                             clearUrl = $('*[data-amshopby-filter-request-var="cat"] *[value="' + item.value + '"]')
                                 .parent().attr('href');
@@ -200,18 +196,6 @@ define([
             if ($.mage.amShopbyApplyFilters) {
                 $.mage.amShopbyApplyFilters.prototype.renderShowButton(event, element);
             }
-        },
-        fixPriceForCurrency: function (price, type, rate) {
-            /* (0.01 / 2) - 0.0001 */
-            var delta = 0.0049;
-            if (type == 'from') {
-                price -= delta;
-            } else {
-                price += delta;
-            }
-            price /= rate;
-
-            return price;
         }
     });
 
@@ -241,8 +225,7 @@ define([
 
                     setTimeout(function () {
                         checkbox.prop('checked', !checkbox.prop('checked'));
-                        checkbox.trigger('change');
-                        checkbox.trigger('sync');
+                        self.triggerSync(checkbox, !checkbox.prop('checked'));
                         if (self.isFinderAndCategory(checkbox[0])) {
                             location.href = href;
                             return;
@@ -258,8 +241,7 @@ define([
                     var element = e.data.checkbox,
                         href = e.data.link.prop('href');
                     element.prop('checked', !element.prop('checked'));
-                    element.trigger('change');
-                    element.trigger('sync');
+                    self.triggerSync(element, !element.prop('checked'));
                     if (self.isFinderAndCategory(element[0])) {
                         location.href = href;
                         return;
@@ -275,8 +257,7 @@ define([
                     var element = e.data.checkbox;
                     var link = e.data.link;
                     element.prop('checked', !element.prop('checked'));
-                    element.trigger('change');
-                    element.trigger('sync');
+                    self.triggerSync(element, !element.prop('checked'));
                     $.mage.amShopbyFilterAbstract.prototype.renderShowButton(e, element);
                     self.apply(link.prop('href'));
 
@@ -295,6 +276,10 @@ define([
 
                 self.markAsSelected(checkbox);
             })
+        },
+        triggerSync: function (element, clearFilter) {
+            element.trigger('change');
+            element.trigger('sync', [clearFilter]);
         },
         isFinderAndCategory: function (element) {
             return location.href.indexOf('find=') !== -1
@@ -335,7 +320,7 @@ define([
                         location.href = href;
                         return;
                     }
-                    self.triggerSync(link);
+                    self.triggerSync(link, [!e.data.checkbox.prop('checked')]);
                     $.mage.amShopbyFilterAbstract.prototype.renderShowButton(e, $(e.target));
                     self.apply(href);
                     self.toggleCheckParentAndChildrenCheckboxes(e.data.parent, e.data.checkbox.prop('checked'));
@@ -351,7 +336,7 @@ define([
                     }
                     element.prop('checked', !element.prop('checked'));
                     self.toggleCheckParentAndChildrenCheckboxes(e.data.parent, element.prop('checked'));
-                    self.triggerSync(element);
+                    self.triggerSync(element, !element.prop('checked'));
                     $.mage.amShopbyFilterAbstract.prototype.renderShowButton(e, element);
                     self.apply(href);
                     e.stopPropagation();
@@ -369,9 +354,9 @@ define([
                 self.markAsSelected(checkbox);
             })
         },
-        triggerSync: function (element) {
+        triggerSync: function (element, clearFilter) {
             element.trigger('change');
-            element.trigger('sync');
+            element.trigger('sync', [clearFilter]);
         },
         markAsSelected: function (checkbox) {
             checkbox.closest('form').find('a').each(function () {
@@ -403,6 +388,23 @@ define([
                         link: link
                     };
 
+                link.bind('click', params, function (e) {
+                    var element = e.data.checkbox,
+                        href = e.data.link.prop('href');
+                    if ($(this).find('input[type=radio]')[0] && location.href.indexOf('find=') !== -1) {
+                        location.href = href;
+                        return;
+                    }
+                    element.prop('checked', !element.prop('checked'));
+                    self.triggerSync(element, !element.prop('checked'));
+                    $.mage.amShopbyFilterAbstract.prototype.renderShowButton(e, element);
+                    self.apply(href);
+                    self.toggleCheckParentAndChildrenCheckboxes(e.data.parent, element.prop('checked'));
+
+                    e.stopPropagation();
+                    e.preventDefault();
+                });
+
                 checkbox.bind('click', params, function (e) {
                     var link = e.data.link,
                         href = link.prop('href');
@@ -410,15 +412,44 @@ define([
                         location.href = href;
                         return;
                     }
-                    link.trigger('change');
-                    link.trigger('sync');
+                    self.triggerSync(link, !link.find('input').prop('checked'));
                     $.mage.amShopbyFilterAbstract.prototype.renderShowButton(e, $(e.target));
                     self.apply(href);
                     e.data.parent.find('.items input[type="checkbox"]').prop('checked', false);
                     e.data.parent.parents('.item').find('>a input[type=checkbox]').prop('checked', false);
                     e.stopPropagation();
-                })
+                });
+
+                checkbox.on('change', function (e) {
+                    self.markAsSelected($(this));
+                });
+
+                checkbox.on('amshopby:sync_change', function (e) {
+                    self.markAsSelected($(this));
+                });
+
+                self.markAsSelected(checkbox);
             });
+        },
+
+        triggerSync: function (element, clearFilter) {
+            element.trigger('change');
+            element.trigger('sync', [clearFilter]);
+        },
+
+        markAsSelected: function (checkbox) {
+            checkbox.closest('form').find('a').each(function () {
+                if (!$(this).find('input').prop("checked")) {
+                    $(this).removeClass('am_shopby_link_selected');
+                } else {
+                    $(this).addClass('am_shopby_link_selected');
+                }
+            });
+        },
+
+        toggleCheckParentAndChildrenCheckboxes: function (element, isChecked) {
+            var parentElements = element.parents('.item').find('>a input[type=checkbox]');
+            parentElements.prop('checked', isChecked);
         }
     });
 
@@ -481,7 +512,7 @@ define([
                     var $input = $link.find(inputSelector);
                     $input.prop('checked', checked($link) ? 0 : 1);
                     $input.trigger('change');
-                    $input.trigger('sync');
+                    $input.trigger('sync', [!$input.prop('checked')]);
                     $.mage.amShopbyFilterAbstract.prototype.renderShowButton(e, this);
                     self.apply($link.attr('href'));
                     markSelected();
@@ -516,8 +547,13 @@ define([
                 this.value = this.element.find('[amshopby-slider-id="value"]');
                 this.slider = this.element.find('[amshopby-slider-id="slider"]');
                 this.display = this.element.find('[amshopby-slider-id="display"]');
-                var fromLabel = this.options.from ? this.options.from * this.element.attr('rate') : this.options.min;
-                var toLabel = this.options.to ? this.options.to * this.element.attr('rate') : this.options.max;
+                var fromLabel = this.options.from && this.options.from >= this.options.min
+                    ? this.options.from
+                    : this.options.min;
+                var toLabel = this.options.to && this.options.to <= this.options.max
+                    ? this.options.to
+                    : this.options.max;
+
                 this.slider.slider({
                     step: this.options.step,
                     range: true,
@@ -528,8 +564,8 @@ define([
                     change: this.onChange.bind(this)
                 });
 
-                if (this.options.from && this.options.to) {
-                    this.setValue(fromLabel, toLabel, false);
+                if (this.options.to) {
+                    this.value.val(fromLabel + '-' + toLabel);
                 } else {
                     this.value.trigger('change');
                     this.value.trigger('sync');
@@ -547,7 +583,12 @@ define([
 
         onChange: function (event, ui) {
             if (this.slider.skipOnChange !== true) {
-                this.setValue(ui.values[0], ui.values[1], true, jQuery(ui.handle).closest('[data-am-js="slider-container"]').attr('rate'));
+                this.setValue(
+                    ui.values[0],
+                    ui.values[1],
+                    true,
+                    jQuery(ui.handle).closest('[data-am-js="slider-container"]').attr('rate')
+                );
             }
 
             return true;
@@ -563,20 +604,11 @@ define([
         },
 
         onSyncChange: function (event, values) {
-            var value = values[0].split('-'),
-                rate = jQuery(event.currentTarget).parent().attr('rate');
+            var value = values[0].split('-');
             if (value.length === 2) {
-                var fixed = 2;
-                var from = (parseFloat(value[0])).toFixed(fixed);
-                var to = parseFloat(value[1]).toFixed(fixed);
-                var options = {
-                    values: [
-                        parseFloat(from).toFixed(fixed),
-                        parseFloat(to).toFixed(fixed)
-                    ]
-                };
-                var from = $.mage.amShopbyFilterAbstract.prototype.fixPriceForCurrency(parseFloat(from), 'from', rate).toFixed(4),
-                    to = $.mage.amShopbyFilterAbstract.prototype.fixPriceForCurrency(parseFloat(to), 'to', rate).toFixed(4);
+                var fixed = 2,
+                    from = (parseFloat(value[0])).toFixed(fixed),
+                    to = parseFloat(value[1]).toFixed(fixed);
 
                 this.slider.skipOnChange = true;
 
@@ -589,9 +621,10 @@ define([
             var fixed = 2;
             from = (parseFloat(from)).toFixed(fixed);
             to = (parseFloat(to)).toFixed(fixed);
-            var newVal = from + '-' + to;
 
-            var changed = this.value.val() != newVal;
+            var newVal = from + '-' + to,
+                changed = this.value.val() != newVal;
+
             this.value.val(newVal);
             if (changed) {
                 this.value.trigger('change');
@@ -599,23 +632,16 @@ define([
             }
 
             if (apply !== false) {
-                var fromNew = $.mage.amShopbyFilterAbstract.prototype.fixPriceForCurrency(parseFloat(from), 'from', rate),
-                    toNew = $.mage.amShopbyFilterAbstract.prototype.fixPriceForCurrency(parseFloat(to), 'to', rate);
-                fromNew = (fromNew <= 0) ? '0' : fromNew.toFixed(4);
-
-                newVal = fromNew + '-' + toNew.toFixed(4);
-
+                newVal = from + '-' + to;
                 this.value.val(newVal);
-                var linkHref = this.options.url.replace('amshopby_slider_from', fromNew).replace('amshopby_slider_to', toNew);
+                var linkHref = this.options.url.replace('amshopby_slider_from', from).replace('amshopby_slider_to', to);
                 $.mage.amShopbyFilterAbstract.prototype.renderShowButton(0, this.element[0]);
                 this.apply(linkHref);
             }
         },
         setValueWtihoutChange: function(from, to) {
             var fixed = this.getSignsCount(this.options.step, 0);
-            from = (parseFloat(from)).toFixed(4);
-            to = parseFloat(to).toFixed(4);
-            var newVal = from + '-' + to;
+            var newVal = parseFloat(from) + '-' + parseFloat(to);
             this.value.val(newVal);
         },
         getLabel: function (from, to) {
@@ -652,11 +678,14 @@ define([
                     && !this.element.closest(priceSelector + '.am-dropdown').length
                 ) {
                     var values = this.value.val().split('-'),
-                        from = values[0] * this.element.find('.range').attr('rate'),
-                        to = values[1] * this.element.find('.range').attr('rate');
+                        from = values[0],
+                        to = values[1];
                     this.value.trigger('amshopby:sync_change', [[values ? from + '-' + to : '', true]]);
                 } else {
-                    this.value.trigger('amshopby:sync_change', [[this.value.val() ? this.value.val() : '', true]]);
+                    var fromValue = this.options.from ? parseFloat(this.options.from).toFixed(2) : '',
+                        toValue = this.options.to ? parseFloat(this.options.to).toFixed(2) : '',
+                        newValue = fromValue + '-' + toValue;
+                    this.value.trigger('amshopby:sync_change', [[this.value.val() ? this.value.val() : newValue, true]]);
                 }
 
                 if (this.go.length > 0) {
@@ -692,8 +721,7 @@ define([
         onChange: function (event) {
             var to = this.to.val(),
                 from = this.from.val(),
-                fixed = this.getFixed(this.isSlider(), this.isPrice()),
-                rate =jQuery(event.currentTarget).parent().attr('rate');
+                fixed = this.getFixed(this.isSlider(), this.isPrice());
 
             if (!to) {
                 to = this.options.max;
@@ -703,19 +731,16 @@ define([
                 from = this.options.min;
             }
 
-            [from, to] = this.checkFromTo(parseFloat(from), parseFloat(to));
-
-            var newVal =  Number(from).toFixed(fixed) + '-' +  Number(to).toFixed(fixed),
-                changed = newVal != this.value.val() && from && to;
+            var fromToInterval = this.checkFromTo(parseFloat(from), parseFloat(to)),
+                newVal =  Number(fromToInterval.from).toFixed(fixed) + '-' +  Number(fromToInterval.to).toFixed(fixed),
+                changed = newVal != this.value.val() && fromToInterval.to;
 
             this.value.val(newVal);
 
             if (changed) {
                 this.value.trigger('change');
                 this.value.trigger('sync');
-                to = $.mage.amShopbyFilterAbstract.prototype.fixPriceForCurrency(parseFloat(to), 'to', rate);
-                from = $.mage.amShopbyFilterAbstract.prototype.fixPriceForCurrency(parseFloat(from), 'from', rate);
-                newVal = parseFloat(Number(from).toFixed(4)) + '-' +  parseFloat(Number(to).toFixed(4));
+                newVal = fromToInterval.from + '-' +  fromToInterval.to;
                 this.value.val(newVal);
 
                 if (this.go.length == 0) {
@@ -725,18 +750,13 @@ define([
             }
         },
         applyFilter: function (e) {
-            var rate = this.element.find('.range').attr('rate'),
-                to = this.to.val(),
+            var to = this.to.val(),
                 from = this.from.val(),
                 isPrice = this.isPrice(),
-                fixed = this.getFixed(this.isSlider(), isPrice);
-
-            [from, to] = this.checkFromTo(parseFloat(from), parseFloat(to));
-            var fromNew = $.mage.amShopbyFilterAbstract.prototype.fixPriceForCurrency(parseFloat(from), 'from', rate),
-                toNew = $.mage.amShopbyFilterAbstract.prototype.fixPriceForCurrency(parseFloat(to), 'to', rate);
-            var linkHref = this.options.url
-                .replace('amshopby_slider_from', fromNew.toFixed(4))
-                .replace('amshopby_slider_to', toNew.toFixed(4));
+                fromToInterval = this.checkFromTo(parseFloat(from), parseFloat(to)),
+                linkHref = this.options.url
+                .replace('amshopby_slider_from', fromToInterval.from)
+                .replace('amshopby_slider_to', fromToInterval.to);
             this.apply(linkHref);
 
             if (e) {
@@ -750,9 +770,9 @@ define([
                 fixed = this.getFixed(this.isSlider(), 0),
                 max = Number(this.options.max).toFixed(fixed),
                 min = Number(this.options.min).toFixed(fixed),
-                to = max, from = min;
+                to = max, from = min, rate = this.element.find('.range').attr('rate');
 
-            if (value.length === 2) {
+            if (value.length === 2 && value[1]) {
                 from = value[0] == '' ? 0 : parseFloat(value[0]);
                 to = value[1] == 0 ? this.options.max : parseFloat(value[1]);
 
@@ -761,17 +781,11 @@ define([
                 }
 
                 if (!this.isDropDown()) {
-                    from = parseFloat(from).toFixed(fixed);
-                    to = parseFloat(to).toFixed(fixed);
                     if (!fixed) {
-                        var toValue = parseFloat(to);
-                        var newVal = from + '-' + toValue;
+                        var newVal = from + '-' + to;
                         this.value.val(newVal);
                     }
                 }
-            }
-            if (from == min && to == max) {
-                var notChange = true;
             }
 
             this.element.find('[amshopby-fromto-id="from"]').val(from);
@@ -779,16 +793,21 @@ define([
         },
 
         checkFromTo: function (from, to) {
-            from = from < this.options.min ? this.options.min : from;
-            from = from > this.options.max ? this.options.min : from;
-            to = to > this.options.max ? this.options.max : to;
-            to = to < this.options.min ? this.options.max : to;
+            var interval = {};
 
-            if (from > to) {
-                [from, to] = [to, from];
+            interval.from = from < this.options.min ? this.options.min : from;
+            interval.from = interval.from > this.options.max ? this.options.min : interval.from;
+            interval.to = to > this.options.max ? this.options.max : to;
+            interval.to = interval.to < this.options.min ? this.options.max : interval.to;
+
+            if (interval.from > interval.to) {
+                var fromOld = interval.from;
+
+                interval.from = interval.to;
+                interval.to = fromOld;
             }
 
-            return [from, to];
+            return interval;
         },
         /**
          * trigger keyup on input with delay
@@ -856,7 +875,8 @@ define([
                             self.unhightlight(li);
                         }
                         $(li).show();
-                        self.showParent($(li).closest('ol').closest('li').show());
+                        var parentSelector = !self.options.isState ? '.filter-options-content' : '[data-am-js="shopby-container"]';
+                        $(li).parentsUntil(parentSelector).show();
                     }
                     else {
                         self.unhightlight(li);
@@ -867,12 +887,6 @@ define([
 
             if (searchText == '') {
                 $(this.element).trigger('search_inactive');
-            }
-        },
-        showParent: function (parent) {
-            if (parent.length !== 0) {
-                $(parent).show();
-                this.showParent($(parent).closest('ol').closest('li').show());
             }
         },
         hightlight: function (element, searchText) {
@@ -1042,7 +1056,7 @@ define([
                     $(links).each(function (index, value) {
                         var filter = {
                             attribute: $(value).attr("data-container"),
-                            value: $(value).attr("data-value")
+                            value: self.escapeHtml($(value).attr("data-value"))
                         };
                         filters.push(filter);
 
@@ -1064,25 +1078,40 @@ define([
                 }
             })
         },
+
+        escapeHtml: function (text) {
+            var map = {
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+                "'": '&#039;'
+            };
+
+            return text.replace(/[&<>"']/g, function(m) { return map[m]; });
+        },
+
         apply: function (filter) {
             var link = $('li[data-container="' + filter.attribute + '"][data-value="' + filter.value + '"] a.remove').attr('href');
 
             try {
                 var self = this;
 
-                var value = this.buildValues(filter.value);
+                var value = filter.value;
                 if (filter.attribute == 'price') {
-                    value = [value.join('-')];
-                }
-                $.each(value, function (index, value) {
-                    self.setDefault(filter.attribute, value);
-                });
+                    var values = filter.value.split('-'),
+                        fromValue = values[0] ? parseFloat(values[0]).toFixed() : '',
+                        toValue = values[1] ?  parseFloat(values[1]).toFixed() : '',
+                        attrSelector = '[data-amshopby-filter="attr_' + filter.attribute + '"]';
 
-                $("[data-amshopby-filter]").trigger('change');
-                $("[data-amshopby-filter]").trigger('sync');
-                $('.am_saved_filter_values[data-amshopby-filter="' + filter.attribute + '"]').each(function (index, item) {
-                    item.remove();
-                });
+                    value = fromValue + '-' + toValue;
+                }
+
+                self.setDefault(filter.attribute, value);
+
+                $(attrSelector).trigger('change');
+                $(attrSelector).trigger('sync', [true]);
+
                 if ($.mage.amShopbyAjax != undefined) {
                     $.mage.amShopbyFilterAbstract.prototype.prepareTriggerAjax(null, null, true);
                 } else if(this.options.collectFilters !== 1) {
@@ -1091,17 +1120,6 @@ define([
             } catch(e) {
                 window.location = link;
             }
-        },
-
-        buildValues: function (value) {
-            var array = [];
-            if (value.indexOf(',') !== -1) {
-                array = value.split(",");
-            } else {
-                array.push(value);
-            }
-
-            return array;
         },
 
         clearBlock: function () {
@@ -1113,24 +1131,56 @@ define([
 
         setDefault: function (name, value) {
             var valueSelector = '[name="amshopby[' + name + '][]"]',
-                filter = $(valueSelector),
-                type = $(filter).prop("tagName");
+                filters = $(valueSelector),
+                self = this;
 
-            switch (type) {
-                case 'SELECT' :
-                    filter.find('[value=' + value + ']').removeAttr('selected', 'selected');
-                    break;
-                case 'INPUT' :
-                    if ($(filter).attr("type") != 'text' && $(filter).attr("type") != 'hidden') {
-                        var selected = $(valueSelector + '[value="' + value + '"]');
-                        selected.removeAttr("checked");
-                        selected.siblings('.swatch-option.selected').removeClass('selected');
-                    } else if ($(filter).attr("type") == 'hidden') {
-                        var selected = $(valueSelector);
-                        selected.val("");
-                    }
-                    break;
+            filters.each(function (index, filter) {
+                var type = $(filter).prop("tagName");
+
+                switch (type) {
+                    case 'SELECT' :
+                        if (name == 'price') {
+                            $(filter).find('option').each(function (index, element) {
+                                if (self.toValidView(element.value.split('-')) == this) {
+                                    element.selected = false;
+                                }
+                            }.bind(value));
+                        } else {
+                            $(filter).find('[value="' + value + '"]').removeAttr('selected', 'selected');
+                        }
+                        break;
+                    case 'INPUT' :
+                        var selected = '';
+                        if ($(filter).attr("type") != 'text' && $(filter).attr("type") != 'hidden') {
+                            selected = $(valueSelector + '[value="' + value + '"]');
+                            selected.removeAttr("checked");
+                            selected.siblings('.swatch-option.selected').removeClass('selected');
+                        } else if (($(filter).attr("type") == 'hidden' && self.isEquals(name, filter.value, value))
+                            || name =='price'
+                        ) {
+                            filter.value = "";
+                        }
+                        break;
+                }
+            });
+        },
+
+        isEquals: function (name, filterValue, value) {
+            var values = value.split('-'),
+                filterValues = filterValue.split('-');
+            if (values.length > 1) {
+                filterValue = this.toValidView(filterValues);
+                value = this.toValidView(values);
             }
+
+            return filterValue == value;
+        },
+
+        toValidView: function (values) {
+            values[0] = values[0] ? parseFloat(values[0]).toFixed() : values[0];
+            values[1] = values[1] ? parseFloat(values[1]).toFixed() : values[1];
+
+            return values[0] + '-' + values[1];
         },
 
         sliderDefault: function (name) {
@@ -1162,12 +1212,12 @@ define([
                 value = filter.value,
                 notExistValue = true;
             $('[name="amshopby[' + name + '][]"]').each(function (index, item) {
-                if (item.value == value) {
+                if (!item.value || item.value == value) {
                     notExistValue = false;
                 }
             });
             if (notExistValue) {
-                $('#layered-filter-block').append('<form class="am_saved_filter_values" data-amshopby-filter="' + name + '"><input value="' + value + '" type="hidden" name="amshopby[' + name + '][]"></form>')
+                $('#layered-filter-block').append('<form class="am_saved_filter_values" data-amshopby-filter="attr_' + name + '"><input value="' + value + '" type="hidden" name="amshopby[' + name + '][]"></form>')
             }
         }
     });

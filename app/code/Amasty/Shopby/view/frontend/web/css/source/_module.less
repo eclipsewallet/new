@@ -104,6 +104,10 @@
         .am-shopby-swatch-label .label {
             margin-right: 5px;
         }
+
+        .am-shopby-form {
+            padding: 3px;
+        }
     }
 
     .am-filter-go {
@@ -270,7 +274,6 @@
         .items.amshopby-fly-out-view li {
             & {
                 margin: 0;
-                padding: 10px;
                 .lib-css(border, 1px solid @base-border__color);
                 border-top: none;
             }
@@ -348,6 +351,12 @@
 
         .items-children:not(.ui-menu) {
             display: none;
+        }
+
+        a {
+            padding: 10px;
+            width: 100%;
+            display: inline-block;
         }
     }
 
@@ -638,6 +647,10 @@
         display: none;
     }
 
+    div.swatch-option-tooltip {
+        z-index: 9999;
+    }
+
     .swatch-option-tooltip .image, .swatch-option-tooltip-layered .image {
       background-size: contain !important;
     }
@@ -650,8 +663,24 @@
         vertical-align: middle;
     }
 
-    .am_filter_current .am-filter-value {
-        display: inline-block;
+    .am-filter-current {
+        .filter-label {
+            vertical-align: middle;
+        }
+
+        .am-filter-value {
+            display: inline-block;
+            max-width: 100%;
+            vertical-align: middle;
+        }
+
+        .am-filter-value .am-swatch-options.color .swatch-option {
+            margin: 0;
+        }
+
+        .am-shopby-swatch-label {
+            margin-left: 10px;
+        }
     }
 }
 

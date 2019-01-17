@@ -1,7 +1,7 @@
 <?php
 /**
  * @author Amasty Team
- * @copyright Copyright (c) 2018 Amasty (https://www.amasty.com)
+ * @copyright Copyright (c) 2019 Amasty (https://www.amasty.com)
  * @package Amasty_ShopbyBrand
  */
 ?>
@@ -101,7 +101,11 @@ $width = floor(100/$columns);
                        class="item"
                        title="<?= $block->escapeHtml($o['label']) ?>">
                         <?php if ($o['img'] && $isShowImages) : ?>
-                            <div class="am-image-wrapper"><img src="<?= /* @escapeNotVerified */ $o['img'] ?>" /></div>
+                            <div class="am-image-wrapper">
+                                <img src="<?= /* @escapeNotVerified */ $o['img'] ?>"
+                                     title="<?= $block->escapeHtml($o['alt']) ?>"
+                                     alt="<?= $block->escapeHtml($o['alt']) ?>" />
+                            </div>
                         <?php else : ?>
                             <div class="am-image-wrapper"><p class="no-img"><?= /* @escapeNotVerified */ $letter ?></p></div>
                         <?php endif ?>
@@ -122,8 +126,8 @@ $width = floor(100/$columns);
 <?php else : ?>
     Please select brand attribute in Stores -> Configuration -> Amasty Extensions -> Improved Layered Navigation:
     Brands.
-</div>
 <?php endif ?>
+</div>
 
 <script>
     require([

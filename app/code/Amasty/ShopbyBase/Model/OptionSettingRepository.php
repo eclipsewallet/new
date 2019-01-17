@@ -1,7 +1,7 @@
 <?php
 /**
  * @author Amasty Team
- * @copyright Copyright (c) 2018 Amasty (https://www.amasty.com)
+ * @copyright Copyright (c) 2019 Amasty (https://www.amasty.com)
  * @package Amasty_ShopbyBase
  */
 
@@ -86,13 +86,14 @@ class OptionSettingRepository implements OptionSettingRepositoryInterface
         if ($storeId !== 0) {
             $defaultModel = $collection->getLastItem();
             foreach ($model->getData() as $key => $value) {
-                if (in_array($key, ['meta_title', 'title']) && $optionValue !== $value) {
-                    $model->setData($key . '_use_default', false);
+                if (in_array($key, ['meta_title', 'title'])) {
+                    $isDefault =  $value && $optionValue !== $value ? false : true;
+                    $model->setData($key . '_use_default', $isDefault);
                     continue;
                 }
-                if ($defaultModel->getData($key) == $value) {
-                    $model->setData($key . '_use_default', true);
-                }
+
+                $isDefault = $defaultModel->getData($key) == $value ? true : false;
+                $model->setData($key . '_use_default', $isDefault);
             }
         } else {
             foreach (['meta_title', 'title'] as $key) {

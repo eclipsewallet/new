@@ -1,7 +1,7 @@
 <?php
 /**
  * @author Amasty Team
- * @copyright Copyright (c) 2018 Amasty (https://www.amasty.com)
+ * @copyright Copyright (c) 2019 Amasty (https://www.amasty.com)
  * @package Amasty_Shopby
  */
 
@@ -9,6 +9,8 @@
 namespace Amasty\Shopby\Block\Product\ProductList;
 
 use Magento\Framework\View\Element\Template;
+use Amasty\Shopby\Model\Source\ChildrenCategoriesBlock\Categories;
+use Amasty\Shopby\Model\Source\ChildrenCategoriesBlock\DisplayMode;
 
 /**
  * Class ChildrenCategoryList
@@ -137,12 +139,33 @@ class ChildrenCategoryList extends Template
      */
     protected function _toHtml()
     {
-        if ($this->categoryHelper->isChildrenCategoriesBlockEnabled()
+        if ($this->categoryHelper->getChildrenCategoriesBlockDisplayMode()
             && in_array($this->request->getModuleName(), $this->availableModules)
+            && $this->isAllowInCategory()
         ) {
             return parent::_toHtml();
         }
         return '';
+    }
+
+    /**
+     * @return bool
+     */
+    private function isAllowInCategory()
+    {
+        $currentCategoryId = $this->registry->registry('current_category')->getId();
+        $allowCategories = $this->categoryHelper->getAllowCategories();
+
+        return in_array($currentCategoryId, explode(',', $allowCategories))
+            || $allowCategories == Categories::ALL_CATEGORIES;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isOnlyLabels()
+    {
+        return $this->categoryHelper->getChildrenCategoriesBlockDisplayMode() == DisplayMode::LABELS;
     }
 
     /**

@@ -1,7 +1,7 @@
 <?php
 /**
  * @author Amasty Team
- * @copyright Copyright (c) 2018 Amasty (https://www.amasty.com)
+ * @copyright Copyright (c) 2019 Amasty (https://www.amasty.com)
  * @package Amasty_Shopby
  */
 ?>
@@ -21,13 +21,13 @@ $attributeFilter = $block->getFilter() ? $block->getFilter()->getRequestVar() : 
 $displayMode = $filterSetting ? $filterSetting->getDisplayMode() : false;
 $displayMode = $displayMode ?: $block->getDisplayModeByAttributeCode($attributeCode);
 $showImagesLabel = ($displayMode == DisplayMode::MODE_IMAGES_LABELS) ? true : false;
-$relNofollow = $filterSetting ? $filterSetting->getRelNofollow() : false;
+$relNofollow = $filterSetting ? $filterSetting->isAddNofollow() : false;
 ?>
 
 <?php if ($filterSetting && $showImagesLabel && $filterSetting->isShowSearchBox(count($swatchData['options']))) : ?>
     <?= $block->getSearchForm(); ?>
 <?php endif; ?>
-    <form data-amshopby-filter="<?= /* @escapeNotVerified */ $attributeFilter ?>"
+    <form class="am-shopby-form" data-amshopby-filter="<?= /* @escapeNotVerified */ $attributeFilter ?>"
         <?php if ($filterSetting && $filterSetting->getEnableOverflowScroll() > 0) : ?>
             style="max-height:<?= $filterSetting->getEnableOverflowScroll() ?>px;
                 overflow-y: auto;
@@ -40,12 +40,12 @@ $relNofollow = $filterSetting ? $filterSetting->getRelNofollow() : false;
              data-am-js="swatch-options">
             <?php foreach ($swatchData['options'] as $option => $label) : ?>
             <?php if ($block instanceof \Amasty\Shopby\Block\Navigation\State\Swatch) : ?>
-                <span class="item swatch-option-link-layered am-swatch-link">
+                <span class="swatch-option-link-layered am-swatch-link">
             <?php else : ?>
                 <a href="<?= /* @escapeNotVerified */
                 $label['link'] ?>"
                     <?= $relNofollow ? ' rel="nofollow"' : '' ?>
-                   data-label="<?= $label['label'] ?>"
+                   data-label="<?= $block->escapeHtml($label['label']) ?>"
                    class="item swatch-option-link-layered am-swatch-link">
                     <?php endif; ?>
                     <?php
@@ -106,9 +106,7 @@ $relNofollow = $filterSetting ? $filterSetting->getRelNofollow() : false;
                                 $value = $swatchData['swatches'][$option]['value'];
                                 break;
                         endswitch; ?>
-                        <div class="<?= /* @escapeNotVerified */ $extraSwatchClass; ?> swatch-option
-                                        <?= /* @escapeNotVerified */ $label['custom_style'] ?>
-                                        <?= /* @escapeNotVerified */ $class; ?> "
+                        <div class="<?= /* @escapeNotVerified */ $extraSwatchClass; ?> swatch-option <?= /* @escapeNotVerified */ $label['custom_style'] ?> <?= /* @escapeNotVerified */ $class; ?> "
                              data-am-js="swatch-item"
                              option-type="<?= /* @escapeNotVerified */ $optionType; ?>"
                              option-id="<?= /* @escapeNotVerified */ $option ?>"
@@ -121,11 +119,9 @@ $relNofollow = $filterSetting ? $filterSetting->getRelNofollow() : false;
                     <?php endif; ?>
                     <?php if ($showImagesLabel) : ?>
                         <div class="am-shopby-swatch-label">
-                            <span class="label"><?= $label['label'] ?></span>
+                            <span class="label"><?= $block->escapeHtml($label['label']) ?></span>
                             <?php if ($filterSetting && $filterSetting->isShowProductQuantities()) : ?>
-                                <span class="count">
-                                <?= $label[SwatchRenderer::VAR_COUNT]; ?>
-                            </span>
+                                <span class="count"><?= $label[SwatchRenderer::VAR_COUNT]; ?></span>
                                 <span class="filter-count-label">
                                 <?php $title = ($label[SwatchRenderer::VAR_COUNT] == 1) ? __('item') : __('items');?>
                                 <?= $block->escapeHtml($title) ?>

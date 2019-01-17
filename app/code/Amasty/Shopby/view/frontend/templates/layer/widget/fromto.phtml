@@ -1,7 +1,7 @@
 <?php
 /**
  * @author Amasty Team
- * @copyright Copyright (c) 2018 Amasty (https://www.amasty.com)
+ * @copyright Copyright (c) 2019 Amasty (https://www.amasty.com)
  * @package Amasty_Shopby
  */
 ?>
@@ -23,9 +23,9 @@ $fromToType = $this->getWidgetType();
         data-amshopby-filter="<?= $filterCode;?>"
         data-amshopby-filter-request-var="<?= $block->getFilter()->getRequestVar(); ?>">
         <input
-            <?php if ($fromToConfig['from'] && $fromToConfig['to']) :?>
-                value="<?= sprintf("%.2f", $fromToConfig['from'] * $fromToConfig['curRate']);?>-
-                    <?= sprintf("%.2f", $fromToConfig['to'] * $fromToConfig['curRate']);?>"
+            <?php if ($fromToConfig['from'] !== null && $fromToConfig['to'] !== null) :?>
+                value="<?= $fromToConfig['from'] ? sprintf("%.2f", $fromToConfig['from']) : '';?>-
+                    <?= $fromToConfig['to'] ? sprintf("%.2f", $fromToConfig['to']) : $fromToConfig['to'];?>"
             <?php endif;?>
             type="hidden"
             amshopby-fromto-id="value"
@@ -36,14 +36,12 @@ $fromToType = $this->getWidgetType();
                 class="am-filter-price -from input-text"
                 amshopby-fromto-id="from"
                 data-validate-data="{'validate-number':true}"
-                validate-digits-range='<?= floor($min / 10) * 10 . '-' . round($max, -1);?>'
                 type="number"
                 placeholder="<?= $block->escapeHtml(__('From'))?>"/>
             <span class="delimiter">-</span>
             <input
                 class="am-filter-price -to input-text"
                 amshopby-fromto-id="to"
-                validate-digits-range='<?= floor($min / 10) * 10 . '-' . round($max, -1);?>'
                 data-validate-data="{'validate-number':true}"
                 type="number"
                 placeholder="<?= $block->escapeHtml(__('To'))?>"

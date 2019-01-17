@@ -2,7 +2,7 @@
 <!--
 /**
  * @author Amasty Team
- * @copyright Copyright (c) 2018 Amasty (https://www.amasty.com)
+ * @copyright Copyright (c) 2019 Amasty (https://www.amasty.com)
  * @package Amasty_Shopby
  */
 -->
@@ -207,6 +207,17 @@
         <plugin name="Amasty_Shopby::PriceRuleIndexerFixerConfigurable"
                 type="Amasty\Shopby\Plugin\Catalog\Model\ResourceModel\Product\Indexer\Price\Configurable"/>
     </type>
+
+    <type name="\Magento\Catalog\Model\ResourceModel\Product\Indexer\Price\SimpleProductPrice">
+        <plugin name="Amasty_Shopby::PriceRuleIndexerFixer.2.2.6"
+                type="Amasty\Shopby\Plugin\Catalog\Model\ResourceModel\Product\Indexer\Price\Dimensional\Simple"/>
+    </type>
+
+    <type name="\Magento\ConfigurableProduct\Model\ResourceModel\Product\Indexer\Price\Configurable">
+        <plugin name="Amasty_Shopby::PriceRuleIndexerFixerConfigurable.2.2.6"
+                type="Amasty\Shopby\Plugin\Catalog\Model\ResourceModel\Product\Indexer\Price\Dimensional\Configurable"/>
+    </type>
+
     <type name="Magento\CatalogRule\Model\Indexer\RuleProductPricesPersistor">
         <plugin name="Amasty_Shopby::PriceIndexerInvalidator"
                 type="Amasty\Shopby\Plugin\CatalogRule\Model\Indexer\RuleProductPricesPersistor"/>

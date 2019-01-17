@@ -1,7 +1,7 @@
 <?php
 /**
  * @author Amasty Team
- * @copyright Copyright (c) 2018 Amasty (https://www.amasty.com)
+ * @copyright Copyright (c) 2019 Amasty (https://www.amasty.com)
  * @package Amasty_ShopbyBrand
  */
 ?>
@@ -45,7 +45,7 @@
     }
 
     .swiper-brand .no-img {
-        width: <?= /* @escapeNotVerified */ $imgWidth;?>px;
+        max-width: <?= /* @escapeNotVerified */ $imgWidth;?>px;
         line-height: <?= /* @escapeNotVerified */ $imgWidth;?>px;
         font-size: <?= /* @escapeNotVerified */ $imgWidth*0.65;?>px;
     }
@@ -89,7 +89,10 @@
                         <div class="swiper-brand <?php if ($showLabel) : ?><?= ' brand-label' ?><?php endif; ?>">
                             <?php if ($brand['img']) : ?>
                             <div class="am-image-wrapper">
-                                <img src="<?= /* @escapeNotVerified */ $brand['img']; ?>" class="am-image"/>
+                                <img alt="<?= $block->escapeHtml($brand['alt']) ?>"
+                                     title="<?= $block->escapeHtml($brand['alt']) ?>"
+                                     src="<?= /* @escapeNotVerified */ $block->escapeHtml($brand['img']); ?>"
+                                     class="am-image"/>
                             </div>
                             <?php else : ?>
                             <div class="am-image-wrapper">

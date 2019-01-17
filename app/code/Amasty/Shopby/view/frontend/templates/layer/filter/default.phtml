@@ -1,7 +1,7 @@
 <?php
 /**
  * @author Amasty Team
- * @copyright Copyright (c) 2018 Amasty (https://www.amasty.com)
+ * @copyright Copyright (c) 2019 Amasty (https://www.amasty.com)
  * @package Amasty_Shopby
  */
 ?>
@@ -26,7 +26,8 @@ $filterCode = $block->escapeHtml($filterSetting->getFilterCode());
 
     <form data-am-js="am-ranges"
           data-amshopby-filter="<?= $filterCode;?>"
-          data-amshopby-filter-request-var="<?= $block->getFilter()->getRequestVar(); ?>">
+          data-amshopby-filter-request-var="<?= $block->getFilter()->getRequestVar(); ?>"
+          autocomplete="off">
         <?php /** @var \Amasty\Shopby\Model\Layer\Filter\Item $filterItem */?>
         <?php foreach ($filterItems as $filterItem) : ?>
         <?php $uniqId = uniqid(); ?>
@@ -38,7 +39,7 @@ $filterCode = $block->escapeHtml($filterSetting->getFilterCode());
                     class="am-filter-item-<?= $block->escapeId($uniqId)?>"
                     data-am-js="filter-item-default"
                     href="<?= $block->escapeUrl($filterItem->getUrl()) ?>"
-                    <?= $filterSetting->getRelNofollow() ? ' rel="nofollow"' : '' ?>
+                    <?= $filterSetting->isAddNofollow() ? ' rel="nofollow"' : '' ?>
                 >
                     <?php $style = ($inputType == 'radio' && !$block->getRadioAllowed())
                         || in_array($filterCode, ['rating', 'stock'])  ? 'display: none;' : ''; ?>

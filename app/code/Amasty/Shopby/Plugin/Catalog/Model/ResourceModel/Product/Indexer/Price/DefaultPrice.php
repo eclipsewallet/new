@@ -1,7 +1,7 @@
 <?php
 /**
  * @author Amasty Team
- * @copyright Copyright (c) 2018 Amasty (https://www.amasty.com)
+ * @copyright Copyright (c) 2019 Amasty (https://www.amasty.com)
  * @package Amasty_Shopby
  */
 
@@ -57,6 +57,17 @@ class DefaultPrice
         $this->entityIds = $entityIds;
         $this->subject = $subject;
         return [$entityIds];
+    }
+
+    /**
+     * @param $subject
+     * @param $result
+     * @return mixed
+     */
+    public function afterReindexAll($subject, $result)
+    {
+        $this->subject = $subject;
+        return $this->afterReindexEntity($subject, $result);
     }
 
     /**

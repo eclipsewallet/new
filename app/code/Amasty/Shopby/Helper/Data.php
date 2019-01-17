@@ -1,7 +1,7 @@
 <?php
 /**
  * @author Amasty Team
- * @copyright Copyright (c) 2018 Amasty (https://www.amasty.com)
+ * @copyright Copyright (c) 2019 Amasty (https://www.amasty.com)
  * @package Amasty_Shopby
  */
 
@@ -18,6 +18,10 @@ use Amasty\ShopbyBase\Helper\OptionSetting as OptionSettingHelper;
 class Data extends AbstractHelper
 {
     const UNFOLDED_OPTIONS_STATE = 'amshopby/general/unfolded_options_state';
+    const AMSHOPBY_ROOT_GENERAL_URL_PATH = 'amshopby_root/general/url';
+    const AMSHOPBY_ROOT_ENABLED_PATH = 'amshopby_root/general/enabled';
+    const CATEGORY_FILTER_POSITION = 'amshopby/category_filter/position';
+    const CATALOG_SEO_SUFFIX_PATH = 'catalog/seo/category_url_suffix';
 
     /**
      * @var FilterSetting
@@ -58,6 +62,21 @@ class Data extends AbstractHelper
      */
     private $optionSettingHelper;
 
+    /**
+     * @var \Amasty\ShopbyBase\Helper\Data
+     */
+    private $baseHelper;
+
+    /**
+     * @var \Amasty\ShopbyBase\Api\UrlBuilderInterface
+     */
+    private $amUrlBuilder;
+
+    /**
+     * @var Layer\Resolver
+     */
+    private $layerResolver;
+
     public function __construct(
         Context $context,
         FilterSetting $settingHelper,
@@ -67,27 +86,31 @@ class Data extends AbstractHelper
         Shopby\Model\Layer\FilterList $filterList,
         \Magento\Swatches\Helper\Data $swatchHelper,
         OptionSettingHelper $optionSettingHelper,
-        \Magento\Framework\Registry $registry
+        \Magento\Framework\Registry $registry,
+        \Amasty\ShopbyBase\Helper\Data $baseHelper,
+        \Amasty\ShopbyBase\Api\UrlBuilderInterface $amUrlBuilder
     ) {
         parent::__construct($context);
         $this->settingHelper = $settingHelper;
-        $this->layer = $layerResolver->get();
+        $this->layerResolver = $layerResolver;
         $this->storeManager = $storeManager;
         $this->shopbyRequest = $shopbyRequest;
         $this->filterList = $filterList;
         $this->registry = $registry;
         $this->swatchHelper = $swatchHelper;
         $this->optionSettingHelper = $optionSettingHelper;
+        $this->baseHelper = $baseHelper;
+        $this->amUrlBuilder = $amUrlBuilder;
     }
 
     public function getSelectedFiltersSettings()
     {
-        $filters = $this->filterList->getAllFilters($this->layer);
+        $filters = $this->filterList->getAllFilters($this->getLayer());
         $result = [];
         foreach ($filters as $filter) {
             /** @var Layer\Filter\AbstractFilter $filter */
             $var = $filter->getRequestVar();
-            if ($this->_getRequest()->getParam($var) !== null) {
+            if ($this->shopbyRequest->getParam($var) !== null) {
                 $setting = $this->settingHelper->getSettingByLayerFilter($filter);
                 $result[] = [
                     'filter' => $filter,
@@ -116,7 +139,8 @@ class Data extends AbstractHelper
 
     public function isFilterItemSelected(\Amasty\Shopby\Model\Layer\Filter\Item $filterItem)
     {
-        $data = $this->shopbyRequest->getFilterParam($filterItem->getFilter());
+        $filter = $filterItem->getFilter();
+        $data = $this->shopbyRequest->getFilterParam($filter);
 
         if (!empty($data)) {
             $ids = explode(',', $data);
@@ -124,6 +148,7 @@ class Data extends AbstractHelper
                 return 1;
             }
         }
+
         return 0;
     }
 
@@ -139,16 +164,19 @@ class Data extends AbstractHelper
             $filterState[$item->getFilter()->getRequestVar()] = $item->getFilter()->getCleanValue();
         }
 
+        $filterState['p'] = null;
+
         $params['_current'] = true;
         $params['_use_rewrite'] = true;
         $params['_query'] = $filterState;
         $params['_escape'] = true;
-        return $this->_urlBuilder->getUrl('*/*/*', $params);
+
+        return str_replace('&amp;', '&', $this->amUrlBuilder->getUrl('*/*/*', $params));
     }
 
     public function getCurrentCategory()
     {
-        return $this->layer->getCurrentCategory();
+        return $this->getLayer()->getCurrentCategory();
     }
 
     /**
@@ -180,7 +208,7 @@ class Data extends AbstractHelper
      */
     public function collectFilters()
     {
-        if ($this->isMobile()) {
+        if ($this->baseHelper->isMobile()) {
             $result = $this->getSubmitFiltersMobile();
         } else {
             $result = $this->getSubmitFiltersDesktop();
@@ -195,14 +223,6 @@ class Data extends AbstractHelper
     public function getUnfoldedCount()
     {
         return (int)$this->scopeConfig->getValue(self::UNFOLDED_OPTIONS_STATE, ScopeInterface::SCOPE_STORE);
-    }
-
-    /**
-     * @return bool
-     */
-    public function isMobile()
-    {
-        return isset($_SERVER['HTTP_USER_AGENT']) && stristr($_SERVER['HTTP_USER_AGENT'],'mobi') !== false;
     }
 
     /**
@@ -232,5 +252,57 @@ class Data extends AbstractHelper
         }
 
         return $swatches;
+    }
+
+    /**
+     * @return string
+     */
+    public function getAllProductsUrlKey()
+    {
+        return $this->scopeConfig->getValue(
+            self::AMSHOPBY_ROOT_GENERAL_URL_PATH,
+            ScopeInterface::SCOPE_STORE
+        );
+    }
+
+    /**
+     * @return bool
+     */
+    public function isAllProductsEnabled()
+    {
+        return $this->scopeConfig->isSetFlag(
+            self::AMSHOPBY_ROOT_ENABLED_PATH,
+            ScopeInterface::SCOPE_STORE
+        );
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getCatalogSeoSuffix()
+    {
+        return (string)$this->scopeConfig->getValue(
+            self::CATALOG_SEO_SUFFIX_PATH,
+            ScopeInterface::SCOPE_STORE
+        );
+    }
+
+    /**
+     * @return int
+     */
+    public function getCategoryPosition()
+    {
+        return $this->scopeConfig->getValue(self::CATEGORY_FILTER_POSITION, ScopeInterface::SCOPE_STORE);
+    }
+
+    /**
+     * @return Layer
+     */
+    public function getLayer()
+    {
+        if (!$this->layer) {
+            $this->layer = $this->layerResolver->get();
+        }
+        return $this->layer;
     }
 }

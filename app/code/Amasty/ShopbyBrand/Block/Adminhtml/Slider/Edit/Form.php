@@ -1,7 +1,7 @@
 <?php
 /**
  * @author Amasty Team
- * @copyright Copyright (c) 2018 Amasty (https://www.amasty.com)
+ * @copyright Copyright (c) 2019 Amasty (https://www.amasty.com)
  * @package Amasty_ShopbyBrand
  */
 
@@ -72,20 +72,6 @@ class Form extends \Magento\Backend\Block\Widget\Form\Generic
                 'is_slider' => true
             ]
         );
-
-        $pageContentFieldSet = $form->getElement('product_list_fieldset');
-        if ($pageContentFieldSet) {
-            $pageContentFieldSet->addField(
-                'short_description',
-                'textarea',
-                [
-                    'name' => 'short_description',
-                    'label' => __('Short Description'),
-                    'title' => __('Short Description')
-                ],
-                'description'
-            );
-        }
 
         $form->setValues($model->getData());
         $this->setForm($form);

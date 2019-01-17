@@ -1,25 +1,25 @@
 <?php
 /**
  * @author Amasty Team
- * @copyright Copyright (c) 2018 Amasty (https://www.amasty.com)
+ * @copyright Copyright (c) 2019 Amasty (https://www.amasty.com)
  * @package Amasty_ShopbyBrand
  */
 
 
 namespace Amasty\ShopbyBrand\Plugin\Xsearch\Block\Search;
 
-use Amasty\ShopbyBrand\Block\Widget\BrandList;
+use Amasty\ShopbyBrand\Block\Widget\BrandListFactory;
 
 class Brand
 {
     /**
-     * @var BrandList
+     * @var BrandListFactory
      */
-    private $brandList;
+    private $brandListFactory;
 
-    public function __construct(BrandList $brandList)
+    public function __construct(BrandListFactory $brandListFactory)
     {
-        $this->brandList = $brandList;
+        $this->brandListFactory = $brandListFactory;
     }
 
     /**
@@ -29,6 +29,6 @@ class Brand
      */
     public function afterGetBrands($subject, array $result)
     {
-        return array_merge($result, $this->brandList->getItems());
+        return array_merge($result, $this->brandListFactory->create()->getItems());
     }
 }

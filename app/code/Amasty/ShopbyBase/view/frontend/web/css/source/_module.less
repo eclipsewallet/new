@@ -215,13 +215,14 @@
 
     .ambrands-search-wrapper {
         & {
+            position: relative;
             display: block;
             margin: 0 auto;
         }
 
         .ambrands-search-input {
             display: block;
-            margin: 0 5px 20px;
+            margin: 0 0 10px;
             max-width: 100%;
         }
 
@@ -234,7 +235,8 @@
             background-color: #fff;
             overflow-x: hidden;
             overflow-y: auto;
-            border: 1px solid #A5ACB2;
+            border: 1px solid #c2c2c2;
+            border-top: 2px solid #309ef3;
             z-index: 99;
         }
 
@@ -243,6 +245,13 @@
             float: left;
             padding: 5px 10px;
             width: 100%;
+            color: #000;
+            box-sizing: border-box;
+        }
+
+        #livesearch a:hover {
+            background-color: #e8e8e8;
+            text-decoration: none;
         }
     }
 

@@ -1,7 +1,7 @@
 <?php
 /**
  * @author Amasty Team
- * @copyright Copyright (c) 2018 Amasty (https://www.amasty.com)
+ * @copyright Copyright (c) 2019 Amasty (https://www.amasty.com)
  * @package Amasty_Shopby
  */
 
@@ -14,6 +14,7 @@ use Magento\Catalog\Model\Layer\Filter\FilterInterface;
 use Magento\Framework\App\Helper\Context;
 use Magento\Framework\Registry;
 use Amasty\Shopby\Model\Source\DisplayMode;
+use Amasty\ShopbyBase\Helper\Data as BaseData;
 
 class UrlBuilder extends \Magento\Framework\App\Helper\AbstractHelper
 {
@@ -47,13 +48,19 @@ class UrlBuilder extends \Magento\Framework\App\Helper\AbstractHelper
      */
     private $categoryHelper;
 
+    /**
+     * @var \Amasty\ShopbyBase\Api\UrlBuilderInterface
+     */
+    private $amUrlBuilder;
+
     public function __construct(
         Context $context,
         Registry $registry,
         CategoryRepositoryInterface $categoryRepository,
         \Amasty\Shopby\Helper\FilterSetting $filterSettingHelper,
         \Magento\Framework\Url\QueryParamsResolverInterface $queryParamsResolver,
-        Category $categoryHelper
+        Category $categoryHelper,
+        \Amasty\ShopbyBase\Api\UrlBuilderInterface $urlBuilder
     ) {
         parent::__construct($context);
         $this->registry = $registry;
@@ -61,6 +68,7 @@ class UrlBuilder extends \Magento\Framework\App\Helper\AbstractHelper
         $this->filterSettingHelper = $filterSettingHelper;
         $this->queryParamsResolver = $queryParamsResolver;
         $this->categoryHelper = $categoryHelper;
+        $this->amUrlBuilder = $urlBuilder;
     }
 
     /**
@@ -94,7 +102,7 @@ class UrlBuilder extends \Magento\Framework\App\Helper\AbstractHelper
         //fix urls like catalogsearch/result/index/price/10-20/?price=10-60&q=bag
         $params['price'] = null;
 
-        return $this->_urlBuilder->getUrl('*/*/*', $params);
+        return $this->amUrlBuilder->getUrl('*/*/*', $params);
     }
 
     /**
@@ -125,7 +133,7 @@ class UrlBuilder extends \Magento\Framework\App\Helper\AbstractHelper
      */
     public function buildQuery(FilterInterface $filter, $resultValue)
     {
-        $query = $this->registry->registry('amasty_shopby_seo_parsed_params');
+        $query = $this->registry->registry(BaseData::SHOPBY_SEO_PARSED_PARAMS);
         if (!is_array($query)) {
             $query = [];
         }

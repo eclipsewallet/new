@@ -1,7 +1,7 @@
 <?php
 /**
  * @author Amasty Team
- * @copyright Copyright (c) 2018 Amasty (https://www.amasty.com)
+ * @copyright Copyright (c) 2019 Amasty (https://www.amasty.com)
  * @package Amasty_ShopbySeo
  */
 
@@ -14,6 +14,7 @@ use Magento\Framework\App\Helper\AbstractHelper;
 use Magento\Framework\App\Helper\Context;
 use Magento\Framework\Module\Manager;
 use Magento\Store\Model\ScopeInterface;
+use Amasty\ShopbyBase\Helper\Data as BaseData;
 
 /**
  * Class Url
@@ -24,90 +25,92 @@ class Url extends AbstractHelper
     /**
      * @var Data
      */
-    protected $helper;
+    private $helper;
 
     /**
      * @var Manager
      */
-    protected $moduleManager;
+    private $moduleManager;
 
     /**
      * @var CategoryCollectionFactory
      */
-    protected $categoryCollectionFactory;
+    private $categoryCollectionFactory;
 
     /**
      * @var bool
      */
-    protected $isBrandFilterActive;
+    private $isBrandFilterActive;
 
     /**
      * @var array
      */
-    protected $originalParts;
+    private $originalParts;
 
     /**
      * @var array
      */
-    protected $query;
+    private $query;
 
     /**
      * @var string
      */
-    protected $paramsDelimiterCurrent;
+    private $paramsDelimiterCurrent;
 
     /**
      * @var \Magento\Framework\Registry
      */
-    protected $coreRegistry;
+    private $coreRegistry;
 
     /**
      * @var string[]
      */
-    protected $categoryUrls;
+    private $categoryUrls;
 
     /**
      * @var \Magento\Store\Model\StoreManagerInterface
      */
-    protected $storeManager;
+    private $storeManager;
 
     /**
      * @var \Amasty\Shopby\Model\Layer\Cms\Manager
      */
-    protected $cmsManager;
+    private $cmsManager;
 
-    /** @var \Magento\Framework\App\ResourceConnection  */
-    protected $resource;
+    /**
+     * @var  \Magento\Framework\App\ResourceConnection
+     */
+    private $resource;
 
     /**
      * @var \Amasty\Shopby\Helper\FilterSetting
      */
-    protected $settingHelper;
+    private $settingHelper;
 
     /**
      * @var string
      */
-    protected $aliasDelimiter;
+    private $aliasDelimiter;
 
     /**
      * @var string
      */
-    protected $rootRoute;
+    private $rootRoute;
 
     /**
      * @var null
      */
-    protected $brandAttributeCode;
+    private $brandAttributeCode;
 
     /**
-     * @var bool
+     * @var bool|null
      */
-    protected $appendShopbySuffix;
+    private $isAddSuffixToShopby;
 
     /**
      * @var string
      */
-    protected $brandUrlKey;
+    private $brandUrlKey;
 
     /**
      * @var int[]
@@ -115,16 +118,25 @@ class Url extends AbstractHelper
     private $filterPositions;
 
     /**
-     * Url constructor.
-     * @param Context $context
-     * @param Data $helper
-     * @param CategoryCollectionFactory $categoryCollectionFactory
-     * @param \Magento\Framework\Registry $coreRegistry
-     * @param \Amasty\Shopby\Model\Layer\Cms\Manager $cmsManager
-     * @param \Magento\Store\Model\StoreManagerInterface $storeManager
-     * @param \Magento\Framework\App\ResourceConnection $resource
-     * @param \Amasty\Shopby\Helper\FilterSetting $settingHelper
+     * @var \Amasty\Shopby\Model\Request
      */
+    private $shopbyRequest;
+
+    /**
+     * @var string[]
+     */
+    private $intoCategoryModules;
+
+    /**
+     * @var BaseData
+     */
+    private $baseHelper;
+
+    /**
+     * @var \Magento\UrlRewrite\Model\UrlFinderInterface
+     */
+    private $urlFinder;
+
     public function __construct(
         Context $context,
         Data $helper,
@@ -133,24 +145,31 @@ class Url extends AbstractHelper
         \Amasty\Shopby\Model\Layer\Cms\Manager $cmsManager,
         \Magento\Store\Model\StoreManagerInterface $storeManager,
         \Magento\Framework\App\ResourceConnection $resource,
-        \Amasty\ShopbyBase\Helper\FilterSetting $settingHelper
+        \Amasty\ShopbyBase\Helper\Data $baseHelper,
+        \Amasty\ShopbyBase\Helper\FilterSetting $settingHelper,
+        \Amasty\Shopby\Model\Request $shopbyRequest,
+        \Magento\UrlRewrite\Model\UrlFinderInterface $urlFinder,
+        array $intoCategoryModules = ['catalog', 'amshopby', 'cms'] //skip ambrand
     ) {
         parent::__construct($context);
         $this->helper = $helper;
+        $this->shopbyRequest = $shopbyRequest;
         $this->moduleManager = $context->getModuleManager();
         $this->categoryCollectionFactory = $categoryCollectionFactory;
         $this->coreRegistry = $coreRegistry;
         $this->cmsManager = $cmsManager;
         $this->storeManager = $storeManager;
         $this->resource = $resource;
+        $this->baseHelper = $baseHelper;
         $this->settingHelper = $settingHelper;
+        $this->intoCategoryModules = $intoCategoryModules;
+        $this->urlFinder = $urlFinder;
         $this->aliasDelimiter =
             $this->scopeConfig->getValue('amasty_shopby_seo/url/option_separator', ScopeInterface::SCOPE_STORE);
         $this->rootRoute = trim($this->scopeConfig->getValue('amshopby_root/general/url', ScopeInterface::SCOPE_STORE));
         $this->brandAttributeCode = $this->moduleManager->isEnabled('Amasty_ShopbyBrand')
         && $this->scopeConfig->getValue('amshopby_brand/general/attribute_code', ScopeInterface::SCOPE_STORE)
             ? $this->scopeConfig->getValue('amshopby_brand/general/attribute_code', ScopeInterface::SCOPE_STORE) : null;
-        $this->appendShopbySuffix = $this->scopeConfig->isSetFlag('amasty_shopby_seo/url/add_suffix_shopby');
         $this->brandUrlKey =
             trim($this->scopeConfig->getValue('amshopby_brand/general/url_key', ScopeInterface::SCOPE_STORE));
     }
@@ -169,35 +188,18 @@ class Url extends AbstractHelper
      */
     public function seofyUrl($url)
     {
-        if (!$this->initialize($url) || $this->cmsManager->isCmsPageNavigation()) {
+        if (!$this->isSeoUrlEnabled()
+            || !$this->initialize($url)
+            || $this->cmsManager->isCmsPageNavigation()
+        ) {
             return $url;
         }
-
         $this->query = $this->parseQuery();
 
-        if (isset($this->query['options']) && $this->query['options'] == 'cart') {
-            return $url;
-        }
 
         $routeUrl = $this->originalParts['route'];
-
-        $moduleName = $this->_getRequest()->getModuleName();
-        $settingCategory = $this->settingHelper->getSettingByAttributeCode(Category::ATTRIBUTE_CODE);
-        $fromRootToCategory = isset($this->query['cat'])
-            && (in_array($moduleName, ['catalog', 'amshopby', 'cms', 'ambrand']))
-            && !$settingCategory->isMultiselect();
-        if ($fromRootToCategory) {
+        if ($this->isIntoCategory()) {
             $routeUrl = $this->getCategoryRouteUrl() ?: $routeUrl;
-        }
-
-        if ($this->coreRegistry->registry('amasty_shopby_root_category_index')
-            && $this->query
-            && !$fromRootToCategory
-        ) {
-            $routeUrl = $this->rootRoute;
-            $isShopby = true;
-        } else {
-            $isShopby = false;
         }
 
         $routeUrlTrimmed = $this->removeCategorySuffix($routeUrl);
@@ -212,9 +214,12 @@ class Url extends AbstractHelper
         $resultPath = $routeUrlTrimmed;
 
         $seoAliases = $this->cutAliases();
-        foreach ($seoAliases as $key => $alias) {
-            if ($alias == $routeUrl) {
-                unset($seoAliases[$key]);
+        $seoAliasesInUrl = $this->getSeoAliasesInUrl($resultPath);
+        foreach ($seoAliases as $attributeCode => $aliases) {
+            foreach ($aliases as $key => $alias) {
+                if (isset($seoAliasesInUrl[$alias])) {
+                    unset($seoAliases[$attributeCode]);
+                }
             }
         }
 
@@ -225,7 +230,7 @@ class Url extends AbstractHelper
         $resultPath = $this->cutReplaceExtraShopby($resultPath);
         $resultPath = ltrim($resultPath, DIRECTORY_SEPARATOR);
 
-        if ($moveSuffix || ($isShopby && $this->appendShopbySuffix)) {
+        if ($moveSuffix || $this->isAddSuffixToShopby()) {
             $resultPath = $this->addCategorySuffix($resultPath);
         }
 
@@ -239,13 +244,39 @@ class Url extends AbstractHelper
     }
 
     /**
+     * @param $path
+     * @return array
+     */
+    private function getSeoAliasesInUrl($path)
+    {
+        $path = $this->helper->getFilterWord() ? substr($path, strripos($path, '/') + 1) : $path;
+
+        return array_flip(explode($this->helper->getOptionSeparator(), $path));
+    }
+
+    /**
+     * @return bool
+     */
+    private function isIntoCategory()
+    {
+        $moduleName = $this->_getRequest()->getModuleName();
+        $settingCategory = $this->settingHelper->getSettingByAttributeCode(Category::ATTRIBUTE_CODE);
+        return
+            isset($this->query['cat'])
+            && in_array($moduleName, $this->intoCategoryModules)
+            && !$settingCategory->isMultiselect();
+    }
+
+    /**
      * @param string $url
      * @return bool
      */
     protected function initialize($url)
     {
         $this->originalParts = [];
-
+        if ($this->_request->getModuleName() == 'catalogsearch') {
+            return false;
+        }
         /**
          * TODO: this code do not execute now. Maybe it is not necessary
          */
@@ -257,7 +288,14 @@ class Url extends AbstractHelper
 
         $parsedUrl = parse_url($url);
         $this->originalParts['domain'] = $this->storeManager->getStore()->getBaseUrl();
-        $this->originalParts['route'] = isset($parsedUrl['path']) ? $parsedUrl['path'] : null;
+        $route = isset($parsedUrl['path']) ? trim($parsedUrl['path'], '/') : null;
+        if ($this->scopeConfig->isSetFlag('web/url/use_store', ScopeInterface::SCOPE_STORE)) {
+            $storeCode = $this->storeManager->getStore()->getCode();
+            if(strpos($route, $storeCode) === 0) {
+                $route = substr($route, strlen($storeCode) + 1);
+            }
+        }
+        $this->originalParts['route'] = $this->normalizeRoute($route);
 
         if (strpos($this->originalParts['route'], 'media/') !== false) {
             return false;
@@ -283,6 +321,30 @@ class Url extends AbstractHelper
     }
 
     /**
+     * @param string $route
+     * @return string
+     */
+    private function normalizeRoute($route)
+    {
+        if ($subPath = $this->getBaseUrlSubPath()) {
+            if (strpos($route, $subPath) !== false) {
+                return substr($route, strlen($subPath) + 1);
+            }
+        }
+
+        return $route;
+    }
+
+    /**
+     * @return string
+     */
+    private function getBaseUrlSubPath()
+    {
+        $parsedBaseUrl = parse_url(trim($this->storeManager->getStore()->getBaseUrl(), '/'));
+        return isset($parsedBaseUrl['path']) ? trim($parsedBaseUrl['path'], '/') : '';
+    }
+
+    /**
      * @return array
      */
     protected function parseQuery()
@@ -294,17 +356,26 @@ class Url extends AbstractHelper
         }
 
         $parts = explode($this->paramsDelimiterCurrent, $this->originalParts['params']);
-        foreach ($parts as $part) {
-            $param = explode('=', $part, 2);
-            if (count($param) != 2) {
-                continue;
-            }
+        if ($parts) {
+            foreach ($parts as $part) {
+                $param = explode('=', $part, 2);
+                if (count($param) != 2) {
+                    continue;
+                }
 
-            $paramName = $param[0];
-            $value = $param[1];
-            $query[$paramName] = $value;
-            if ($this->brandAttributeCode === $paramName) {
-                $this->isBrandFilterActive = true;
+                $paramName = $param[0];
+                $value = $param[1];
+                $query[$paramName] = $value;
+                if ($this->brandAttributeCode === $paramName) {
+                    $this->isBrandFilterActive = true;
+                }
+            }
+        } else {
+            foreach ($this->shopbyRequest->getRequestParams() as $name => $values) {
+                $query[$name] = $values;
+                if ($this->brandAttributeCode === $name) {
+                    $this->isBrandFilterActive = true;
+                }
             }
         }
 
@@ -345,28 +416,47 @@ class Url extends AbstractHelper
     }
 
     /**
-     * @return string[]
+     * @return array|mixed|null
+     */
+    private function getOptionsSeoData()
+    {
+        $attributeOptionsData = $this->helper->getOptionsSeoData();
+        return $attributeOptionsData;
+    }
+
+    /**
+     * @return array
      */
     protected function cutAliases()
     {
-        $attributeOptionsData = $this->helper->getOptionsSeoData();
+        $attributeOptionsData = $this->getOptionsSeoData();
 
         $aliasesByCode = [];
         $brandAliases = [];
-        foreach ($this->query as $paramName => $rawValue) {
-            if ($this->isParamSeoSignificant($paramName)) {
-                if (!array_key_exists($paramName, $attributeOptionsData)) {
-                    continue;
-                }
+        foreach ($this->query as $paramName => $rawValues) {
+            if ($this->isParamSeoSignificant($paramName) && isset($attributeOptionsData[$paramName])) {
                 $optionsData = $attributeOptionsData[$paramName];
-                $values = explode(',', str_replace('%2C', ',', $rawValue));
-                foreach ($values as $value) {
-                    if (!array_key_exists($value, $optionsData)) {
-                        continue;
+                $rawValues = explode(',', str_replace('%2C', ',', $rawValues));
+                if (is_array($rawValues)) {
+                    foreach ($rawValues as $value) {
+                        if (!array_key_exists($value, $optionsData)) {
+                            continue;
+                        }
+                        $alias = $optionsData[$value];
+                        if ($paramName == $this->brandAttributeCode) {
+                            $brandAliases[$paramName][] = $alias;
+                        } else {
+                            if (array_key_exists($paramName, $aliasesByCode)) {
+                                $aliasesByCode[$paramName][] = $alias;
+                            } else {
+                                $aliasesByCode[$paramName] = [$alias];
+                            }
+                        }
                     }
-                    $alias = $optionsData[$value];
+                } elseif (array_key_exists($rawValues, $optionsData)) {
+                    $alias = $optionsData[$rawValues];
                     if ($paramName == $this->brandAttributeCode) {
-                        $brandAliases[] = $alias;
+                        $brandAliases[$paramName][] = $alias;
                     } else {
                         if (array_key_exists($paramName, $aliasesByCode)) {
                             $aliasesByCode[$paramName][] = $alias;
@@ -375,7 +465,12 @@ class Url extends AbstractHelper
                         }
                     }
                 }
-                unset($this->query[$paramName]);
+
+                foreach ($attributeOptionsData as $key => $optionValue) {
+                    if (isset($this->query[$key])) {
+                        unset($this->query[$key]);
+                    }
+                }
             }
         }
 
@@ -437,25 +532,24 @@ class Url extends AbstractHelper
     /**
      * @param string[] $brandAliases
      * @param string[][] $aliasesByCode
-     * @return string[]
+     * @return array
      */
     private function mergeAliases($brandAliases, $aliasesByCode)
     {
-        $result = $brandAliases;
-        array_walk_recursive($aliasesByCode, function ($alias) use (&$result) {
-            $result[] = $alias;
-        });
+        $result = array_merge($brandAliases, $aliasesByCode);
+
         return $result;
     }
 
     /**
-     * @param string $param
+     * @param string $paramName
      * @return bool
      */
-    protected function isParamSeoSignificant($param)
+    protected function isParamSeoSignificant($paramName)
     {
         $seoList = $this->helper->getSeoSignificantAttributeCodes();
-        return in_array($param, $seoList);
+
+        return in_array($paramName, $seoList);
     }
 
     /**
@@ -467,8 +561,32 @@ class Url extends AbstractHelper
     {
         $result = $routeUrl;
         if ($aliases) {
-            $result .= DIRECTORY_SEPARATOR . implode($this->aliasDelimiter, $aliases);
+            $filterWord = $this->helper->getFilterWord() ? $this->helper->getFilterWord() . DIRECTORY_SEPARATOR : '';
+
+            if (isset($aliases[$this->brandAttributeCode])
+                && $this->coreRegistry->registry(BaseData::SHOPBY_CATEGORY_INDEX)
+            ) {
+                $result .= DIRECTORY_SEPARATOR . implode($this->aliasDelimiter, $aliases[$this->brandAttributeCode]);
+                unset($aliases[$this->brandAttributeCode]);
+            }
+
+            if (count($aliases) > 0) {
+                $result .= DIRECTORY_SEPARATOR . $filterWord;
+            }
+
+            $isFirstAlias = true;
+            foreach ($aliases as $code => $alias) {
+                $delimiter = $isFirstAlias ? '' : $this->aliasDelimiter;
+                if (!$this->helper->isIncludeAttributeName()) {
+                    $result .= $delimiter . implode($this->aliasDelimiter, $alias);
+                } else {
+                    $result .= $delimiter . $code . $this->aliasDelimiter . implode($this->aliasDelimiter, $alias);
+                }
+
+                $isFirstAlias = false;
+            }
         }
+
         return $result;
     }
 
@@ -480,7 +598,6 @@ class Url extends AbstractHelper
     {
         $cut = false;
         $allProductsEnabled =
-            $this->moduleManager->isEnabled('Amasty_ShopbyRoot') &&
             $this->scopeConfig->isSetFlag('amshopby_root/general/enabled', ScopeInterface::SCOPE_STORE);
         if ($allProductsEnabled || $this->moduleManager->isEnabled('Amasty_ShopbyBrand')) {
             $l = strlen($this->rootRoute);
@@ -520,7 +637,7 @@ class Url extends AbstractHelper
      */
     public function addCategorySuffix($url)
     {
-        $suffix = $this->scopeConfig->getValue('catalog/seo/category_url_suffix', ScopeInterface::SCOPE_STORE);
+        $suffix = $this->getSeoSuffix();
         if (strlen($suffix)) {
             $url .= $suffix;
         }
@@ -533,8 +650,8 @@ class Url extends AbstractHelper
      */
     public function removeCategorySuffix($url)
     {
-        $suffix = $this->scopeConfig->getValue('catalog/seo/category_url_suffix', ScopeInterface::SCOPE_STORE);
-        if ($this->coreRegistry->registry('amasty_shopby_root_category_index') && $this->query) {
+        $suffix = $this->getSeoSuffix();
+        if ($this->coreRegistry->registry(BaseData::SHOPBY_CATEGORY_INDEX) && $this->query) {
             if (strlen($suffix)) {
                 $p = strrpos($this->rootRoute, $suffix);
                 if ($p !== false && $p == strlen($this->rootRoute) - strlen($suffix)) {
@@ -560,11 +677,36 @@ class Url extends AbstractHelper
     }
 
     /**
-     * @deprecated
      * @return bool
      */
-    public function isSeoRedirectEnabled()
+    public function isAddSuffixToShopby()
     {
-        return !!$this->scopeConfig->getValue('amasty_shopby_seo/url/seo_redirect', ScopeInterface::SCOPE_STORE);
+        if ($this->isAddSuffixToShopby === null) {
+            $moduleName = $this->_getRequest()->getModuleName();
+            $isOnProperPage = in_array($moduleName, ['ambrand', 'amshopby', null], true);
+            $addSuffixFlag = $this->scopeConfig->isSetFlag(
+                'amasty_shopby_seo/url/add_suffix_shopby',
+                ScopeInterface::SCOPE_STORE
+            );
+
+            $result = $addSuffixFlag && $isOnProperPage && strlen($this->getSeoSuffix());
+
+            if ($moduleName === null) { //early call - don't save the field
+                return $result;
+            }
+
+            $this->isAddSuffixToShopby = $result;
+        }
+
+        return $this->isAddSuffixToShopby;
+    }
+
+    /**
+     * @return string
+     */
+    public function getSeoSuffix()
+    {
+        return (string)$this->scopeConfig
+            ->getValue('catalog/seo/category_url_suffix', ScopeInterface::SCOPE_STORE);
     }
 }

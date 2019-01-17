@@ -1,7 +1,7 @@
 <?php
 /**
  * @author Amasty Team
- * @copyright Copyright (c) 2018 Amasty (https://www.amasty.com)
+ * @copyright Copyright (c) 2019 Amasty (https://www.amasty.com)
  * @package Amasty_Shopby
  */
 
@@ -45,6 +45,11 @@ class Category extends \Magento\Framework\View\Element\Template
      * @var \Magento\Catalog\Model\Layer
      */
     protected $layer;
+
+    /**
+     * @var array
+     */
+    private $countByPath = [];
 
     /**
      * Category constructor.
@@ -193,9 +198,35 @@ class Category extends \Magento\Framework\View\Element\Template
      */
     public function isExpandByClick($currentPath = null)
     {
-        return $this->getFilter()->getItems()->getItemsCount($currentPath)
+        return $this->getChildren($currentPath)
             && $this->getFilterSetting()->getSubcategoriesExpand() == SubcategoriesExpand::BY_CLICK
             && $this->getFilterSetting()->getSubcategoriesView() == SubcategoriesView::FOLDING;
+    }
+
+    /**
+     * @param $currentPath
+     * @return int
+     */
+    public function getChildren($currentPath)
+    {
+        return $this->getFilter()->getItems()->getItemsCount($currentPath);
+    }
+
+    /**
+     * @param $filterItems
+     * @param $path
+     * @return bool
+     */
+    public function isParent($filterItems, $path)
+    {
+        foreach ($filterItems->getItems($path) as $filterItem) {
+            if ($filterItem->getCount() > 0) {
+                $this->countByPath[$path ?: 0] = true;
+                break;
+            }
+        }
+
+        return isset($this->countByPath[$path ?: 0]);
     }
 
     /**

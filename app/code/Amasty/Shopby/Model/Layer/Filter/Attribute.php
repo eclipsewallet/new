@@ -1,7 +1,7 @@
 <?php
 /**
  * @author Amasty Team
- * @copyright Copyright (c) 2018 Amasty (https://www.amasty.com)
+ * @copyright Copyright (c) 2019 Amasty (https://www.amasty.com)
  * @package Amasty_Shopby
  */
 namespace Amasty\Shopby\Model\Layer\Filter;
@@ -292,9 +292,14 @@ class Attribute extends AbstractFilter
         $options = $this->getOptions();
         $optionsFacetedData = $this->getOptionsFacetedData();
 
+        if (!$optionsFacetedData) {
+            return [];
+        }
+
         $this->addItemsToDataBuilder($options, $optionsFacetedData);
 
         $itemsData = $this->getItemsFromDataBuilder();
+
         return $itemsData;
     }
 
@@ -460,7 +465,9 @@ class Attribute extends AbstractFilter
             /** @var \Amasty\Shopby\Model\ResourceModel\Fulltext\Collection $productCollection */
             $productCollection = $this->getLayer()->getProductCollection();
             $requestBuilder = clone $productCollection->getMemRequestBuilder();
-            $requestBuilder->removePlaceholder($this->getAttributeModel()->getAttributeCode());
+            $attributeCode = $this->getAttributeModel()->getAttributeCode();
+            $requestBuilder->removePlaceholder($attributeCode);
+            $requestBuilder->setAggregationsOnly($attributeCode);
             $queryRequest = $requestBuilder->create();
             $alteredQueryResponse = $this->searchEngine->search($queryRequest);
         }

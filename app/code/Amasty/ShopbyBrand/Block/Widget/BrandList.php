@@ -1,7 +1,7 @@
 <?php
 /**
  * @author Amasty Team
- * @copyright Copyright (c) 2018 Amasty (https://www.amasty.com)
+ * @copyright Copyright (c) 2019 Amasty (https://www.amasty.com)
  * @package Amasty_ShopbyBrand
  */
 
@@ -58,6 +58,7 @@ class BrandList extends BrandListAbstract implements \Magento\Widget\Block\Block
         \Magento\Catalog\Model\Product\Visibility $catalogProductVisibility,
         DataHelper $dataHelper,
         \Magento\Framework\Message\ManagerInterface $messageManager,
+        \Amasty\ShopbyBase\Api\UrlBuilderInterface $amUrlBuilder,
         \Amasty\ShopbyBrand\Helper\Data $brandHelper,
         array $data = []
     ) {
@@ -72,6 +73,7 @@ class BrandList extends BrandListAbstract implements \Magento\Widget\Block\Block
             $categoryRepository,
             $dataHelper,
             $messageManager,
+            $amUrlBuilder,
             $data
         );
         $this->filterAttributeResource = $filterAttributeResource;
@@ -136,7 +138,8 @@ class BrandList extends BrandListAbstract implements \Magento\Widget\Block\Block
             'image' => $setting->getImageUrl(),
             'description' => $setting->getDescription(),
             'short_description' => $setting->getShortDescription(),
-            'cnt' => $count
+            'cnt' => $count,
+            'alt' => $setting->getSmallImageAlt() ?: $setting->getLabel()
         ];
 
     }

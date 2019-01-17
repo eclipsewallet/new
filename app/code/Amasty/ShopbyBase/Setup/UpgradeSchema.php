@@ -1,7 +1,7 @@
 <?php
 /**
  * @author Amasty Team
- * @copyright Copyright (c) 2018 Amasty (https://www.amasty.com)
+ * @copyright Copyright (c) 2019 Amasty (https://www.amasty.com)
  * @package Amasty_ShopbyBase
  */
 
@@ -27,12 +27,19 @@ class UpgradeSchema implements UpgradeSchemaInterface
      */
     private $addLabelPosition;
 
+    /**
+     * @var Operation\AddImageAlt
+     */
+    private $addImageAlt;
+
     public function __construct(
         \Amasty\ShopbyBase\Helper\Data $helper,
-        \Amasty\ShopbyBase\Setup\Operation\AddLabelPosition $addLabelPosition
+        \Amasty\ShopbyBase\Setup\Operation\AddLabelPosition $addLabelPosition,
+        \Amasty\ShopbyBase\Setup\Operation\AddImageAlt $addImageAlt
     ) {
         $this->helper = $helper;
         $this->addLabelPosition = $addLabelPosition;
+        $this->addImageAlt = $addImageAlt;
     }
 
     /**
@@ -132,6 +139,10 @@ class UpgradeSchema implements UpgradeSchemaInterface
 
         if (version_compare($version, '2.8.5', '<')) {
             $this->addLabelPosition->execute($setup);
+        }
+
+        if (version_compare($version, '2.10.2', '<')) {
+            $this->addImageAlt->execute($setup);
         }
 
         $setup->endSetup();

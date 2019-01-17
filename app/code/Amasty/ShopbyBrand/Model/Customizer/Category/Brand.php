@@ -1,7 +1,7 @@
 <?php
 /**
  * @author Amasty Team
- * @copyright Copyright (c) 2018 Amasty (https://www.amasty.com)
+ * @copyright Copyright (c) 2019 Amasty (https://www.amasty.com)
  * @package Amasty_ShopbyBrand
  */
 
@@ -96,8 +96,10 @@ class Brand implements CustomizerInterface
             ->setCmsBlock($data['cms_block'])
             ->setMetaTitle($data['meta_title'])
             ->setMetaDescription($data['meta_description'])
-            ->setMetaKeywords($data['meta_keywords']);
+            ->setMetaKeywords($data['meta_keywords'])
+            ->setBottomCmsBlock($data['bottom_cms_block']);
         $category->setData(CategoryDataSetterInterface::APPLIED_BRAND_VALUE, $brand->getValue());
+
         return $this;
     }
 
@@ -114,7 +116,7 @@ class Brand implements CustomizerInterface
             'meta_title' => [],
             'meta_description' => [],
             'meta_keywords' => [],
-
+            'bottom_cms_block' => null
         ];
 
         $setting = $this->brandContentHelper->getCurrentBranding();
@@ -127,6 +129,9 @@ class Brand implements CustomizerInterface
         }
         if ($setting->getTopCmsBlockId() && $result['cms_block'] === null) {
             $result['cms_block'] = $setting->getTopCmsBlockId();
+        }
+        if ($setting->getBottomCmsBlockId() && $result['bottom_cms_block'] === null) {
+            $result['bottom_cms_block'] = $setting->getBottomCmsBlockId();
         }
         if ($setting->getImageUrl() && $result['img_url'] === null) {
             $result['img_url'] = $setting->getImageUrl();
@@ -239,6 +244,21 @@ class Brand implements CustomizerInterface
             $this->category->setData('landing_page', $blockId);
             $this->category->setData(CategoryManager::CATEGORY_FORCE_MIXED_MODE, 1);
         }
+        return $this;
+    }
+
+    /**
+     * Set category bottom CMS block.
+     * @param string|null $blockId
+     * @return $this
+     */
+    private function setBottomCmsBlock($blockId)
+    {
+        if ($blockId !== null) {
+            $this->category->setData('bottom_cms_block', $blockId);
+            $this->category->setData(CategoryManager::CATEGORY_FORCE_MIXED_MODE, 1);
+        }
+
         return $this;
     }
 }

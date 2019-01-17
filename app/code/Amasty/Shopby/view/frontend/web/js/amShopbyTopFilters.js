@@ -11,26 +11,20 @@ define([
 
     return {
         moveTopFiltersToSidebar: function(){
-            if($('.sidebar.sidebar-main #layered-filter-block').first().length == 0) {
+            if($('.sidebar.sidebar-main #narrow-by-list').first().length == 0) {
                 var $element = $(".catalog-topnav #layered-filter-block").clone();
+                $(".catalog-topnav .filter-actions").hide();
+                $element.find('.filter-title:before').css('display', 'none');
                 $element
                     .addClass('amshopby-all-top-filters-append-left')
                     .attr('data-mage-init', '{"collapsible":{"openedState": "active", "collapsible": true, "active": false, "collateral": { "openedState": "filter-active", "element": "body" } }}')
                 $element.find('#narrow-by-list')
                     .attr('data-mage-init', '{"accordion":{"openedState": "active", "collapsible": true, "active": false, "multipleCollapsible": false}}');
+                $element.find('.block-actions.filter-actions').remove();
                 $('.sidebar.sidebar-main').first().append($element);
-
                 $('.sidebar.sidebar-main').first().trigger('contentUpdated');
                 return;
             }
-
-            /*if($('.sidebar.sidebar-main .filter-content #narrow-by-list').length == 0) {
-                var $element = $(".catalog-topnav #narrow-by-list").clone().addClass('amshopby-all-top-filters-append-left')
-                    .attr('data-mage-init', '{"accordion":{"openedState": "active", "collapsible": true, "active": false, "multipleCollapsible": false}}');
-                $('.sidebar.sidebar-main .filter-content').append($element);
-                $('.sidebar.sidebar-main').first().trigger('contentUpdated');
-                return;
-            }*/
 
             $(".catalog-topnav #narrow-by-list .filter-options-item").each(function () {
                 var isPresent = false;

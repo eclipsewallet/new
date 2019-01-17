@@ -1,7 +1,7 @@
 <?php
 /**
  * @author Amasty Team
- * @copyright Copyright (c) 2018 Amasty (https://www.amasty.com)
+ * @copyright Copyright (c) 2019 Amasty (https://www.amasty.com)
  * @package Amasty_ShopbyBase
  */
 
@@ -94,9 +94,10 @@ class Manager extends \Magento\Framework\DataObject
     }
 
     /**
+     * @param null $controllerAction
      * @return bool|\Magento\Catalog\Api\Data\CategoryInterface
      */
-    public function init()
+    public function init($controllerAction = null)
     {
         $categoryId = $this->getRootCategoryId();
 
@@ -125,7 +126,7 @@ class Manager extends \Magento\Framework\DataObject
         try {
             $this->eventManager->dispatch(
                 'catalog_controller_category_init_after',
-                ['category' => $category]
+                ['category' => $category, 'controller_action' => $controllerAction]
             );
         } catch (\Magento\Framework\Exception\LocalizedException $e) {
             $this->objectManager->get(\Psr\Log\LoggerInterface::class)->critical($e);

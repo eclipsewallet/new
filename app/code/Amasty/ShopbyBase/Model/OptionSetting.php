@@ -1,7 +1,7 @@
 <?php
 /**
  * @author Amasty Team
- * @copyright Copyright (c) 2018 Amasty (https://www.amasty.com)
+ * @copyright Copyright (c) 2019 Amasty (https://www.amasty.com)
  * @package Amasty_ShopbyBase
  */
 
@@ -217,9 +217,25 @@ class OptionSetting extends \Magento\Framework\Model\AbstractModel implements Op
     /**
      * @return string
      */
+    public function getBottomCmsBlockId()
+    {
+        return $this->getData(self::BOTTOM_CMS_BLOCK_ID);
+    }
+
+    /**
+     * @return string
+     */
     public function getSliderPosition()
     {
         return $this->getData(self::SLIDER_POSITION);
+    }
+
+    /**
+     * @return string
+     */
+    public function getSmallImageAlt()
+    {
+        return $this->getData(self::SMALL_IMAGE_ALT);
     }
 
     /**
@@ -304,6 +320,15 @@ class OptionSetting extends \Magento\Framework\Model\AbstractModel implements Op
     }
 
     /**
+     * @param string $alt
+     * @return OptionSetting
+     */
+    public function setSmallImageAlt($alt)
+    {
+        return $this->setData(self::SMALL_IMAGE_ALT, $alt);
+    }
+
+    /**
      * @param string $filterCode
      * @return OptionSetting
      */
@@ -337,6 +362,15 @@ class OptionSetting extends \Magento\Framework\Model\AbstractModel implements Op
     public function setTopCmsBlockId($id)
     {
         return $this->setData(self::TOP_CMS_BLOCK_ID, $id);
+    }
+
+    /**
+     * @param int|null $id
+     * @return OptionSetting
+     */
+    public function setBottomCmsBlockId($id)
+    {
+        return $this->setData(self::BOTTOM_CMS_BLOCK_ID, $id);
     }
 
     /**

@@ -1,7 +1,7 @@
 <?php
 /**
  * @author Amasty Team
- * @copyright Copyright (c) 2018 Amasty (https://www.amasty.com)
+ * @copyright Copyright (c) 2019 Amasty (https://www.amasty.com)
  * @package Amasty_ShopbyBrand
  */
 
@@ -22,11 +22,6 @@ class BlockHtmlTitlePlugin extends BlockHtmlTitlePluginAbstract
     /**
      * @var \Amasty\ShopbyBase\Helper\Data
      */
-    protected $baseHelper;
-
-    /**
-     * @var \Amasty\ShopbyBase\Helper\Data
-     */
     protected $brandHelper;
 
     public function __construct(
@@ -35,12 +30,10 @@ class BlockHtmlTitlePlugin extends BlockHtmlTitlePluginAbstract
         BlockFactory $blockFactory,
         StoreManagerInterface $storeManager,
         Configurable $configurableType,
-        \Amasty\ShopbyBase\Helper\Data $baseHelper,
         \Amasty\ShopbyBrand\Helper\Data $brandHelper,
         $data = []
     ) {
         parent::__construct($optCollectionFactory, $registry, $storeManager, $blockFactory, $configurableType, $data);
-        $this->baseHelper = $baseHelper;
         $this->brandHelper = $brandHelper;
     }
 

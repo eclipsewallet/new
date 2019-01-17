@@ -1,7 +1,7 @@
 <?php
 /**
  * @author Amasty Team
- * @copyright Copyright (c) 2018 Amasty (https://www.amasty.com)
+ * @copyright Copyright (c) 2019 Amasty (https://www.amasty.com)
  * @package Amasty_ShopbySeo
  */
 
@@ -87,9 +87,12 @@ class LayoutGenerateBlocksAfterObserver implements \Magento\Framework\Event\Obse
             if ($toolbarBlock) {
                 /** @var \Magento\Theme\Block\Html\Pager $pagerBlock */
                 $pagerBlock = $toolbarBlock->getChildBlock('product_list_toolbar_pager');
-                $pagerBlock
-                    ->setAvailableLimit($toolbarBlock->getAvailableLimit())
-                    ->setCollection($productListBlock->getLayer()->getProductCollection());
+                if ($pagerBlock) {
+                    $pagerBlock
+                        ->setLimit($toolbarBlock->getLimit())
+                        ->setAvailableLimit($toolbarBlock->getAvailableLimit())
+                        ->setCollection($productListBlock->getLayer()->getProductCollection());
+                }
             }
         }
 
@@ -134,8 +137,12 @@ class LayoutGenerateBlocksAfterObserver implements \Magento\Framework\Event\Obse
         $currentUrl = $this->urlBuilder->getCurrentUrl();
         $currentUrl = $this->escaper->escapeUrl($currentUrl);
         $result = preg_replace('/(\W)' . $key . '=\d+/', "$1$key=$value", $currentUrl, -1, $count);
-        if (!$count) {
-            $delimiter = (strpos($currentUrl, '?') === false) ? '?' : '&';
+        if ($value == 1) {
+            $result = str_replace($key . '=1&amp;', '', $result); //not last & not single param
+            $result = str_replace('&amp;' . $key . '=1', '', $result); //last param
+            $result = str_replace('?' . $key . '=1', '', $result); //single param
+        } elseif(!$count) {
+            $delimiter = (strpos($currentUrl, '?') === false) ? '?' : '&amp;';
             $result .= $delimiter . $key . '=' . $value;
         }
 

@@ -2,7 +2,7 @@
 <!--
 /**
  * @author Amasty Team
- * @copyright Copyright (c) 2018 Amasty (https://www.amasty.com)
+ * @copyright Copyright (c) 2019 Amasty (https://www.amasty.com)
  * @package Amasty_Shopby
  */
 -->
@@ -13,7 +13,7 @@
 -->
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
     <system>
-        <section id="amshopby" translate="label" type="text" sortOrder="200" showInDefault="1" showInWebsite="1" showInStore="1">
+        <section id="amshopby" translate="label" type="text" sortOrder="91312" showInDefault="1" showInWebsite="1" showInStore="1">
             <resource>Amasty_ShopbyBase::config</resource>
             <class>separator-top</class>
             <label>Improved Layered Navigation</label>
@@ -96,36 +96,43 @@
             </group>
             <group id="children_categories" translate="label comment" type="select" sortOrder="25" showInDefault="1" showInWebsite="1" showInStore="1">
                 <label>Children Categories Block</label>
-                <field id="enabled" translate="label comment" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
-                    <label>Enabled</label>
-                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                <field id="display_mode" translate="label comment" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Display Mode</label>
+                    <source_model>Amasty\Shopby\Model\Source\ChildrenCategoriesBlock\DisplayMode</source_model>
                 </field>
                 <field id="image_size" translate="label comment" type="text" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Category's Thumbnail Image Size</label>
                     <validate>validate-greater-than-zero</validate>
                     <depends>
-                        <field id="enabled">1</field>
+                        <field id="display_mode">1</field>
                     </depends>
                 </field>
                 <field id="show_labels" translate="label comment" type="select" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Show Image Labels</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                     <depends>
-                        <field id="enabled">1</field>
+                        <field id="display_mode">1</field>
                     </depends>
                 </field>
                 <field id="slider_enabled" translate="label" type="select" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Enable Slider</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                     <depends>
-                        <field id="enabled">1</field>
+                        <field id="display_mode" separator=",">1,2</field>
                     </depends>
                 </field>
                 <field id="items_per_slide" translate="label" type="text" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Items per Slide</label>
                     <depends>
-                        <field id="enabled">1</field>
+                        <field id="display_mode">1</field>
                         <field id="slider_enabled">1</field>
+                    </depends>
+                </field>
+                <field id="categories" translate="label" type="multiselect" sortOrder="60" showInDefault="1" showInWebsite="1" showInStore="1" >
+                    <label>Categories</label>
+                    <source_model>Amasty\Shopby\Model\Source\ChildrenCategoriesBlock\Categories</source_model>
+                    <depends>
+                        <field id="display_mode" separator=",">1,2</field>
                     </depends>
                 </field>
             </group>
@@ -165,7 +172,14 @@
                     <label>Enabled</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
-                <field id="button_category_filter" translate="label" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="position" translate="label" type="text" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Position</label>
+                    <validate>validate-zero-or-greater</validate>
+                    <depends>
+                        <field id="enabled">1</field>
+                    </depends>
+                </field>
+                <field id="button_category_filter" translate="label" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Category Filter</label>
                     <frontend_model>Amasty\Shopby\Block\Adminhtml\Config\Form\Field\CategoryFilter</frontend_model>
                 </field>
@@ -177,6 +191,13 @@
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                     <comment>If you want to show out of stock products, please configure it here: Stores -> Configuration -> Catalog -> Inventory -> Stock Options -> Display Out of Stock Products</comment>
                 </field>
+                <!--<field id="stock_source" translate="label" type="select" sortOrder="19" showInDefault="1" showInWebsite="1" showInStore="1">-->
+                    <!--<label>Identify Out of Stock Products by</label>-->
+                    <!--<source_model>Amasty\Shopby\Model\Source\StockFilterSource</source_model>-->
+                    <!--<depends>-->
+                        <!--<field id="enabled">1</field>-->
+                    <!--</depends>-->
+                <!--</field>-->
                 <field id="block_position" translate="label" type="select" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Show in the Block</label>
                     <source_model>Amasty\Shopby\Model\Source\FilterPlacedBlock</source_model>
@@ -186,6 +207,7 @@
                 </field>
                 <field id="position" translate="label" type="text" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Position</label>
+                    <validate>validate-zero-or-greater</validate>
                     <depends>
                         <field id="enabled">1</field>
                     </depends>
@@ -209,7 +231,7 @@
                         <field id="enabled">1</field>
                         <field id="block_position" separator=",">0,2</field>
                     </depends>
-                    <comment>Set 'Yes' to expand filter right after a page is loaded. Keep 'Auto' to work based on the custom theme functionality.</comment>
+                    <comment>Allows to expand filter automatically right after a page is loaded. Set 'Expand for desktop only' to keep filter minimized on mobile. Keep 'Auto' to work based on the custom theme functionality.</comment>
                 </field>
                 <field id="display_mode" translate="label" type="select" sortOrder="70" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Display Mode</label>
@@ -234,6 +256,7 @@
                 </field>
                 <field id="position" translate="label" type="text" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Position</label>
+                    <validate>validate-zero-or-greater</validate>
                     <depends>
                         <field id="enabled">1</field>
                     </depends>
@@ -257,7 +280,7 @@
                         <field id="enabled">1</field>
                         <field id="block_position" separator=",">0,2</field>
                     </depends>
-                    <comment>Set 'Yes' to expand filter right after a page is loaded. Keep 'Auto' to work based on the custom theme functionality.</comment>
+                    <comment>Allows to expand filter automatically right after a page is loaded. Set 'Expand for desktop only' to keep filter minimized on mobile. Keep 'Auto' to work based on the custom theme functionality.</comment>
                 </field>
                 <field id="display_mode" translate="label" type="select" sortOrder="70" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Display Mode</label>
@@ -282,6 +305,7 @@
                 </field>
                 <field id="position" translate="label" type="text" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Position</label>
+                    <validate>validate-zero-or-greater</validate>
                     <depends>
                         <field id="enabled">1</field>
                     </depends>
@@ -305,7 +329,7 @@
                         <field id="enabled">1</field>
                         <field id="block_position" separator=",">0,2</field>
                     </depends>
-                    <comment>Set 'Yes' to expand filter right after a page is loaded. Keep 'Auto' to work based on the custom theme functionality.</comment>
+                    <comment>Allows to expand filter automatically right after a page is loaded. Set 'Expand for desktop only' to keep filter minimized on mobile. Keep 'Auto' to work based on the custom theme functionality.</comment>
                 </field>
                 <field id="display_mode" translate="label" type="select" sortOrder="70" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Display Mode</label>
@@ -330,6 +354,7 @@
                 </field>
                 <field id="position" translate="label" type="text" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Position</label>
+                    <validate>validate-zero-or-greater</validate>
                     <depends>
                         <field id="enabled">1</field>
                     </depends>
@@ -353,7 +378,7 @@
                         <field id="enabled">1</field>
                         <field id="block_position" separator=",">0,2</field>
                     </depends>
-                    <comment>Set 'Yes' to expand filter right after a page is loaded. Keep 'Auto' to work based on the custom theme functionality.</comment>
+                    <comment>Allows to expand filter automatically right after a page is loaded. Set 'Expand for desktop only' to keep filter minimized on mobile. Keep 'Auto' to work based on the custom theme functionality.</comment>
                 </field>
                 <field id="display_mode" translate="label" type="select" sortOrder="70" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Display Mode</label>
@@ -386,6 +411,22 @@
                     <label>Status</label>
                     <comment><![CDATA[It speeds up the catalog pages and layered navigation. See more details <a target="_blank" href="https://amasty.com/elasticsearch-for-magento-2.html?utm_source=extension&utm_medium=backend&utm_campaign=iln_to_elastic_m2">here</a>]]></comment>
                     <frontend_model>Amasty\Shopby\Block\Adminhtml\System\Config\Form\Field\Elastic</frontend_model>
+                </field>
+            </group>
+        </section>
+        <section id="amshopby_root" translate="label" type="text" sortOrder="91313" showInDefault="1" showInWebsite="1" showInStore="1">
+            <resource>Amasty_Shopby::config</resource>
+            <class>separator-top</class>
+            <label>Improved Layered Navigation: All Products</label>
+            <tab>amasty</tab>
+            <group id="general" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>General</label>
+                <field id="enabled" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Enable All Products Page</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="url" translate="label comment" type="text" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>All Products Page URL</label>
                 </field>
             </group>
         </section>

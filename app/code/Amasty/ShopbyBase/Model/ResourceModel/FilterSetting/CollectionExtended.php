@@ -1,7 +1,7 @@
 <?php
 /**
  * @author Amasty Team
- * @copyright Copyright (c) 2018 Amasty (https://www.amasty.com)
+ * @copyright Copyright (c) 2019 Amasty (https://www.amasty.com)
  * @package Amasty_ShopbyBase
  */
 
@@ -127,7 +127,7 @@ class CollectionExtended extends Collection
                 $data[FilterSettingInterface::DISPLAY_MODE] =
                     $this->filterSettingHelper->getConfig($filterCode, 'display_mode');
                 $data[FilterSettingInterface::FILTER_CODE] = $filterCode;
-                $data[FilterSettingInterface::IS_EXPANDED] =
+                $data[FilterSettingInterface::EXPAND_VALUE] =
                     $this->filterSettingHelper->getConfig($filterCode, 'is_expanded');
                 $data[FilterSettingInterface::TOOLTIP] = $this->filterSettingHelper->getConfig($filterCode, 'tooltip');
                 $data[FilterSettingInterface::BLOCK_POSITION] =

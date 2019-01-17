@@ -1,7 +1,7 @@
 <?php
 /**
  * @author Amasty Team
- * @copyright Copyright (c) 2018 Amasty (https://www.amasty.com)
+ * @copyright Copyright (c) 2019 Amasty (https://www.amasty.com)
  * @package Amasty_Shopby
  */
 ?>
@@ -11,18 +11,20 @@
 ?>
 <?php
 $filterCode = $block->escapeHtml($filterSetting->getFilterCode());
+$noFollow = $filterSetting->isAddNofollow() ? ' rel="nofollow"' : '';
 ?>
 <div class="items am-filter-items-<?= $filterCode;?> am-dropdown">
     <form data-amshopby-filter="<?= $filterCode;?>" data-amshopby-filter-request-var="<?= $block->getFilter()->getRequestVar(); ?>">
     <?php if (count($filterItems) >= 0) :?>
         <select
-            <?= $filterSetting->isMultiselect() ? 'multiple="on"' : '' ?>
+            <?= $filterSetting->isMultiselect() ? 'multiple="on"' : ''; ?>
+
             class="am-shopby-filter-<?= $filterCode; ?>"
             name="amshopby[<?= /* @escapeNotVerified */ $block->getFilter()->getRequestVar();?>][]"
         >
             <?php if (!$filterSetting->isMultiselect()) :?>
                 <option value="" href="<?= $this->getClearUrl() ? $block->escapeUrl($this->getClearUrl()) : '#' ?>"
-                    <?= $filterSetting->getRelNofollow() ? ' rel="nofollow"' : '' ?>>
+                    <?= $noFollow ?>>
                     <?php echo __("Select Option ...");?>
                 </option>
             <?php endif;?>
@@ -38,7 +40,7 @@ $filterCode = $block->escapeHtml($filterSetting->getFilterCode());
                 ?>
                 <option value="<?= $block->escapeHtml($filterItem->getValueString());?>"
                         href="<?= $url ?>"
-                        <?= $filterSetting->getRelNofollow() ? ' rel="nofollow"' : '' ?>
+                        <?= $noFollow ?>
                         <?= $disabled . $selected ?>
                 >
                     <?= $label ?>

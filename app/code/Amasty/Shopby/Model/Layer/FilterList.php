@@ -1,7 +1,7 @@
 <?php
 /**
  * @author Amasty Team
- * @copyright Copyright (c) 2018 Amasty (https://www.amasty.com)
+ * @copyright Copyright (c) 2019 Amasty (https://www.amasty.com)
  * @package Amasty_Shopby
  */
 
@@ -12,7 +12,12 @@ use Amasty\Shopby\Model\Source\FilterPlacedBlock;
 use Magento\Catalog\Model\Layer;
 use Magento\Store\Model\ScopeInterface;
 use Amasty\Shopby\Model\Source\VisibleInCategory;
+use Amasty\ShopbyBase\Model\ResourceModel\FilterSetting\CollectionExtendedFactory;
 
+/**
+ * Class FilterList
+ * @package Amasty\Shopby\Model\Layer
+ */
 class FilterList extends Layer\FilterList
 {
     const PLACE_SIDEBAR = 'sidebar';
@@ -55,9 +60,19 @@ class FilterList extends Layer\FilterList
     private $filtersApplied = false;
 
     /**
+     * @var CollectionExtendedFactory
+     */
+    private $collectionExtendedFactory;
+
+    /**
      * @var  \Magento\Framework\Registry
      */
     private $registry;
+
+    /**
+     * @var \Amasty\Shopby\Model\Request
+     */
+    private $shopbyRequest;
 
     public function __construct(
         \Magento\Framework\ObjectManagerInterface $objectManager,
@@ -66,6 +81,8 @@ class FilterList extends Layer\FilterList
         \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
         \Magento\Framework\App\Request\Http $request,
         \Magento\Framework\Registry $registry,
+        CollectionExtendedFactory $collectionExtendedFactory,
+        \Amasty\Shopby\Model\Request $shopbyRequest,
         array $filters = [],
         $place = self::PLACE_SIDEBAR
     ) {
@@ -74,6 +91,8 @@ class FilterList extends Layer\FilterList
         $this->scopeConfig = $scopeConfig;
         $this->request = $request;
         $this->registry = $registry;
+        $this->collectionExtendedFactory = $collectionExtendedFactory;
+        $this->shopbyRequest = $shopbyRequest;
         parent::__construct($objectManager, $filterableAttributes, $filters);
     }
 
@@ -142,7 +161,6 @@ class FilterList extends Layer\FilterList
     protected function matchFilters(array $listFilters, Layer $layer)
     {
         if ($this->filtersMatched
-            || $layer->getState()->getData('filters') === null
             || $layer->getProductCollection()->isLoaded()
         ) {
             return false;
@@ -166,7 +184,7 @@ class FilterList extends Layer\FilterList
             $this->applyFilters($layer);
 
             if ($attributesFilter = $setting->getAttributesFilter()) {
-                $stateAttributes = $this->getStateAttributesIds($layer);
+                $stateAttributes = $this->getStateAttributesIds();
                 $intersects = array_intersect($attributesFilter, $stateAttributes);
                 if (!$intersects) {
                     continue;
@@ -174,7 +192,7 @@ class FilterList extends Layer\FilterList
             }
 
             if ($attributesOptionsFilter = $setting->getAttributesOptionsFilter()) {
-                $stateAttributesOptions = $this->getActiveOptionIds($layer);
+                $stateAttributesOptions = $this->getActiveOptionIds();
                 $intersects = array_intersect($attributesOptionsFilter, $stateAttributesOptions);
                 if (!$intersects) {
                     continue;
@@ -209,31 +227,36 @@ class FilterList extends Layer\FilterList
     }
 
     /**
-     * @param Layer $layer
      * @return array
      * @throws \Magento\Framework\Exception\LocalizedException
      */
-    protected function getStateAttributesIds(Layer $layer)
+    protected function getStateAttributesIds()
     {
         $ids = [];
-        foreach ($layer->getState()->getFilters() as $filter) {
-            if ($model = $filter->getFilter()->getData('attribute_model')) {
-                $ids[] = $model->getId();
+
+        foreach ($this->shopbyRequest->getRequestParams() as $key => $param) {
+            $filter = $this->collectionExtendedFactory->get()->getItemByCode('attr_' . $key);
+            $filterModel = $filter ? $filter->getAttributeModel() : false;
+            if ($filterModel) {
+                $ids[] = $filterModel->getId();
             }
         }
+
         return array_unique($ids);
     }
 
     /**
-     * @param Layer $layer
      * @return array
      * @throws \Magento\Framework\Exception\LocalizedException
      */
-    protected function getActiveOptionIds(Layer $layer)
+    protected function getActiveOptionIds()
     {
         $ids = [];
-        foreach ($layer->getState()->getFilters() as $filter) {
-            $ids[] = explode(',', $filter->getValueString());
+
+        foreach ($this->shopbyRequest->getRequestParams() as $param) {
+            if (isset($param[0])) {
+                $ids[] = explode(',', $param[0]);
+            }
         }
 
         if (count($ids)) {
@@ -291,29 +314,46 @@ class FilterList extends Layer\FilterList
         );
     }
 
+    /**
+     * @param $listStandartFilters
+     * @param $listAdditionalFilters
+     * @return array
+     */
     protected function insertAdditionalFilters($listStandartFilters, $listAdditionalFilters)
     {
         if (count($listAdditionalFilters) == 0) {
             return $listStandartFilters;
         }
-        $listNewFilters = [];
-        foreach ($listStandartFilters as $filter) {
-            if (!$filter->hasAttributeModel()) {
-                $listNewFilters[] = $filter;
-                continue;
-            }
-            $position = $filter->getAttributeModel()->getPosition();
-            foreach ($listAdditionalFilters as $key => $additionalFilter) {
-                $additionalFilterPosition = $additionalFilter->getPosition();
-                if ($additionalFilterPosition <= $position) {
-                    $listNewFilters[] = $additionalFilter;
-                    unset($listAdditionalFilters[$key]);
-                }
-            }
-            $listNewFilters[] = $filter;
-        }
-        $listNewFilters = array_merge($listNewFilters, $listAdditionalFilters);
+
+        $listNewFilters = array_merge($listStandartFilters, $listAdditionalFilters);
+        usort($listNewFilters, [$this, 'sortingByPosition']);
+
         return $listNewFilters;
+    }
+
+    /**
+     * @param $first
+     * @param $second
+     * @return bool
+     */
+    public function sortingByPosition($first, $second)
+    {
+        return $this->getFilterPosition($first) > $this->getFilterPosition($second);
+    }
+
+    /**
+     * @param $filter
+     * @return int
+     */
+    public function getFilterPosition($filter)
+    {
+        if ($filter->hasAttributeModel()) {
+            $position = $filter->getAttributeModel()->getPosition();
+        } else {
+            $position = $filter->getPosition();
+        }
+
+        return $position;
     }
 
     protected function isEnabledShowOutOfStock()

@@ -1,7 +1,7 @@
 <?php
 /**
  * @author Amasty Team
- * @copyright Copyright (c) 2018 Amasty (https://www.amasty.com)
+ * @copyright Copyright (c) 2019 Amasty (https://www.amasty.com)
  * @package Amasty_ShopbyBase
  */
 
@@ -129,17 +129,10 @@ abstract class BlockHtmlTitlePluginAbstract
         }
 
         $optionSettingCollection = $this->optionCollectionFactory->create()
-            ->addFieldToSelect(OptionSetting::TITLE)
-            ->addFieldToSelect(OptionSetting::SHORT_DESCRIPTION)
-            ->addFieldToSelect(OptionSetting::DESCRIPTION)
-            ->addFieldToSelect(OptionSetting::VALUE)
-            ->addFieldToSelect(OptionSetting::SLIDER_IMAGE)
-            ->addFieldToSelect(OptionSetting::IMAGE)
-            ->addFieldToSelect(OptionSetting::FILTER_CODE)
             ->addFieldToFilter(OptionSetting::VALUE, ['in' => $attributeValues])
             ->addFieldToFilter(
-                [OptionSetting::SLIDER_IMAGE, OptionSetting::IMAGE],
-                [['neq' => ''],['neq' => '']]
+                [OptionSetting::SLIDER_IMAGE, OptionSetting::IMAGE, OptionSetting::SMALL_IMAGE_ALT],
+                [['neq' => ''], ['neq' => ''], ['neq' => '']]
             )
             ->addFieldToFilter(
                 OptionSettingInterface::STORE_ID,
@@ -196,8 +189,9 @@ abstract class BlockHtmlTitlePluginAbstract
     {
         $data = [
             self::IMAGE_URL => $this->getProductPageLogoUrl($setting),
-            self::LINK_URL  => $this->getOptionSettingUrl($setting),
-            self::TITLE     => $setting->getTitle()
+            self::LINK_URL => $this->getOptionSettingUrl($setting),
+            self::TITLE => $setting->getTitle(),
+            OptionSetting::SMALL_IMAGE_ALT => $setting->getSmallImageAlt()
         ];
 
         if ($this->isShowShortDescription()) {
@@ -206,6 +200,7 @@ abstract class BlockHtmlTitlePluginAbstract
 
         if ($this->isToolTipEnabled()) {
             $data[self::TOOLTIP_JS ] = $this->getTooltipTemplate([
+                'title' => $setting->getTitle(),
                 'label' => $setting->getLabel(),
                 'img' => $setting->getSliderImageUrl(),
                 'image' => $setting->getImageUrl(),

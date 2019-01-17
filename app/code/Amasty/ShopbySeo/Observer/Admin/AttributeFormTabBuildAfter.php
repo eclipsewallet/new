@@ -1,7 +1,7 @@
 <?php
 /**
  * @author Amasty Team
- * @copyright Copyright (c) 2018 Amasty (https://www.amasty.com)
+ * @copyright Copyright (c) 2019 Amasty (https://www.amasty.com)
  * @package Amasty_ShopbySeo
  */
 
@@ -18,7 +18,7 @@ use Magento\Framework\Data\Form;
 use Magento\Framework\Event\ObserverInterface;
 use Magento\Framework\Registry;
 use Magento\Backend\Block\Widget\Form\Element\Dependence;
-use Amasty\ShopbyBrand\Helper\Data as BrandHelper;
+use Amasty\ShopbyBase\Helper\Data as BaseHelper;
 
 class AttributeFormTabBuildAfter implements ObserverInterface
 {
@@ -48,22 +48,13 @@ class AttributeFormTabBuildAfter implements ObserverInterface
     protected $relNofollow;
 
     /**
-     * @var BrandHelper
+     * @var BaseHelper
      */
-    private $brandHelper;
+    private $baseHelper;
 
-    /**
-     * AttributeFormTabBuildAfter constructor.
-     * @param Yesno $yesNoSource
-     * @param BrandHelper $brandHelper
-     * @param IndexMode $indexMode
-     * @param RelNofollow $relNofollow
-     * @param Registry $registry
-     * @param FieldFactory $fieldFactory
-     */
     public function __construct(
         Yesno $yesNoSource,
-        BrandHelper $brandHelper,
+        BaseHelper $baseHelper,
         IndexMode $indexMode,
         RelNofollow $relNofollow,
         Registry $registry,
@@ -74,7 +65,7 @@ class AttributeFormTabBuildAfter implements ObserverInterface
         $this->relNofollow = $relNofollow;
         $this->dependencyFieldFactory = $fieldFactory;
         $this->attribute = $registry->registry('entity_attribute');
-        $this->brandHelper = $brandHelper;
+        $this->baseHelper = $baseHelper;
     }
 
     /**
@@ -96,7 +87,7 @@ class AttributeFormTabBuildAfter implements ObserverInterface
 
         if ($this->attribute->getAttributeCode() != Category::ATTRIBUTE_CODE) {
             $note = '';
-            if ($this->brandHelper->getBrandAttributeCode() == $this->attribute->getAttributeCode()) {
+            if ($this->baseHelper->getBrandAttributeCode() == $this->attribute->getAttributeCode()) {
                 $note = __('SEO URL is always generated for the brand.');
             }
 

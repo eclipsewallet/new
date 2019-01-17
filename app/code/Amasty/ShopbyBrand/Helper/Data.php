@@ -1,7 +1,7 @@
 <?php
 /**
  * @author Amasty Team
- * @copyright Copyright (c) 2018 Amasty (https://www.amasty.com)
+ * @copyright Copyright (c) 2019 Amasty (https://www.amasty.com)
  * @package Amasty_ShopbyBrand
  */
 
@@ -107,7 +107,10 @@ class Data extends AbstractHelper
             ScopeInterface::SCOPE_STORE,
             $scopeCode
         );
-        return $this->url->getUrl($pageIdentifier);
+
+        $identifierWithId = explode('|', $pageIdentifier);
+
+        return $this->url->getUrl($identifierWithId[0]);
     }
 
     /**
@@ -190,11 +193,7 @@ class Data extends AbstractHelper
                 return [];
             }
 
-            $suffix = '';
-            if ($this->scopeConfig->isSetFlag('amasty_shopby_seo/url/add_suffix_shopby')) {
-                $suffix = $this->scopeConfig
-                    ->getValue('catalog/seo/category_url_suffix', ScopeInterface::SCOPE_STORE);
-            }
+            $suffix = $this->getSuffix();
 
             $options = $this->attributeRepository->get($attributeCode)->getOptions();
             array_shift($options);
@@ -208,13 +207,27 @@ class Data extends AbstractHelper
                 $items[$option->getValue()] = str_replace(
                     '-',
                     $this->getSpecialChar(),
-                    $this->productUrl->formatUrlKey($option->getLabel()) . $suffix
+                    $this->productUrl->formatUrlKey($option->getLabel())
                 );
             }
 
             $this->brandAliases = $this->getStoreAliases($items, $this->storeManager->getStore()->getId());
         }
         return $this->brandAliases;
+    }
+
+    /**
+     * @return string
+     */
+    public function getSuffix()
+    {
+        $suffix = '';
+        if ($this->scopeConfig->isSetFlag('amasty_shopby_seo/url/add_suffix_shopby')) {
+            $suffix = $this->scopeConfig
+                ->getValue('catalog/seo/category_url_suffix', ScopeInterface::SCOPE_STORE);
+        }
+
+        return $suffix;
     }
 
     /**
@@ -271,7 +284,6 @@ class Data extends AbstractHelper
             \Magento\Store\Model\Store::DEFAULT_STORE_ID,
             $storeId
         ];
-        $storeAliases = [];
         $filterCode =  FilterSettingHelper::ATTR_PREFIX . $this->getBrandAttributeCode();
         $collection = $this->optionCollectionFactory->create();
         $collection->addFieldToFilter('filter_code', ['eq' => $filterCode])
@@ -279,8 +291,10 @@ class Data extends AbstractHelper
             ->addFieldToFilter('store_id', ['in' => $storeIds])
             ->addFieldToFilter('url_alias', ['neq' => ''])
             ->setOrder('store_id', AbstractDb::SORT_ORDER_ASC);
+
         foreach ($collection as $item) {
-            $defaultAliases[$item->getValue()] = $item->getUrlAlias();
+            $formatAlias = $this->productUrl->formatUrlKey($item->getUrlAlias());
+            $defaultAliases[$item->getValue()] = str_replace('-', $this->getSpecialChar(), $formatAlias);
         }
 
         return $defaultAliases;

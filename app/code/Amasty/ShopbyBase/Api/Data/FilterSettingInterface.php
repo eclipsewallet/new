@@ -1,7 +1,7 @@
 <?php
 /**
  * @author Amasty Team
- * @copyright Copyright (c) 2018 Amasty (https://www.amasty.com)
+ * @copyright Copyright (c) 2019 Amasty (https://www.amasty.com)
  * @package Amasty_ShopbyBase
  */
 
@@ -20,7 +20,7 @@ interface FilterSettingInterface
     const INDEX_MODE = 'index_mode';
     const FOLLOW_MODE = 'follow_mode';
     const REL_NOFOLLOW = 'rel_nofollow';
-    const IS_EXPANDED = 'is_expanded';
+    const EXPAND_VALUE = 'is_expanded';
     const SORT_OPTIONS_BY = 'sort_options_by';
     const SHOW_PRODUCT_QUANTITIES = 'show_product_quantities';
     const IS_SHOW_SEARCH_BOX = 'is_show_search_box';
@@ -68,6 +68,11 @@ interface FilterSettingInterface
      * @return int
      */
     public function getRelNofollow();
+
+    /**
+     * @return bool
+     */
+    public function isAddNofollow();
 
     /**
      * @return bool|null

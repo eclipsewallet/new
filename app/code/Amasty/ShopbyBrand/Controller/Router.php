@@ -1,7 +1,7 @@
 <?php
 /**
  * @author Amasty Team
- * @copyright Copyright (c) 2018 Amasty (https://www.amasty.com)
+ * @copyright Copyright (c) 2019 Amasty (https://www.amasty.com)
  * @package Amasty_ShopbyBrand
  */
 
@@ -25,10 +25,10 @@ class Router implements \Magento\Framework\App\RouterInterface
      */
 
     private $response;
+
     /**
      * @var \Magento\Framework\App\Config\ScopeConfigInterface
      */
-
     private $scopeConfig;
 
     /**
@@ -55,6 +55,11 @@ class Router implements \Magento\Framework\App\RouterInterface
      * @var \Amasty\ShopbyBrand\Helper\Data
      */
     private $brandHelper;
+
+    /**
+     * @var
+     */
+    private $isRedirectToSingleBrand;
 
     /**
      * Router constructor.
@@ -104,6 +109,11 @@ class Router implements \Magento\Framework\App\RouterInterface
              * There is no redirect to single brand, because this extension doesn't support
              * multiple filter values. It means, that situation when someone will request two brands is impossible
              */
+            $params = $this->checkMultibrand($brandParams);
+            if ($this->isRedirectToSingleBrand) {
+                $request->setParams($params);
+                return $this->redirectToSingleBrand($request);
+            }
             $request->setModuleName('ambrand')->setControllerName('index')->setActionName('index');
             $request->setAlias(\Magento\Framework\Url::REWRITE_REQUEST_PATH_ALIAS, $identifier);
             $params = array_merge($request->getParams(), $brandParams);
@@ -115,6 +125,47 @@ class Router implements \Magento\Framework\App\RouterInterface
     }
 
     /**
+     * @param $params
+     * @return mixed
+     */
+    private function checkMultibrand($params)
+    {
+        if ($this->brandCode && isset($params[$this->brandCode])) {
+            $brandValue = $params[$this->brandCode];
+            if (is_array($brandValue)) {
+                $brandValue = array_unshift($brandValue);
+            }
+
+            $delimiterPos = strrpos($brandValue, ',');
+            if ($delimiterPos) {
+                $brandValue = substr($brandValue, $delimiterPos + 1);
+                $this->isRedirectToSingleBrand = true;
+            }
+
+            $params[$this->brandCode] = $brandValue;
+        }
+
+        return $params;
+    }
+
+    /**
+     * If this page is brand/brand1-brand2-... redirect to brand/brand1
+     */
+    private function redirectToSingleBrand(RequestInterface $request)
+    {
+        $route = sprintf(
+            '%s/%s/%s',
+            $request->getModuleName(),
+            $request->getControllerName(),
+            $request->getActionName()
+        );
+        $url = $this->urlBuilder->getUrl($route, ['_query' => $request->getParams()]);
+        $this->response->setRedirect($url, \Zend\Http\Response::STATUS_CODE_301);
+        $request->setDispatched(true);
+        return $this->actionFactory->create(\Magento\Framework\App\Action\Redirect::class);
+    }
+
+    /**
      * @param RequestInterface $request
      * @return string
      */
@@ -123,9 +174,10 @@ class Router implements \Magento\Framework\App\RouterInterface
         $identifier = trim($request->getPathInfo(), '/');
         $suffix = $this->scopeConfig
             ->getValue('catalog/seo/category_url_suffix', ScopeInterface::SCOPE_STORE);
-        if ($suffix === '/') {
-            $identifier .= '/';
+        if (!empty($suffix) && strpos($identifier, $suffix) !== false) {
+            $identifier = str_replace($suffix, '', $identifier);
         }
+
         return $identifier;
     }
 

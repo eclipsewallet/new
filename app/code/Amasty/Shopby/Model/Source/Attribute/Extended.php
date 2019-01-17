@@ -1,7 +1,7 @@
 <?php
 /**
  * @author Amasty Team
- * @copyright Copyright (c) 2018 Amasty (https://www.amasty.com)
+ * @copyright Copyright (c) 2019 Amasty (https://www.amasty.com)
  * @package Amasty_Shopby
  */
 
@@ -16,7 +16,7 @@ class Extended extends \Amasty\Shopby\Model\Source\Attribute
      *
      * @return array
      */
-    public function toOptionArray()
+    public function toOptionArray($boolean = 1)
     {
         $allOption = [[
             'value' => self::ALL,

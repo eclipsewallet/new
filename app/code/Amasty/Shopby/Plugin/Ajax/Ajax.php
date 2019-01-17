@@ -1,7 +1,7 @@
 <?php
 /**
  * @author Amasty Team
- * @copyright Copyright (c) 2018 Amasty (https://www.amasty.com)
+ * @copyright Copyright (c) 2019 Amasty (https://www.amasty.com)
  * @package Amasty_Shopby
  */
 
@@ -67,12 +67,15 @@ class Ajax
             $products = $layout->getBlock('search.result');
         }
 
-        $tags = $this->addXTagCache($products, $tags);
-
-        $productList = $products->getChildBlock('product_list');
-        $productsCount = $productList
-            ? $productList->getLoadedProductCollection()->getSize()
-            : $products->getResultCount();
+        $productsCount = 0;
+        $productList = null;
+        if ($products) {
+            $tags = $this->addXTagCache($products, $tags);
+            $productList = $products->getChildBlock('product_list') ?: $products->getChildBlock('search_result_list');
+            $productsCount = $productList
+                ? $productList->getLoadedProductCollection()->getSize()
+                : $products->getResultCount();
+        }
 
         $navigation = $layout->getBlock('catalog.leftnav') ?: $layout->getBlock('catalogsearch.leftnav');
         if ($navigation) {
@@ -126,8 +129,13 @@ class Ajax
             $swatchesChooseHtml = $swatchesChoose->toHtml();
         }
 
-        $isDisplayModePage = $productList && $productList->getLayer()
-            && $productList->getLayer()->getCurrentCategory()->getDisplayMode() == Category::DM_PAGE;
+        $currentCategory = $productList && $productList->getLayer()
+            ? $productList->getLayer()->getCurrentCategory()
+            : false;
+
+        $isDisplayModePage = $currentCategory && $currentCategory->getDisplayMode() == Category::DM_PAGE;
+
+        $bottomBlock = $layout->getBlock('amshopby.bottom') ? $layout->getBlock('amshopby.bottom')->toHtml() : '';
 
         $responseData = [
             'categoryProducts'=> $categoryProducts . $swatchesChooseHtml,
@@ -142,13 +150,18 @@ class Ajax
             'h1' => $h1 ? $h1->toHtml() : '',
             'title' => $title->get(),
             'categoryData' => $htmlCategoryData,
+            'bottomCmsBlock' => $bottomBlock,
             'url' => $this->stateHelper->getCurrentUrl(),
             'tags' => implode(',', array_unique($tags + [\Magento\PageCache\Model\Cache\Type::CACHE_TAG])),
             'productsCount' => $productsCount,
             'js_init' => $jsInit ? $jsInit->toHtml() : '',
             'isDisplayModePage' => $isDisplayModePage,
-            'newClearUrl' => $layout->getBlock('category.amshopby.ajax')->getClearUrl()
+            'currentCategoryId' => $currentCategory ? $currentCategory->getId() ?: 0 : 0
         ];
+        if ($layout->getBlock('category.amshopby.ajax')) {
+            $responseData['newClearUrl'] = $layout->getBlock('category.amshopby.ajax')->getClearUrl();
+        }
+
         try {
             $sidebarTag = $layout->getElementProperty('div.sidebar.additional', Element::CONTAINER_OPT_HTML_TAG);
             $sidebarClass = $layout->getElementProperty('div.sidebar.additional', Element::CONTAINER_OPT_HTML_CLASS);

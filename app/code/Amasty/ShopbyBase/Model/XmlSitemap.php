@@ -1,7 +1,7 @@
 <?php
 /**
  * @author Amasty Team
- * @copyright Copyright (c) 2018 Amasty (https://www.amasty.com)
+ * @copyright Copyright (c) 2019 Amasty (https://www.amasty.com)
  * @package Amasty_ShopbyBase
  */
 
@@ -24,16 +24,22 @@ class XmlSitemap
     private $dataObjectFactory;
 
     /**
+     * @var \Amasty\ShopbyBase\Helper\Data
+     */
+    private $baseHelper;
+    /**
      * @var \Amasty\ShopbyBrand\Helper\Data
      */
     private $brandHelper;
 
     public function __construct(
         \Magento\Eav\Model\Config $eavConfig,
+        \Amasty\ShopbyBase\Helper\Data $baseHelper,
         \Amasty\ShopbyBrand\Helper\Data $brandHelper,
         ObjectFactory $dataObjectFactory
     ) {
         $this->eavConfig = $eavConfig;
+        $this->baseHelper = $baseHelper;
         $this->brandHelper = $brandHelper;
         $this->dataObjectFactory = $dataObjectFactory;
     }
@@ -57,7 +63,7 @@ class XmlSitemap
     public function getBrandUrls($storeId, $baseUrl = null)
     {
         $result = [];
-        $attrCode   = $this->brandHelper->getBrandAttributeCode();
+        $attrCode   = $this->baseHelper->getBrandAttributeCode();
         if (!$attrCode) {
             return $result;
         }

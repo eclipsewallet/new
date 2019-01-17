@@ -2,7 +2,7 @@
 <!--
 /**
  * @author Amasty Team
- * @copyright Copyright (c) 2018 Amasty (https://www.amasty.com)
+ * @copyright Copyright (c) 2019 Amasty (https://www.amasty.com)
  * @package Amasty_Shopby
  */
 -->
@@ -15,6 +15,11 @@
                     <resource id="Amasty_Shopby::layered_navigation_stores" title="Layered Navigation" sortOrder="50">
                         <resource id="Amasty_Shopby::option" title="Amasty Attribute Options Settings" sortOrder="0"/>
                         <resource id="Amasty_Shopby::group_attributes" title="Amasty Attribute Group Settings" sortOrder="1"/>
+                    </resource>
+                    <resource id="Magento_Backend::stores_settings">
+                        <resource id="Magento_Config::config">
+                            <resource id="Amasty_Shopby::config" title="Improved Layered Navigation: All Products" sortOrder="11318" />
+                        </resource>
                     </resource>
                 </resource>
             </resource>

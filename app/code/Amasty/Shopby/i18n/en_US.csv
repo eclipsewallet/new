@@ -38,7 +38,11 @@ Attribute,Attribute
 "Number of unfolded options","Number of unfolded options"
 "Other options will be shown after a customer clicks the ""More"" button.","Other options will be shown after a customer clicks the ""More"" button."
 Expand,Expand
-"Set 'Yes' to expand filter right after a page is loaded. Keep 'Auto' to work based on the custom theme functionality.","Set 'Yes' to expand filter right after a page is loaded. Keep 'Auto' to work based on the custom theme functionality."
+"Allows to expand filter automatically right after a page is loaded.
+                Set 'Expand for desktop only' to keep filter minimized on mobile. Keep 'Auto' to work
+                based on the custom theme functionality.","Allows to expand filter automatically right after a page is loaded.
+                Set 'Expand for desktop only' to keep filter minimized on mobile. Keep 'Auto' to work
+                based on the custom theme functionality."
 Tooltip,Tooltip
 Filtering,Filtering
 "When multiselect option is disabled it follows the category page (except the filtering from the search page)","When multiselect option is disabled it follows the category page (except the filtering from the search page)"
@@ -104,6 +108,9 @@ New,New
 "Show Labels Only","Show Labels Only"
 "Show Images Only","Show Images Only"
 "Show Labels And Images","Show Labels And Images"
+"All Categories","All Categories"
+"Category Thumbnail Images","Category Thumbnail Images"
+"Category Names Without Images","Category Names Without Images"
 Labels,Labels
 Dropdown,Dropdown
 Images,Images
@@ -115,6 +122,8 @@ Ranges,Ranges
 "Please upload images at the Properties tab.","Please upload images at the Properties tab."
 "Please add text values at the Properties tab.","Please add text values at the Properties tab."
 "Auto (based on custom theme)","Auto (based on custom theme)"
+"Expand for desktop and mobile","Expand for desktop and mobile"
+"Expand for desktop only","Expand for desktop only"
 "Category Description","Category Description"
 Meta-Description,Meta-Description
 Meta-Keywords,Meta-Keywords
@@ -135,6 +144,8 @@ After,After
 No,No
 Default,Default
 Name,Name
+"Disabled stock status","Disabled stock status"
+"Quantity threshold","Quantity threshold"
 Always,Always
 "By Click","By Click"
 Folding,Folding
@@ -146,6 +157,7 @@ Instantly,Instantly
 "Hide in Selected Categories","Hide in Selected Categories"
 "Improved Layered Navigation","Improved Layered Navigation"
 Thumbnail,Thumbnail
+"Please remove ""%1"" folder manually.","Please remove ""%1"" folder manually."
 Edit,Edit
 Delete,Delete
 "Delete ""${ $.$data.name }""","Delete ""${ $.$data.name }"""
@@ -228,6 +240,9 @@ Tooltips,Tooltips
 "Tooltip Image","Tooltip Image"
 "Elastic Search","Elastic Search"
 "It speeds up the catalog pages and layered navigation. See more details <a target=""_blank"" href=""https://amasty.com/elasticsearch-for-magento-2.html?utm_source=extension&utm_medium=backend&utm_campaign=iln_to_elastic_m2"">here</a>","It speeds up the catalog pages and layered navigation. See more details <a target=""_blank"" href=""https://amasty.com/elasticsearch-for-magento-2.html?utm_source=extension&utm_medium=backend&utm_campaign=iln_to_elastic_m2"">here</a>"
+"Improved Layered Navigation: All Products","Improved Layered Navigation: All Products"
+"Enable All Products Page","Enable All Products Page"
+"All Products Page URL","All Products Page URL"
 "Amasty Improved Layered Navigation","Amasty Improved Layered Navigation"
 "Settings for your filters and their options","Settings for your filters and their options"
 "Delete items","Delete items"

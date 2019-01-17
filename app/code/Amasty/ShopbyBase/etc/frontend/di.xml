@@ -2,7 +2,7 @@
 <!--
 /**
  * @author Amasty Team
- * @copyright Copyright (c) 2018 Amasty (https://www.amasty.com)
+ * @copyright Copyright (c) 2019 Amasty (https://www.amasty.com)
  * @package Amasty_ShopbyBase
  */
 -->
@@ -32,4 +32,17 @@
     <type name="Magento\Framework\View\Page\Config\Renderer">
         <plugin name="Amasty_ShopbyBase::make-css" type="Amasty\ShopbyBase\Plugin\View\Page\Config\Renderer" />
     </type>
+
+    <type name="Amasty\ShopbyBase\Model\UrlBuilder">
+        <arguments>
+            <argument name="urlAdapters" xsi:type="array">
+                <item name="base" xsi:type="array">
+                    <item name="adapter" xsi:type="object">\Amasty\ShopbyBase\Model\UrlBuilder\Adapter</item>
+                    <item name="sort_order" xsi:type="string">100</item>
+                </item>
+            </argument>
+        </arguments>
+    </type>
+
+
 </config>

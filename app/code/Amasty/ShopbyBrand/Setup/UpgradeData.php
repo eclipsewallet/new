@@ -1,7 +1,7 @@
 <?php
 /**
  * @author Amasty Team
- * @copyright Copyright (c) 2018 Amasty (https://www.amasty.com)
+ * @copyright Copyright (c) 2019 Amasty (https://www.amasty.com)
  * @package Amasty_ShopbyBrand
  */
 
@@ -59,16 +59,10 @@ class UpgradeData implements UpgradeDataInterface
     protected $filterSettingRepository;
 
     /**
-     * UpgradeData constructor.
-     * @param PageFactory $pageFactory
-     * @param WriterInterface $configWriter
-     * @param \Amasty\ShopbyBrand\Helper\Data $brandHelper
-     * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
-     * @param \Amasty\ShopbyBase\Model\ResourceModel\FilterSetting\CollectionFactory $filterCollectionFactory
-     * @param \Amasty\ShopbyBase\Helper\Data $baseHelper
-     * @param \Magento\UrlRewrite\Model\UrlFinderInterface $urlFinder
-     * @param \Amasty\ShopbyBase\Api\Data\FilterSettingRepositoryInterface $filterSettingRepository
+     * @var \Magento\Framework\App\State
      */
+    private $appState;
+
     public function __construct(
         \Magento\Cms\Model\PageFactory $pageFactory,
         WriterInterface $configWriter,
@@ -77,7 +71,8 @@ class UpgradeData implements UpgradeDataInterface
         \Amasty\ShopbyBase\Model\ResourceModel\FilterSetting\CollectionFactory $filterCollectionFactory,
         \Amasty\ShopbyBase\Helper\Data $baseHelper,
         \Magento\UrlRewrite\Model\UrlFinderInterface $urlFinder,
-        \Amasty\ShopbyBase\Api\Data\FilterSettingRepositoryInterface $filterSettingRepository
+        \Amasty\ShopbyBase\Api\Data\FilterSettingRepositoryInterface $filterSettingRepository,
+        \Magento\Framework\App\State $appState
     ) {
         $this->_pageFactory = $pageFactory;
         $this->_configWriter = $configWriter;
@@ -87,13 +82,27 @@ class UpgradeData implements UpgradeDataInterface
         $this->baseHelper = $baseHelper;
         $this->urlFinder = $urlFinder;
         $this->filterSettingRepository = $filterSettingRepository;
+        $this->appState = $appState;
     }
 
     /**
      * @param ModuleDataSetupInterface $setup
      * @param ModuleContextInterface $context
      */
-    public function upgrade(
+    public function upgrade(ModuleDataSetupInterface $setup, ModuleContextInterface $context)
+    {
+        $this->appState->emulateAreaCode(
+            \Magento\Framework\App\Area::AREA_ADMINHTML,
+            [$this, 'upgradeCallback'],
+            [$setup, $context]
+        );
+    }
+
+    /**
+     * @param ModuleDataSetupInterface $setup
+     * @param ModuleContextInterface $context
+     */
+    public function upgradeCallback(
         ModuleDataSetupInterface $setup,
         ModuleContextInterface $context
     ) {

@@ -1,7 +1,7 @@
 <?php
 /**
  * @author Amasty Team
- * @copyright Copyright (c) 2018 Amasty (https://www.amasty.com)
+ * @copyright Copyright (c) 2019 Amasty (https://www.amasty.com)
  * @package Amasty_ShopbyBase
  */
 
@@ -15,6 +15,7 @@ use Magento\Framework\DataObject\IdentityInterface;
 use Magento\Store\Model\ScopeInterface;
 use Amasty\ShopbyBrand\Block\Widget\BrandListAbstract;
 use Amasty\ShopbySeo\Model\Source\IndexMode;
+use Amasty\ShopbyBase\Helper\Data;
 
 class FilterSetting extends \Magento\Framework\Model\AbstractModel implements FilterSettingInterface, IdentityInterface
 {
@@ -37,11 +38,17 @@ class FilterSetting extends \Magento\Framework\Model\AbstractModel implements Fi
      */
     protected $groupAttrDataProviderFactory = null;
 
+    /**
+     * @var Data
+     */
+    private $baseHelper;
+
     public function __construct(
         \Magento\Framework\Model\Context $context,
         \Magento\Framework\Registry $registry,
         \Magento\Catalog\Helper\Data $catalogHelper,
         \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
+        Data $baseHelper,
         \Amasty\ShopbyBase\Api\GroupAttributeDataFactoryProvider $groupAttributeDataFactoryProvider = null,
         \Magento\Framework\Model\ResourceModel\AbstractResource $resource = null,
         \Magento\Framework\Data\Collection\AbstractDb $resourceCollection = null,
@@ -50,6 +57,7 @@ class FilterSetting extends \Magento\Framework\Model\AbstractModel implements Fi
         $this->catalogHelper = $catalogHelper;
         $this->scopeConfig = $scopeConfig;
         $this->groupAttrDataProviderFactory = $groupAttributeDataFactoryProvider;
+        $this->baseHelper = $baseHelper;
         parent::__construct(
             $context,
             $registry,
@@ -112,6 +120,14 @@ class FilterSetting extends \Magento\Framework\Model\AbstractModel implements Fi
     }
 
     /**
+     * @return bool
+     */
+    public function isAddNofollow()
+    {
+        return $this->getRelNofollow() && !$this->getFollowMode() && $this->baseHelper->isEnableRelNofollow();
+    }
+
+    /**
      * @return bool|null
      */
     public function getAddFromToWidget()
@@ -155,7 +171,7 @@ class FilterSetting extends \Magento\Framework\Model\AbstractModel implements Fi
      */
     public function isMultiselect()
     {
-        $allProducts = $this->_registry->registry('amasty_shopby_root_category_index');
+        $allProducts = $this->_registry->registry(Data::SHOPBY_CATEGORY_INDEX);
         $brandCode = 'attr_'
             . $this->scopeConfig->getValue(
                 BrandListAbstract::PATH_BRAND_ATTRIBUTE_CODE,
@@ -174,11 +190,7 @@ class FilterSetting extends \Magento\Framework\Model\AbstractModel implements Fi
      */
     public function isSeoSignificant()
     {
-        return $this->getData(self::IS_SEO_SIGNIFICANT)
-            || $this->scopeConfig->getValue(
-                BrandListAbstract::PATH_BRAND_ATTRIBUTE_CODE,
-                ScopeInterface::SCOPE_STORE
-            );
+        return $this->getData(self::IS_SEO_SIGNIFICANT);
     }
 
     /**
@@ -186,7 +198,9 @@ class FilterSetting extends \Magento\Framework\Model\AbstractModel implements Fi
      */
     public function isExpanded()
     {
-        return $this->getData(self::IS_EXPANDED);
+        $expandValue = $this->getData(self::EXPAND_VALUE);
+
+        return ($expandValue == 2 && !$this->baseHelper->isMobile()) || $expandValue == 1;
     }
 
     /**
@@ -426,7 +440,7 @@ class FilterSetting extends \Magento\Framework\Model\AbstractModel implements Fi
      */
     public function setIsExpanded($isExpanded)
     {
-        return $this->setData(self::IS_EXPANDED, $isExpanded);
+        return $this->setData(self::EXPAND_VALUE, $isExpanded);
     }
 
     /**
@@ -613,10 +627,13 @@ class FilterSetting extends \Magento\Framework\Model\AbstractModel implements Fi
      */
     public function getEnableOverflowScroll()
     {
-        $enableOverflowScroll = $this->scopeConfig->getValue(
-            'amshopby/general/enable_overflow_scroll',
-            \Magento\Store\Model\ScopeInterface::SCOPE_STORE
-        );
+        $enableOverflowScroll = $this->getSubcategoriesView() == \Amasty\Shopby\Model\Source\SubcategoriesView::FLY_OUT
+            ? false
+            : $this->scopeConfig->getValue(
+                'amshopby/general/enable_overflow_scroll',
+                \Magento\Store\Model\ScopeInterface::SCOPE_STORE
+            );
+
         return $enableOverflowScroll;
     }
 

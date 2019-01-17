@@ -1,7 +1,7 @@
 <?php
 /**
  * @author Amasty Team
- * @copyright Copyright (c) 2018 Amasty (https://www.amasty.com)
+ * @copyright Copyright (c) 2019 Amasty (https://www.amasty.com)
  * @package Amasty_ShopbyBase
  */
 
@@ -23,9 +23,11 @@ interface OptionSettingInterface
     const VALUE = 'value';
     const TITLE = 'title';
     const TOP_CMS_BLOCK_ID = 'top_cms_block_id';
+    const BOTTOM_CMS_BLOCK_ID = 'bottom_cms_block_id';
     const IS_FEATURED = 'is_featured';
     const SLIDER_POSITION = 'slider_position';
     const SLIDER_IMAGE = 'slider_image';
+    const SMALL_IMAGE_ALT = 'small_image_alt';
 
     /**
      * @return string
@@ -90,7 +92,17 @@ interface OptionSettingInterface
     /**
      * @return int|null
      */
+    public function getBottomCmsBlockId();
+
+    /**
+     * @return int|null
+     */
     public function getSliderPosition();
+
+    /**
+     * @return OptionSettingInterface
+     */
+    public function getSmallImageAlt();
 
     /**
      * @param string $description
@@ -121,6 +133,12 @@ interface OptionSettingInterface
      * @return OptionSettingInterface
      */
     public function setSliderImage($image);
+
+    /**
+     * @param string $alt
+     * @return OptionSettingInterface
+     */
+    public function setSmallImageAlt($alt);
 
     /**
      * @param int $id
@@ -169,6 +187,12 @@ interface OptionSettingInterface
      * @return OptionSettingInterface
      */
     public function setTopCmsBlockId($id);
+
+    /**
+     * @param int|null $id
+     * @return OptionSettingInterface
+     */
+    public function setBottomCmsBlockId($id);
 
     /**
      * @param int $pos

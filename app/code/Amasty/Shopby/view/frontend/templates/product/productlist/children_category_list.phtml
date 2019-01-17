@@ -1,7 +1,7 @@
 <?php
 /**
  * @author Amasty Team
- * @copyright Copyright (c) 2018 Amasty (https://www.amasty.com)
+ * @copyright Copyright (c) 2019 Amasty (https://www.amasty.com)
  * @package Amasty_Shopby
  */
 ?>
@@ -27,15 +27,17 @@ $swiperPrefix = $block->isSliderEnabled() ? 'swiper-' : '';
                 <div class="<?= $swiperPrefix; ?>wrapper">
                     <?php foreach ($categories as $category) : ?>
                         <?php
-                        $imgUrl = $categoryImagesHelper->getImageUrl($category->getImage() ?: $category->getThumbnail(), true, $size, $size);
+                        $imgUrl = $categoryImagesHelper->getImageUrl($category->getThumbnail() ?: $category->getImage(), true, $size, $size);
                         ?>
                         <?php if ($imgUrl) : ?>
                         <a title="<?= $block->escapeHtml($category->getName())?>"
                            href="<?= $block->escapeUrl($category->getUrl()) ?>"
                            class="<?= $swiperPrefix; ?>slide">
                             <div class="<?= $swiperPrefix ?>category-item <?= ($block->showLabels()) ? ' category-item-label' : ''; ?>">
-                                <img height="<?= $size?>" width="<?= $size ?>" src="<?= $imgUrl; ?>" />
-                                <?php if ($block->showLabels()) : ?>
+                                <?php if (!$block->isOnlyLabels()) : ?>
+                                    <img height="<?= $size?>" width="<?= $size ?>" src="<?= $imgUrl; ?>" />
+                                <?php endif; ?>
+                                <?php if ($block->showLabels() || $block->isOnlyLabels()) : ?>
                                     <div class="category-item-title" <?= $block->isSliderEnabled() ? '' : 'style="max-width: '. $size . 'px"'?>><?= $block->escapeHtml($category->getName())?></div>
                                 <?php endif; ?>
                             </div>

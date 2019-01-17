@@ -1,7 +1,7 @@
 <?php
 /**
  * @author Amasty Team
- * @copyright Copyright (c) 2018 Amasty (https://www.amasty.com)
+ * @copyright Copyright (c) 2019 Amasty (https://www.amasty.com)
  * @package Amasty_Shopby
  */
 
@@ -22,12 +22,26 @@ class Configurable extends DefaultPrice
         return $result;
     }
 
+    /**
+     * @param $subject
+     * @param $result
+     * @return mixed
+     */
+    public function afterReindexAll($subject, $result)
+    {
+        $this->subject = $subject;
+        $this->addSpecialPriceToConfigurable();
+
+        return $result;
+    }
+
+    /**
+     * Perform setting special and final prices for composite products
+     *
+     * @return void
+     */
     private function addSpecialPriceToConfigurable()
     {
-        if (!$this->entityIds) {
-            return;
-        }
-
         $connection = $this->resource->getConnection();
         $select = $connection->select()->from(
             ['main_table' => $this->getIdxTable()]
@@ -50,7 +64,9 @@ class Configurable extends DefaultPrice
             ['parent_id' => 'simple_link.parent_id']
         );
 
-        $select->where('simple_link.parent_id IN (?)', $this->entityIds);
+        if ($this->entityIds) {
+            $select->where('simple_link.parent_id IN (?)', $this->entityIds);
+        }
         $select->where('main_table.price > main_table.final_price and main_table.final_price > 0');
 
         $select->group(['simple_link.parent_id', 'main_table.customer_group_id', 'main_table.website_id']);

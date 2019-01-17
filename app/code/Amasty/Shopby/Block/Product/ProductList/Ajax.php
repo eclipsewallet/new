@@ -1,7 +1,7 @@
 <?php
 /**
  * @author Amasty Team
- * @copyright Copyright (c) 2018 Amasty (https://www.amasty.com)
+ * @copyright Copyright (c) 2019 Amasty (https://www.amasty.com)
  * @package Amasty_Shopby
  */
 
@@ -39,12 +39,18 @@ class Ajax extends \Magento\Framework\View\Element\Template implements IdentityI
      */
     private $moduleManager;
 
+    /**
+     * @var \Amasty\ShopbyBase\Helper\Data
+     */
+    private $baseHelper;
+
     public function __construct(
         Template\Context $context,
         \Magento\Catalog\Model\Layer\Resolver $layerResolver,
         \Amasty\Shopby\Helper\Data $helper,
         \Magento\Framework\Registry $registry,
         \Magento\Framework\Module\Manager $moduleManager,
+        \Amasty\ShopbyBase\Helper\Data $baseHelper,
         array $data = []
     ) {
         parent::__construct($context, $data);
@@ -52,6 +58,7 @@ class Ajax extends \Magento\Framework\View\Element\Template implements IdentityI
         $this->helper = $helper;
         $this->registry = $registry;
         $this->moduleManager = $moduleManager;
+        $this->baseHelper = $baseHelper;
     }
 
     /**
@@ -83,7 +90,7 @@ class Ajax extends \Magento\Framework\View\Element\Template implements IdentityI
      */
     public function getIdentities()
     {
-        return [self::CACHE_TAG . '_' . $this->helper->isMobile() ? 'mobile' : 'desktop'];
+        return [self::CACHE_TAG . '_' . $this->baseHelper->isMobile() ? 'mobile' : 'desktop'];
     }
 
     /**

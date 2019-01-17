@@ -1,7 +1,7 @@
 <?php
 /**
  * @author Amasty Team
- * @copyright Copyright (c) 2018 Amasty (https://www.amasty.com)
+ * @copyright Copyright (c) 2019 Amasty (https://www.amasty.com)
  * @package Amasty_ShopbyBrand
  */
 
@@ -69,19 +69,10 @@ class Index extends \Magento\Framework\App\Action\Action
     protected $categoryManager;
 
     /**
-     * Index constructor.
-     * @param \Magento\Framework\App\Action\Context $context
-     * @param \Magento\Catalog\Model\Design $catalogDesign
-     * @param \Magento\Catalog\Model\Session $catalogSession
-     * @param \Magento\Framework\Registry $coreRegistry
-     * @param \Magento\Store\Model\StoreManagerInterface $storeManager
-     * @param \Magento\CatalogUrlRewrite\Model\CategoryUrlPathGenerator $categoryUrlPathGenerator
-     * @param \Magento\Framework\View\Result\PageFactory $resultPageFactory
-     * @param \Magento\Framework\Controller\Result\ForwardFactory $resultForwardFactory
-     * @param \Magento\Catalog\Model\Layer\Resolver $layerResolver
-     * @param \Magento\Catalog\Api\CategoryRepositoryInterface $categoryRepository
-     * @param \Amasty\ShopbyBase\Model\Category\Manager\Proxy $categoryManager
+     * @var \Amasty\ShopbyBrand\Helper\Data
      */
+    private $brandHelper;
+
     public function __construct(
         \Magento\Framework\App\Action\Context $context,
         \Magento\Catalog\Model\Design $catalogDesign,
@@ -93,7 +84,8 @@ class Index extends \Magento\Framework\App\Action\Action
         \Magento\Framework\Controller\Result\ForwardFactory $resultForwardFactory,
         \Magento\Catalog\Model\Layer\Resolver $layerResolver,
         \Magento\Catalog\Api\CategoryRepositoryInterface $categoryRepository,
-        \Amasty\ShopbyBase\Model\Category\Manager\Proxy $categoryManager
+        \Amasty\ShopbyBase\Model\Category\Manager\Proxy $categoryManager,
+        \Amasty\ShopbyBrand\Helper\Data $brandHelper
     ) {
         parent::__construct($context);
         $this->storeManager = $storeManager;
@@ -106,6 +98,7 @@ class Index extends \Magento\Framework\App\Action\Action
         $this->layerResolver = $layerResolver;
         $this->categoryRepository = $categoryRepository;
         $this->categoryManager = $categoryManager;
+        $this->brandHelper = $brandHelper;
     }
 
     /**
@@ -113,7 +106,7 @@ class Index extends \Magento\Framework\App\Action\Action
      */
     protected function _initCategory()
     {
-        return $this->categoryManager->init();
+        return $this->categoryManager->init($this);
     }
 
     /**
@@ -121,6 +114,7 @@ class Index extends \Magento\Framework\App\Action\Action
      */
     public function execute()
     {
+        $this->initBrand();
         $category = $this->_initCategory();
         if (!$category) {
             return $this->resultForwardFactory->create()->forward('noroute');
@@ -180,5 +174,16 @@ class Index extends \Magento\Framework\App\Action\Action
         }
 
         return $page;
+    }
+
+    /**
+     * @return $this
+     */
+    private function initBrand()
+    {
+        if ($id = $this->getRequest()->getParam('id', false)) {
+            $this->getRequest()->setParams([$this->brandHelper->getBrandAttributeCode() => $id]);
+        }
+        return $this;
     }
 }

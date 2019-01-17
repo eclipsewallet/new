@@ -1,7 +1,7 @@
 <?php
 /**
  * @author Amasty Team
- * @copyright Copyright (c) 2018 Amasty (https://www.amasty.com)
+ * @copyright Copyright (c) 2019 Amasty (https://www.amasty.com)
  * @package Amasty_Shopby
  */
 
@@ -647,7 +647,9 @@ class Shopby extends \Magento\Backend\Block\Widget\Form\Generic
                 'label' => __('Expand'),
                 'title' => __('Expand'),
                 'values' => $this->expandSource->toOptionArray(),
-                'note' => __('Set \'Yes\' to expand filter right after a page is loaded. Keep \'Auto\' to work based on the custom theme functionality.')
+                'note' => __('Allows to expand filter automatically right after a page is loaded.
+                Set \'Expand for desktop only\' to keep filter minimized on mobile. Keep \'Auto\' to work
+                based on the custom theme functionality.')
             ]
         );
 
@@ -1001,20 +1003,11 @@ class Shopby extends \Magento\Backend\Block\Widget\Form\Generic
             $subcategoriesViewField->getName()
         )->addFieldDependence(
             $subcategoriesViewField->getName(),
-            $categoryTreeDepthField->getName(),
-            $this->dependencyFieldFactory->create(
-                [
-                    'fieldData' => ['value' => $categoryTreeDepthFieldValues, 'separator' => ',', 'negative' => true],
-                    'fieldPrefix' => ''
-                ]
-            )
-        )->addFieldDependence(
-            $subcategoriesViewField->getName(),
             $displayModeField->getName(),
             (string)DisplayMode::MODE_DEFAULT
         );
 
-        $fieldsetDisplayProperties->addField(
+        $categoryTreeDisplayMode = $fieldsetDisplayProperties->addField(
             'category_tree_display_mode',
             'select',
             [
@@ -1023,6 +1016,17 @@ class Shopby extends \Magento\Backend\Block\Widget\Form\Generic
                 'title' => __('Category Tree Display Mode'),
                 'values' => $this->categoryTreeDisplayMode->toOptionArray(),
             ]
+        );
+
+        $dependence->addFieldMap(
+            $categoryTreeDisplayMode->getHtmlId(),
+            $categoryTreeDisplayMode->getName()
+        );
+
+        $dependence->addFieldDependence(
+            $categoryTreeDisplayMode->getName(),
+            $displayModeField->getName(),
+            (string)DisplayMode::MODE_DEFAULT
         );
 
         $subcategoriesExpandField = $fieldsetDisplayProperties->addField(

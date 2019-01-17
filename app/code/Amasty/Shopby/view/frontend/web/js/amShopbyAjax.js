@@ -43,7 +43,8 @@ define([
                          */
                         window.onpopstate = function (e) {
                             if (e.state) {
-                                self.callAjax(e.state.url, [], null, null ,true);
+                                self.callAjax(e.state.url, []);
+                                self.$shopbyOverlay.show();
                             }
                         };
                     }, 0)
@@ -57,7 +58,7 @@ define([
                 swatchesTooltip = $(self.swatchesTooltip),
                 filterTooltip = $(self.filterTooltip);
             $(document).on('baseCategory', function (event, eventData) {
-                self.baseCategoryId = eventData;
+                self.currentCategoryId = eventData;
             });
             $(document).on('amshopby:submit_filters', function (event, eventData) {
                 var data = eventData.data,
@@ -114,13 +115,20 @@ define([
 
         callAjax: function (clearUrl, data, pushState, cacheKey, isSorting) {
             var self = this;
-
             if (pushState || isSorting) {
                 this.$shopbyOverlay.show();
             }
+
             data.every(function (item, key) {
-                if (item.name.indexOf('[cat]') != -1 && item.value == self.options.baseCategoryId) {
-                    data.splice(key, 1);
+                if (item.name.indexOf('[cat]') != -1) {
+                    if (item.value == self.options.currentCategoryId) {
+                        data.splice(key, 1);
+                    } else {
+                        item.value.split(',').filter(function(element) {
+                            return element != self.options.currentCategoryId
+                        }).join(',');
+                    }
+
                     return false;
                 }
             });
@@ -130,6 +138,9 @@ define([
             if (!clearUrl) {
                 clearUrl = self.options.clearUrl;
             }
+
+            self.clearUrl = clearUrl;
+
             return $.ajax({
                 url: clearUrl,
                 data: data,
@@ -149,7 +160,10 @@ define([
                         }
 
                         $.mage.amShopbyAjax.prototype.response = response;
-                        self.options.clearUrl = response.newClearUrl;
+                        if (response.newClearUrl
+                            && (response.newClearUrl.indexOf('?p=') == -1 && response.newClearUrl.indexOf('&p=') == -1)) {
+                            self.options.clearUrl = response.newClearUrl;
+                        }
 
                         if (pushState || ($.mage.amShopbyApplyFilters && $.mage.amShopbyApplyFilters.prototype.showButtonClick) || isSorting) {
                             window.history.pushState({url: response.url}, '', response.url);
@@ -169,7 +183,8 @@ define([
                             $.mage.amShopbyApplyFilters.prototype.showButtonCounter(response.productsCount);
                         }
                     } catch (e) {
-                        window.location = (this.url.indexOf('shopbyAjax') == -1) ? this.url : self.options.clearUrl;
+                        var url = self.clearUrl ? self.clearUrl : self.options.clearUrl;
+                        window.location = (this.url.indexOf('shopbyAjax') == -1) ? this.url : url;
                     }
                 },
                 error: function (response) {
@@ -186,14 +201,20 @@ define([
 
         reloadHtml: function (data) {
             var selectSidebarNavigation = '.sidebar.sidebar-main .block.filter',
-                selectMainNavigation = false;
+                selectTopNavigation = selectSidebarNavigation + '.amshopby-all-top-filters-append-left',
+                selectMainNavigation = '';
 
-            if ($(selectSidebarNavigation).first().length > 0) {
+            this.options.currentCategoryId = data.currentCategoryId
+                ? data.currentCategoryId
+                : this.options.currentCategoryId;
+
+            if ($(selectTopNavigation).first().length > 0) {
+                selectMainNavigation = selectTopNavigation; //if all filters are top
+            } else if ($(selectSidebarNavigation).first().length > 0) {
                 selectMainNavigation = selectSidebarNavigation;
             }
 
             $('.am_shopby_apply_filters').remove();
-
             if (!selectMainNavigation) {
                 if ($('.sidebar.sidebar-main').first().length) {
                     $('.sidebar.sidebar-main').first().prepend("<div class='block filter'></div>");
@@ -240,9 +261,12 @@ define([
                 media: '(max-width: 768px)',
                 entry: function () {
                     amShopbyTopFilters.moveTopFiltersToSidebar();
+                    if (selectMainNavigation == selectTopNavigation
+                        && $(selectSidebarNavigation + ':not(.amshopby-all-top-filters-append-left)').length != 0) {
+                        $(selectSidebarNavigation).first().remove();
+                    }
                 },
                 exit: function () {
-
                     amShopbyTopFilters.removeTopFiltersFromSidebar();
                 }
             });
@@ -254,10 +278,12 @@ define([
                 this.$shopbyOverlay.hide();
             }
 
-            if (this.options.scrollUp) {
-                $(document).scrollTop($('#amasty-shopby-product-list').offset().top);
+            var producttList = $('#amasty-shopby-product-list');
+            if (this.options.scrollUp && producttList.length) {
+                $(document).scrollTop(producttList.offset().top);
             }
-
+            $('.amshopby-filters-bottom-cms').remove();
+            producttList.append(data.bottomCmsBlock);
 
             $('[data-am-js="js-init"]').first().replaceWith(data.js_init);
             $('[data-am-js="js-init"]').first().trigger('contentUpdated');
@@ -310,7 +336,7 @@ define([
             }
 
             //change page number
-            $(".toolbar .pages a").bind('click', function (e) {
+            $(".toolbar .pages a").unbind('click').bind('click', function (e) {
                 var newUrl = $(this).prop('href'),
                     updatedUrl = null,
                     urlPaths = newUrl.split('?'),

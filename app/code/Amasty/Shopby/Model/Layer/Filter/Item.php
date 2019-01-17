@@ -1,7 +1,7 @@
 <?php
 /**
  * @author Amasty Team
- * @copyright Copyright (c) 2018 Amasty (https://www.amasty.com)
+ * @copyright Copyright (c) 2019 Amasty (https://www.amasty.com)
  * @package Amasty_Shopby
  */
 namespace Amasty\Shopby\Model\Layer\Filter;
@@ -42,6 +42,7 @@ class Item extends \Magento\Catalog\Model\Layer\Filter\Item
         Shopby\Helper\UrlBuilder $urlBuilderHelper,
         FollowResolver $followResolver,
         \Amasty\Shopby\Helper\Group $groupHelper,
+        \Amasty\ShopbyBase\Api\UrlBuilderInterface $urlBuilder,
         array $data = []
     ) {
         $this->_request = $request;
@@ -49,6 +50,7 @@ class Item extends \Magento\Catalog\Model\Layer\Filter\Item
         $this->urlBuilderHelper = $urlBuilderHelper;
         $this->followResolver = $followResolver;
         $this->groupHelper = $groupHelper;
+        $this->_urlBuilder = $urlBuilder;
         parent::__construct($url, $htmlPagerBlock, $data);
     }
     /**

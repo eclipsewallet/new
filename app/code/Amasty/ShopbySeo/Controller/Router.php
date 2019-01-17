@@ -1,7 +1,7 @@
 <?php
 /**
  * @author Amasty Team
- * @copyright Copyright (c) 2018 Amasty (https://www.amasty.com)
+ * @copyright Copyright (c) 2019 Amasty (https://www.amasty.com)
  * @package Amasty_ShopbySeo
  */
 
@@ -12,9 +12,8 @@ use Amasty\ShopbySeo\Helper\Url;
 use Amasty\ShopbySeo\Helper\UrlParser;
 use Magento\Framework\App\RequestInterface;
 use Magento\UrlRewrite\Model\UrlFinderInterface;
-use Magento\UrlRewrite\Service\V1\Data\UrlRewrite;
-use Magento\Framework\Module\Manager;
 use Magento\Store\Model\ScopeInterface;
+use Amasty\ShopbySeo\Helper\Data;
 
 /**
  * Class Router
@@ -22,169 +21,168 @@ use Magento\Store\Model\ScopeInterface;
  */
 class Router implements \Magento\Framework\App\RouterInterface
 {
-    const INDEX_ALIAS       = 1;
-    const INDEX_CATEGORY    = 2;
-
-    /**
-     * @var \Magento\Framework\App\ActionFactory
-     */
-    protected $actionFactory;
-
-    /**
-     * @var \Magento\Framework\App\ResponseInterface
-     */
-    protected $_response;
-
     /**
      * @var Url
      */
-    protected $urlHelper;
-
-    /**
-     * @var \Magento\Framework\Registry
-     */
-    protected $registry;
+    private $urlHelper;
 
     /**
      * @var UrlParser
      */
-    protected $urlParser;
+    private $urlParser;
 
     /**
      * @var UrlFinderInterface
      */
-    protected $urlFinder;
+    private $urlFinder;
 
     /**
      * @var \Magento\Framework\App\Config\ScopeConfigInterface
      */
-    protected $scopeConfig;
+    private $scopeConfig;
 
     /**
-     * @var Manager
+     * @var Data
      */
-    protected $moduleManager;
-    /**
-     * @var \Psr\Log\LoggerInterface
-     */
-    private $logger;
+    private $helper;
 
     public function __construct(
-        \Magento\Framework\App\ActionFactory $actionFactory,
-        \Magento\Framework\App\ResponseInterface $response,
-        \Magento\Framework\Registry $registry,
+        \Magento\Framework\App\ActionFactory $actionFactory,     
         UrlParser $urlParser,
         Url $urlHelper,
         UrlFinderInterface $urlFinder,
         \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
-        \Psr\Log\LoggerInterface $logger,
-        Manager $moduleManager
+        Data $helper
     ) {
         $this->actionFactory = $actionFactory;
-        $this->_response = $response;
-        $this->registry = $registry;
         $this->urlHelper = $urlHelper;
         $this->urlParser = $urlParser;
-        $this->urlFinder = $urlFinder;
         $this->scopeConfig = $scopeConfig;
-        $this->moduleManager = $moduleManager;
-        $this->logger = $logger;
+        $this->helper = $helper;
     }
 
     /**
      * @param RequestInterface $request
-     * @return bool|\Magento\Framework\App\ActionInterface
+     * @return bool
      */
     public function match(RequestInterface $request)
     {
-        $identifier = trim($request->getPathInfo(), '/');
-        $posLastValue = strrpos($identifier, "/");
-
-        $matches[self::INDEX_ALIAS] = substr($identifier, 0, $posLastValue);
-        $positionFrom = ($posLastValue === false) ? 0 : $posLastValue + 1;
-        $matches[self::INDEX_CATEGORY] = substr($identifier, $positionFrom);
-
-        $seoPart = $this->urlHelper->removeCategorySuffix($matches[self::INDEX_CATEGORY]);
-        $suffix = $this->scopeConfig
-            ->getValue('catalog/seo/category_url_suffix', ScopeInterface::SCOPE_STORE);
-        $suffixMoved = $seoPart != $matches[self::INDEX_CATEGORY] || $suffix == '/';
-        $alias = $matches[self::INDEX_ALIAS];
-
-        $params = $this->urlParser->parseSeoPart($seoPart);
-        if ($params === false) {
+        if ($request->getMetaData(\Amasty\ShopbySeo\Helper\Data::SKIP_REQUEST_FLAG) || $this->skipRequest($request)) {
+            $request->setMetaData(\Amasty\ShopbySeo\Helper\Data::SKIP_REQUEST_FLAG, true);
             return false;
         }
 
-        /**
-         * for brand pages with key, e.g. /brand/adidas
-         */
-        $matchedAlias = null;
-        if ($this->moduleManager->isEnabled('Amasty_ShopbyBrand')) {
-            $brandKey = trim($this->scopeConfig->getValue(
-                'amshopby_brand/general/url_key',
-                \Magento\Store\Model\ScopeInterface::SCOPE_STORE
-            ));
-            if ($brandKey == $alias) {
-                $redirectToSeo = $this->createSeoRedirect($request, true);
-                if ($redirectToSeo) {
-                    return $redirectToSeo;
+        $this->initRequestMetaData($request);
+
+        $identifier = $request->getPathInfo();
+
+        if (trim($identifier, '/') && $this->getSeoSuffix()) {
+            $suffixPosition = strrpos($identifier, $this->getSeoSuffix());
+            if ($suffixPosition !== false
+                && ($suffixPosition == strlen($identifier) - strlen($this->getSeoSuffix()))
+            ) {
+                $identifier = substr($identifier, 0, $suffixPosition);
+                if (!$this->urlHelper->isAddSuffixToShopby()) {
+                   $request->setMetaData(\Amasty\ShopbySeo\Helper\Data::SEO_REDIRECT_MISSED_SUFFIX_FLAG, true);
                 }
-
-                $matchedAlias = $alias;
+            } elseif ($this->urlHelper->isAddSuffixToShopby()) {
+                $request->setMetaData(\Amasty\ShopbySeo\Helper\Data::SEO_REDIRECT_MISSED_SUFFIX_FLAG, true);
             }
+
         }
 
-        /* For regular seo category */
-        if (!$matchedAlias) {
-            $category = $suffixMoved ? $alias . $suffix : $alias;
-            $rewrite = $this->urlFinder->findOneByData([
-                UrlRewrite::REQUEST_PATH => $category,
-            ]);
-
-            if ($rewrite) {
-                $matchedAlias = $category;
+        if ($this->helper->getFilterWord()) {
+            if (strpos($identifier, '/' . $this->helper->getFilterWord() . '/') !== false) {
+                $filterWordPosition = strpos($identifier, '/' . $this->helper->getFilterWord() . '/');
+                $seoPart = substr(
+                    $identifier,
+                    $filterWordPosition + strlen('/' . $this->helper->getFilterWord() . '/')
+                );
+                $identifier = substr($identifier, 0, $filterWordPosition);
+            } else {
+                /**
+                 * Should be filterWord but does not exist
+                 * Request should be skipped
+                 */
+                $request->setMetaData(\Amasty\ShopbySeo\Helper\Data::SKIP_REQUEST_FLAG, true);
+                return false;
             }
+        } else {
+            $lastSlashPosition = strrpos($identifier, "/");
+            $lastSlashPosition = ($lastSlashPosition === false) ? 0 : $lastSlashPosition;
+            $seoPart = substr($identifier, $lastSlashPosition + 1);
+            $identifier = substr($identifier, 0, $lastSlashPosition);
         }
 
-        if ($matchedAlias) {
-            $this->registry->unregister('amasty_shopby_seo_parsed_params');
-            $this->registry->register('amasty_shopby_seo_parsed_params', $params);
-            $request->setParams($params);
-            $request->setPathInfo($matchedAlias);
-            return $this->actionFactory->create(\Magento\Framework\App\Action\Forward::class);
+        $params = $this->urlParser->parseSeoPart($seoPart);
+        $this->checkSeoParams($request, $params);
+        if (!empty($params)) {
+            $this->modifyRequest($request, $identifier, $params);
         }
 
+        $request->setMetaData(\Amasty\ShopbySeo\Helper\Data::SKIP_REQUEST_FLAG, true);
         return false;
     }
 
     /**
      * @param RequestInterface $request
-     * @param bool $brandRedirect
-     * @return bool|\Magento\Framework\App\ActionInterface
+     * @param $identifier
+     * @param array $params
+     * @return $this
      */
-    protected function createSeoRedirect(RequestInterface $request, $brandRedirect = false)
+    public function modifyRequest(RequestInterface $request, $identifier, $params = [])
     {
-        if ($this->urlHelper->isSeoRedirectEnabled()) {
-            $url = $this->urlHelper->seofyUrl($request->getUri()->toString());
-            if ($brandRedirect
-                && $this->scopeConfig->isSetFlag('amasty_shopby_seo/url/add_suffix_shopby')
-            ) {
-                $suffix = $this->scopeConfig
-                    ->getValue('catalog/seo/category_url_suffix', ScopeInterface::SCOPE_STORE);
-                if (strpos($url, '?') === false && substr($url, -strlen($suffix)) !== $suffix) {
-                    $url .= $suffix;
-                }
-            }
-
-            if (strcmp($url, $request->getUri()->toString()) === 0) {
-                return false;
-            }
-
-            $this->_response->setRedirect($url, \Zend\Http\Response::STATUS_CODE_301);
-            $request->setDispatched(true);
-            return $this->actionFactory->create(\Magento\Framework\App\Action\Redirect::class);
+        if (strlen($identifier)) {
+            $identifier .= $this->getSeoSuffix();
+            $request->setPathInfo($identifier);
         }
+        $request->setParams($params);
+        $request->setMetaData(\Amasty\ShopbySeo\Helper\Data::HAS_PARSED_PARAMS, true);
+        return $this;
+    }
 
-        return false;
+    /**
+     * @param RequestInterface $request
+     * @return bool
+     */
+    public function skipRequest(RequestInterface $request)
+    {
+        return !$this->helper->isAllowedRequest($request, true);
+    }
+
+    /**
+     * @return string
+     */
+    public function getSeoSuffix()
+    {
+        return $this->scopeConfig
+            ->getValue('catalog/seo/category_url_suffix', ScopeInterface::SCOPE_STORE);
+    }
+
+    /**
+     * @param RequestInterface $request
+     * @param array $parsedParams
+     * @return $this
+     */
+    public function checkSeoParams(RequestInterface $request, array $parsedParams = [])
+    {
+        $userExtraParams = array_diff_assoc($request->getUserParams(), $parsedParams);
+        if ($this->urlParser->checkSeoParams(array_merge((array)$request->getQuery(), $userExtraParams))) {
+            $request->setMetaData(\Amasty\ShopbySeo\Helper\Data::SEO_REDIRECT_FLAG, true);
+        }
+        return $this;
+    }
+
+    /**
+     * @param RequestInterface $request
+     * @return $this
+     */
+    public function initRequestMetaData(RequestInterface $request)
+    {
+        $request->setMetaData(\Amasty\ShopbySeo\Helper\Data::SEO_REDIRECT_FLAG, false);
+        $request->setMetaData(\Amasty\ShopbySeo\Helper\Data::SEO_REDIRECT_MISSED_SUFFIX_FLAG, false);
+        $request->setMetaData(\Amasty\ShopbySeo\Helper\Data::HAS_PARSED_PARAMS, false);
+
+        return $this;
     }
 }

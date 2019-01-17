@@ -1,6 +1,18 @@
+@media only screen and (max-width: 767px) {
+  .filter-content .filter-current .am-show-more {
+    display: none !important;
+  }
+  .filter-content .active .am-show-more {
+    display: block !important;
+    margin-bottom: 10px;
+  }
+}
 @media all and (min-width: 768px), print {
   .ui-tooltip.ui-widget {
     max-width: 450px;
+  }
+  .filter-options-content a:hover {
+    text-decoration: none;
   }
   .catalog-topnav {
     display: block;
@@ -15,6 +27,9 @@
   .filter-options-content .am-filter-price {
     width: 40%;
   }
+  .amasty-catalog-topnav {
+    margin-top: 3px;
+  }
   .amasty-catalog-topnav .filter-options {
     border-top: 1px solid #cccccc;
   }
@@ -24,6 +39,17 @@
   .amasty-catalog-topnav .amshopby-category-dropdown {
     min-width: 150px;
   }
+  .amasty-catalog-topnav .filter-options-item {
+    margin-bottom: 0;
+  }
+  .amasty-catalog-topnav .filter-options-title {
+    padding-right: 5px;
+  }
+  .amasty-catalog-topnav .filter-options-title:after {
+    position: static;
+    display: inline-block;
+    margin: 0 0 0 15px;
+  }
   .am_shopby_apply_filters {
     visibility: hidden;
     position: absolute;
@@ -31,7 +57,7 @@
     display: none;
     width: inherit;
     padding: 0;
-    z-index: 999;
+    z-index: 9999;
   }
   .am_shopby_apply_filters.visible {
     bottom: inherit;
@@ -171,9 +197,6 @@
 .filter-options-content .am-swatch-link > .input.-hidden {
   display: none;
 }
-#am-shopby-container .am-shopby-item {
-  display: flex;
-}
 .am-shopby-item .filter-value {
   margin-left: 5px;
 }
@@ -196,6 +219,7 @@
   margin-top: 10px;
 }
 .filter-options-content .am-filter-price {
+  padding: 5px;
   width: 46%;
 }
 .filter-options-content .items a {
@@ -210,6 +234,9 @@
 }
 .filter-options-content .am-shopby-swatch-label .label {
   margin-right: 5px;
+}
+.filter-options-content .am-shopby-form {
+  padding: 3px;
 }
 .am-filter-go {
   margin: 15px 0 0;
@@ -333,7 +360,6 @@ input[type="text"].am-filter-price.-to.right {
 }
 .filter-options .items.amshopby-fly-out-view li {
   margin: 0;
-  padding: 10px;
   border: 1px solid #cccccc;
   border-top: none;
 }
@@ -347,16 +373,15 @@ input[type="text"].am-filter-price.-to.right {
   background-color: transparent;
 }
 .filter-options .ui-widget-overlay {
-  background: #aaaaaa;
-  opacity: .3;
+  background: #aaa;
+  opacity: 0.3;
 }
 .filter-options .ui-widget-shadow {
-  -webkit-box-shadow: 0 0 5px #666666;
-  box-shadow: 0 0 5px #666666;
+  box-shadow: 0 0 5px #666;
 }
 .filter-options .am-category-view {
   position: absolute;
-  display: block;
+  display: none;
   margin: 0;
   padding: 10px;
   width: 100%;
@@ -367,6 +392,10 @@ input[type="text"].am-filter-price.-to.right {
   white-space: nowrap;
   overflow-y: auto;
   z-index: 9;
+}
+.filter-options .items.am-category-view,
+.filter-options .am-category-view ol.items {
+  margin: 0;
 }
 .filter-options .am-labels-folding .item a.amshopby-filter-parent,
 .filter-options .am-category-view .item a.amshopby-filter-parent {
@@ -389,6 +418,14 @@ input[type="text"].am-filter-price.-to.right {
 .amshopby-fly-out-view .ui-menu {
   width: 100%;
 }
+.amshopby-fly-out-view .items-children:not(.ui-menu) {
+  display: none;
+}
+.amshopby-fly-out-view a {
+  padding: 10px;
+  width: 100%;
+  display: inline-block;
+}
 .filter-options .ui-menu {
   display: block;
   margin: 0;
@@ -406,7 +443,7 @@ input[type="text"].am-filter-price.-to.right {
 }
 .filter-options .ui-menu .ui-menu-item-wrapper {
   position: relative;
-  padding: 3px 1em 3px .4em;
+  padding: 3px 1em 3px 0.4em;
 }
 .filter-options .ui-menu .ui-menu-divider {
   margin: 5px 0;
@@ -440,7 +477,7 @@ input[type="text"].am-filter-price.-to.right {
   border-style: solid;
   border-width: 0.5rem 0.4rem 0 0.4rem;
   box-sizing: border-box;
-  transition: all .2s linear;
+  transition: all 0.2s linear;
 }
 .amshopby-category-dropdown:before {
   content: '';
@@ -479,7 +516,9 @@ input[type="text"].am-filter-price.-to.right {
   margin: 0;
   padding: 0;
   width: 2rem;
-  font-size: .5em;
+  height: auto;
+  line-height: 1;
+  font-size: 0.5em;
   background-color: transparent;
   border: none;
   border-radius: 0;
@@ -524,7 +563,7 @@ input[type="text"].am-filter-price.-to.right {
   border-style: solid;
   border-width: 0.5rem 0.4rem 0 0.4rem;
   box-sizing: border-box;
-  transition: all .2s linear;
+  transition: all 0.2s linear;
   transform: rotate(-90deg);
 }
 .am-collapse-icon._active:after {
@@ -543,7 +582,7 @@ input[type="text"].am-filter-price.-to.right {
   display: none;
   width: 100%;
   background: #fff;
-  opacity: .5;
+  opacity: 0.5;
   z-index: 999;
 }
 #amasty-shopby-product-list #amasty-shopby-overlay .loader {
@@ -553,8 +592,11 @@ input[type="text"].am-filter-price.-to.right {
   display: block;
   width: 64px;
   height: 64px;
-  background-image: url('../images/loader-1.gif');
+  background-image: url('../Amasty_Shopby/images/loader-1.gif');
   transform: translate(-50%, -10%);
+}
+#amasty-shopby-product-list #amasty-shopby-overlay .loader:before {
+  content: '';
 }
 .amshopby-option-link {
   display: inline-block;
@@ -577,7 +619,7 @@ input[type="text"].am-filter-price.-to.right {
   -moz-transition: all 0.2s ease;
   -ms-transition: all 0.2s ease;
   transition: all 0.2s ease;
-  z-index: 999;
+  z-index: 9999;
 }
 .am_shopby_apply_filters.visible {
   bottom: 0;
@@ -598,13 +640,14 @@ input[type="text"].am-filter-price.-to.right {
   margin: 0 5px;
   width: 25px;
   height: 25px;
-  background-image: url(../images/loader-1.gif);
+  background-image: url('../Amasty_Shopby/images/loader-1.gif');
   background-size: contain;
   vertical-align: middle;
 }
 .am-show-button > .am-button {
   margin-left: 15px;
   padding: 17px 50px;
+  height: auto;
   border-radius: 5px;
   text-align: center;
   font-size: 14px;
@@ -624,9 +667,30 @@ input[type="text"].am-filter-price.-to.right {
 .filter [data-role="collapsible"]:not([data-collapsible="true"]) [data-role="content"] {
   display: none;
 }
+div.swatch-option-tooltip {
+  z-index: 9999;
+}
+.swatch-option-tooltip .image,
+.swatch-option-tooltip-layered .image {
+  background-size: contain !important;
+}
 .am-item-removed {
   text-decoration: line-through;
 }
 .am-category-image {
   vertical-align: middle;
+}
+.am-filter-current .filter-label {
+  vertical-align: middle;
+}
+.am-filter-current .am-filter-value {
+  display: inline-block;
+  max-width: 100%;
+  vertical-align: middle;
+}
+.am-filter-current .am-filter-value .am-swatch-options.color .swatch-option {
+  margin: 0;
+}
+.am-filter-current .am-shopby-swatch-label {
+  margin-left: 10px;
 }

@@ -1,9 +1,11 @@
 <?php
 /**
  * @author Amasty Team
- * @copyright Copyright (c) 2018 Amasty (https://www.amasty.com)
+ * @copyright Copyright (c) 2019 Amasty (https://www.amasty.com)
  * @package Amasty_Shopby
  */
+
+
 namespace Amasty\Shopby\Model\Layer\Filter;
 
 use Magento\Framework\Exception\StateException;
@@ -16,8 +18,8 @@ use Amasty\Shopby\Api\Data\FromToFilterInterface;
 class Price extends \Magento\CatalogSearch\Model\Layer\Filter\Price implements FromToFilterInterface
 {
     const NUMBERS_AFTER_POINT = 4;
-
     const AM_BASE_PRICE = 'am_base_price';
+    const DELTA_FOR_BORDERS_RANGE = 0.0049;
 
     use FromToDecimal;
 
@@ -200,6 +202,10 @@ class Price extends \Magento\CatalogSearch\Model\Layer\Filter\Price implements F
             empty($from) ? 0 : $from,
             $to ? $to - 0.01 : $to
         );
+
+        $from = $from ? round($from * $this->getCurrencyRate(), self::NUMBERS_AFTER_POINT) : $from;
+        $to = $to ? round($to * $this->getCurrencyRate(), self::NUMBERS_AFTER_POINT) : $to;
+
         $value = $from . '-' . $to . $this->dataProvider->getAdditionalRequestData();
         $data = [
             'label' => $label,
@@ -226,14 +232,23 @@ class Price extends \Magento\CatalogSearch\Model\Layer\Filter\Price implements F
         $noValidate = 0;
         $filterSetting = $this->settingHelper->getSettingByLayerFilter($this);
         $isSlider = $filterSetting->getDisplayMode() == DisplayMode::MODE_SLIDER;
+        $newValue = '';
 
-        if (!empty($filter) && !is_array($filter)) {
+        if (!empty($filter) && is_string($filter)) {
             $copyFilter = $filter;
             $filter = explode('-', $filter);
 
             $toValue = isset($filter[1]) && $filter[1] ? $filter[1] : '';
             $filter = $filter[0] . '-' . $toValue;
             $validateFilter = $this->dataProvider->validateFilter($copyFilter);
+
+            $values = explode('-', $copyFilter);
+            $displayMode = $filterSetting->getDisplayMode();
+            $includeBorders = $this->isSliderOrFromTo($displayMode) ? self::DELTA_FOR_BORDERS_RANGE : 0;
+
+            $values[0] = $values[0] ? ($values[0] - $includeBorders) / $this->getCurrencyRate() : '';
+            $values[1] = $values[1] ? ($values[1] + $includeBorders) / $this->getCurrencyRate() : '';
+            $newValue = $values[0] . '-' . $values[1];
 
             if (!$validateFilter) {
                 $noValidate = 1;
@@ -242,8 +257,9 @@ class Price extends \Magento\CatalogSearch\Model\Layer\Filter\Price implements F
             }
         }
 
-        $request->setParam($this->getRequestVar(), $filter);
+        $request->setParam($this->getRequestVar(), $newValue ?: $filter);
         $request->setPostValue(self::AM_BASE_PRICE, isset($copyFilter) ? $copyFilter : $filter);
+
         $apply = parent::apply($request);
 
         if ($noValidate) {
@@ -281,8 +297,10 @@ class Price extends \Magento\CatalogSearch\Model\Layer\Filter\Price implements F
             $filterSetting = $this->settingHelper->getSettingByLayerFilter($this);
             $rangeCalculation = $this->scopeConfig->getValue(AlgorithmFactory::XML_PATH_RANGE_CALCULATION);
             if ($rangeCalculation != AlgorithmFactory::RANGE_CALCULATION_IMPROVED || $this->isUnical($filterSetting)) {
-                $requestBuilder->removePlaceholder($this->getAttributeModel()->getAttributeCode() . '.from');
-                $requestBuilder->removePlaceholder($this->getAttributeModel()->getAttributeCode() . '.to');
+                $attributeCode = $this->getAttributeModel()->getAttributeCode();
+                $requestBuilder->removePlaceholder($attributeCode . '.from');
+                $requestBuilder->removePlaceholder($attributeCode . '.to');
+                $requestBuilder->setAggregationsOnly($attributeCode);
             }
             $queryRequest = $requestBuilder->create();
             $alteredQueryResponse = $this->searchEngine->search($queryRequest);
@@ -328,9 +346,18 @@ class Price extends \Magento\CatalogSearch\Model\Layer\Filter\Price implements F
      */
     public function isUnical($filterSetting)
     {
-        return ($filterSetting->getDisplayMode() == \Amasty\Shopby\Model\Source\DisplayMode::MODE_SLIDER ||
-        $filterSetting->getDisplayMode() == \Amasty\Shopby\Model\Source\DisplayMode::MODE_FROM_TO_ONLY ||
-        $filterSetting->getAddFromToWidget() === '1');
+        return $this->isSliderOrFromTo($filterSetting->getDisplayMode())
+            || $filterSetting->getAddFromToWidget() === '1';
+    }
+
+    /**
+     * @param $displayMode
+     * @return bool
+     */
+    public function isSliderOrFromTo($displayMode)
+    {
+        return $displayMode == \Amasty\Shopby\Model\Source\DisplayMode::MODE_SLIDER ||
+            $displayMode == \Amasty\Shopby\Model\Source\DisplayMode::MODE_FROM_TO_ONLY;
     }
 
     /**

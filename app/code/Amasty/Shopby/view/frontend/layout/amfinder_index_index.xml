@@ -2,7 +2,7 @@
 <!--
 /**
  * @author Amasty Team
- * @copyright Copyright (c) 2018 Amasty (https://www.amasty.com)
+ * @copyright Copyright (c) 2019 Amasty (https://www.amasty.com)
  * @package Amasty_Shopby
  */
 -->
@@ -24,6 +24,8 @@
         </referenceContainer>
 
         <referenceContainer name="sidebar.main">
+            <block class="Amasty\Shopby\Block\Navigation\FilterCollapsing\Category" name="catalog.navigation.collapsing" after="catalog.leftnav" template="Amasty_Shopby::layer/filter_collapsing.phtml"/>
+            <block class="Amasty\Shopby\Block\Navigation\SwatchesChoose\Category" name="catalog.navigation.swatches.choose" after="catalog.navigation.collapsing" template="Amasty_Shopby::layer/filter_swatches_choose.phtml"/>
             <block class="Amasty\Shopby\Block\Navigation\ApplyButton" name="amasty.shopby.applybutton.sidebar" after="catalog.leftnav">
                 <action method="setNavigationSelector">
                     <argument name="selector" xsi:type="string">.sidebar</argument>

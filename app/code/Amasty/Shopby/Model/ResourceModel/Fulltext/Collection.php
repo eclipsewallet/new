@@ -1,7 +1,7 @@
 <?php
 /**
  * @author Amasty Team
- * @copyright Copyright (c) 2018 Amasty (https://www.amasty.com)
+ * @copyright Copyright (c) 2019 Amasty (https://www.amasty.com)
  * @package Amasty_Shopby
  */
 
@@ -274,7 +274,7 @@ class Collection extends \Magento\Catalog\Model\ResourceModel\Product\Collection
             $this->_renderFilters();
         }
 
-        $response = $outerResponse ? $outerResponse : $this->queryResponse;
+        $response = $outerResponse ?: $this->queryResponse;
 
         $aggregations = $response->getAggregations();
         $bucket = $aggregations->getBucket($field . '_bucket');
@@ -380,7 +380,7 @@ class Collection extends \Magento\Catalog\Model\ResourceModel\Product\Collection
         $this->queryResponse = $this->searchEngine->search($queryRequest);
 
         $temporaryStorage = $this->temporaryStorageFactory->create();
-        $table = $temporaryStorage->storeDocuments($this->queryResponse->getIterator());
+        $table = $temporaryStorage->storeApiDocuments($this->queryResponse->getIterator());
 
         $this->getSelect()->joinInner(
             [
@@ -400,7 +400,9 @@ class Collection extends \Magento\Catalog\Model\ResourceModel\Product\Collection
      */
     protected function _beforeLoad()
     {
+        $this->setOrder('entity_id');
         $this->stockHelper->addIsInStockFilterToCollection($this);
+
         return parent::_beforeLoad();
     }
 
@@ -415,16 +417,10 @@ class Collection extends \Magento\Catalog\Model\ResourceModel\Product\Collection
             if ($this->relevanceOrderDirection) {
                 $this->getSelect()->order(
                     'search_result.'. TemporaryStorage::FIELD_SCORE . ' ' . $this->relevanceOrderDirection
-                )->order("e.entity_id ASC");
+                );
             }
 
             parent::_renderOrders();
-            if (!empty($this->_orders)) {
-                $filters = $this->_productLimitationFilters;
-                if (isset($filters['category_id']) || isset($filters['visibility'])) {
-                    $this->getSelect()->order("e.entity_id ASC");
-                }
-            }
         }
 
         return $this;

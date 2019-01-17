@@ -1,7 +1,7 @@
 <?php
 /**
  * @author Amasty Team
- * @copyright Copyright (c) 2018 Amasty (https://www.amasty.com)
+ * @copyright Copyright (c) 2019 Amasty (https://www.amasty.com)
  * @package Amasty_ShopbyBrand
  */
 
@@ -24,7 +24,7 @@ abstract class BrandListAbstract extends \Magento\Framework\View\Element\Templat
     const PATH_BRAND_ATTRIBUTE_CODE = 'amshopby_brand/general/attribute_code';
 
     /**
-     * @var  array
+     * @var  array|null
      */
     protected $items;
 
@@ -83,16 +83,10 @@ abstract class BrandListAbstract extends \Magento\Framework\View\Element\Templat
     private $settingByValue = [];
 
     /**
-     * BrandListAbstract constructor.
-     * @param Context $context
-     * @param Repository $repository
-     * @param OptionSettingHelper $optionSetting
-     * @param \Magento\CatalogSearch\Model\Layer\Category\ItemCollectionProvider $collectionProvider
-     * @param \Magento\Catalog\Model\Product\Url $productUrl
-     * @param \Magento\Catalog\Api\CategoryRepositoryInterface $categoryRepository
-     * @param DataHelper $helper
-     * @param array $data
+     * @var \Amasty\ShopbyBase\Api\UrlBuilderInterface
      */
+    private $amUrlBuilder;
+
     public function __construct(
         Context $context,
         Repository $repository,
@@ -104,6 +98,7 @@ abstract class BrandListAbstract extends \Magento\Framework\View\Element\Templat
         \Magento\Catalog\Api\CategoryRepositoryInterface $categoryRepository,
         DataHelper $helper,
         \Magento\Framework\Message\ManagerInterface $messageManager,
+        \Amasty\ShopbyBase\Api\UrlBuilderInterface $amUrlBuilder,
         array $data = []
     ) {
         parent::__construct($context, $data);
@@ -116,6 +111,7 @@ abstract class BrandListAbstract extends \Magento\Framework\View\Element\Templat
         $this->messageManager = $messageManager;
         $this->optionSettingCollectionFactory = $optionSettingCollectionFactory;
         $this->optionSettingFactory = $optionSettingFactory;
+        $this->amUrlBuilder = $amUrlBuilder;
     }
 
     /**
@@ -161,9 +157,12 @@ abstract class BrandListAbstract extends \Magento\Framework\View\Element\Templat
                 ScopeInterface::SCOPE_STORE
             );
             $filterCode = \Amasty\ShopbyBase\Helper\FilterSetting::ATTR_PREFIX . $attributeCode;
-            
-            $collection = $this->optionSettingCollectionFactory->create();
-            $collection->addFieldToFilter('filter_code', $filterCode);
+
+            $stores = [0,  $this->_storeManager->getStore()->getId()];
+            $collection = $this->optionSettingCollectionFactory->create()
+                ->addFieldToFilter('store_id', $stores)
+                ->addFieldToFilter('filter_code', $filterCode)
+                ->addOrder('store_id', 'ASC'); //current store values will rewrite defaults
             foreach ($collection as $item) {
                 $this->settingByValue[$item->getValue()] = $item;
             }
@@ -186,7 +185,7 @@ abstract class BrandListAbstract extends \Magento\Framework\View\Element\Templat
      */
     public function getBrandUrl(Option $option)
     {
-        return $this->helper->getBrandUrl($option);
+        return $this->amUrlBuilder->getUrl('ambrand/index/index', ['id' => $option->getValue()]);
     }
 
     /**

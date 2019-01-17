@@ -2,7 +2,7 @@
 <!--
 /**
  * @author Amasty Team
- * @copyright Copyright (c) 2018 Amasty (https://www.amasty.com)
+ * @copyright Copyright (c) 2019 Amasty (https://www.amasty.com)
  * @package Amasty_ShopbyBrand
  */
 -->
@@ -14,11 +14,6 @@
             <arguments>
                 <argument name="type" xsi:type="string">morefrom</argument>
             </arguments>
-            <block class="Magento\Catalog\Block\Product\ProductList\Item\Container" name="morefrom.product.addto" as="addto">
-                <block class="Magento\Catalog\Block\Product\ProductList\Item\AddTo\Compare"
-                       name="morefrom.product.addto.compare" as="compare"
-                       template="Magento_Catalog::product/list/addto/compare.phtml"/>
-            </block>
         </block>
     </referenceContainer>
 </page>

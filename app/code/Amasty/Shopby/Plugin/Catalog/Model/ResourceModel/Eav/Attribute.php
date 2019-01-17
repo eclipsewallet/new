@@ -1,7 +1,7 @@
 <?php
 /**
  * @author Amasty Team
- * @copyright Copyright (c) 2018 Amasty (https://www.amasty.com)
+ * @copyright Copyright (c) 2019 Amasty (https://www.amasty.com)
  * @package Amasty_Shopby
  */
 
@@ -113,6 +113,7 @@ class Attribute
 
         $data = $this->prepareData($subject->getData());
         $data['tooltip'] = $this->serializer->serialize($data['tooltip']);
+        $subject->setData('tooltip', null); //in the case of a conflict when column 'tooltip' exists in catalog_eav_attribute
         $filterSetting->addData($data);
         $currentFilterCode = $filterSetting->getFilterCode();
         if (empty($currentFilterCode)) {

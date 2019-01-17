@@ -1,7 +1,7 @@
 <?php
 /**
  * @author Amasty Team
- * @copyright Copyright (c) 2018 Amasty (https://www.amasty.com)
+ * @copyright Copyright (c) 2019 Amasty (https://www.amasty.com)
  * @package Amasty_Shopby
  */
 
@@ -16,6 +16,8 @@ use Magento\Framework\Search\Request\Query\Filter;
 use Magento\Framework\Search\RequestInterface;
 use Magento\Framework\Search\Request\QueryInterface as RequestQueryInterface;
 use Magento\Framework\App\ResourceConnection;
+use Magento\Store\Model\Store;
+use Magento\Framework\Module\Manager;
 
 class IndexBuilder
 {
@@ -49,6 +51,16 @@ class IndexBuilder
      */
     private $customExclusionStrategy;
 
+    /**
+     * @var \Magento\CatalogInventory\Model\ResourceModel\Stock\Status
+     */
+    private $stockResource;
+
+    /**
+     * @var Manager
+     */
+    private $moduleManager;
+
     public function __construct(
         \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
         \Magento\Store\Model\StoreManagerInterface $storeManager,
@@ -56,7 +68,9 @@ class IndexBuilder
         ResourceConnection $resource,
         \Amasty\Shopby\Model\Layer\Filter\IsNew\Helper $isNewHelper,
         \Amasty\Shopby\Model\Layer\Cms\Manager $cmsManager,
-        CustomExclusionStrategy $customExclusionStrategy
+        CustomExclusionStrategy $customExclusionStrategy,
+        \Magento\CatalogInventory\Model\ResourceModel\Stock\Status $stockResource,
+        Manager $moduleManager
     ) {
         $this->scopeConfig = $scopeConfig;
         $this->storeManager = $storeManager;
@@ -64,6 +78,8 @@ class IndexBuilder
         $this->resource = $resource;
         $this->cmsManager = $cmsManager;
         $this->customExclusionStrategy = $customExclusionStrategy;
+        $this->stockResource = $stockResource;
+        $this->moduleManager = $moduleManager;
     }
 
     /**
@@ -168,17 +184,21 @@ class IndexBuilder
      */
     protected function addStockDataToSelect(Select $select)
     {
-        $connection = $select->getConnection();
-
-        $select->joinLeft(
-            ['stock_status_filter' => $this->resource->getTableName('cataloginventory_stock_status')],
-            'search_index.entity_id = stock_status_filter.product_id'
-            . $connection->quoteInto(
-                ' AND stock_status_filter.website_id IN (?, 0)',
-                $this->storeManager->getWebsite()->getId()
-            ),
+        $select->joinInner(
+            ['e' => $this->resource->getTableName('catalog_product_entity')],
+            'search_index.entity_id = e.entity_id',
             []
         );
+        if ($this->moduleManager->isEnabled('Mangeto_Inventory')) {
+            $website = $this->storeManager->getStore()->getWebsite();
+        } else {
+            // in old versions stock saved only for default website
+            $website = $this->storeManager->getStore(Store::DEFAULT_STORE_ID)->getWebsite();
+        }
+
+        $this->stockResource->addStockStatusToSelect($select, $website);
+
+        $this->renameStockTable($select);
     }
 
     /**
@@ -201,5 +221,23 @@ class IndexBuilder
             'amshopby/stock_filter/enabled',
             \Magento\Store\Model\ScopeInterface::SCOPE_STORE
         );
+    }
+
+    /**
+     * @param Select $select
+     */
+    private function renameStockTable($select)
+    {
+        // remove unused alias
+        $columns = $select->getPart(Select::COLUMNS);
+        array_pop($columns);
+        $select->setPart(Select::COLUMNS, $columns);
+        // rename stock table in stock_status_filter
+        $from = $select->getPart(Select::FROM);
+        $stockStatus = $from['stock_status'];
+        unset($from['stock_status']);
+        $stockStatus['joinCondition'] = str_replace('stock_status', 'stock_status_filter', $stockStatus['joinCondition']);
+        $from['stock_status_filter'] = $stockStatus;
+        $select->setPart(Select::FROM, $from);
     }
 }

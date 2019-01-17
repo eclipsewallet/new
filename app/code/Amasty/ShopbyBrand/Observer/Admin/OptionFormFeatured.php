@@ -1,7 +1,7 @@
 <?php
 /**
  * @author Amasty Team
- * @copyright Copyright (c) 2018 Amasty (https://www.amasty.com)
+ * @copyright Copyright (c) 2019 Amasty (https://www.amasty.com)
  * @package Amasty_ShopbyBrand
  */
 
@@ -70,7 +70,9 @@ class OptionFormFeatured implements ObserverInterface
                 [
                     'name' => 'slider_position',
                     'label' => __('Position in Slider'),
-                    'title' => __('Position in Slider')
+                    'title' => __('Position in Slider'),
+                    'note' => __('Please make sure Sort By "Position" is selected in the following setting group: STORES -> 
+                                  Configuration -> Improved Layered Navigation: Brands -> Brand Slider')
                 ]
             );
         }

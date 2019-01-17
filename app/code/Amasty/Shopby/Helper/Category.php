@@ -1,7 +1,7 @@
 <?php
 /**
  * @author Amasty Team
- * @copyright Copyright (c) 2018 Amasty (https://www.amasty.com)
+ * @copyright Copyright (c) 2019 Amasty (https://www.amasty.com)
  * @package Amasty_Shopby
  */
 
@@ -23,6 +23,7 @@ class Category extends \Magento\Framework\App\Helper\AbstractHelper
     const CHILDREN_CATEGORIES_SETTING_PATH = 'amshopby/children_categories/';
     const DEFAULT_CATEGORY_FILTER_IMAGE_SIZE = 20;
     const MIN_CATEGORY_DEPTH = 1;
+    const CATEGORY_FILTER_PARAM = 'cat';
 
     /**
      * @var \Amasty\ShopbyBase\Api\Data\FilterSettingInterface
@@ -39,6 +40,11 @@ class Category extends \Magento\Framework\App\Helper\AbstractHelper
      */
     protected $layer;
 
+    /**
+     * @var \Magento\Catalog\Model\Layer\Resolver
+     */
+    private $layerResolver;
+    
     /**
      * @var \Magento\Catalog\Api\CategoryRepositoryInterface
      */
@@ -88,7 +94,7 @@ class Category extends \Magento\Framework\App\Helper\AbstractHelper
         parent::__construct($context);
         $this->settingHelper = $settingHelper;
         $this->categoryManager = $categoryManager;
-        $this->layer = $layerResolver->get();
+        $this->layerResolver = $layerResolver;
         $this->categoryRepository = $categoryRepository;
         $this->categoryCollectionFactory = $categoryCollectionFactory;
         $this->image = $image;
@@ -123,9 +129,9 @@ class Category extends \Magento\Framework\App\Helper\AbstractHelper
     {
         if ($this->getSetting()->getCategoryTreeDepth() ==  self::MIN_CATEGORY_DEPTH
             && !$this->getSetting()->getRenderAllCategoriesTree()
-            && $this->layer->getCurrentCategory()->getChildrenCount()
+            && $this->getLayer()->getCurrentCategory()->getChildrenCount()
         ) {
-            $category = $this->layer->getCurrentCategory();
+            $category = $this->getLayer()->getCurrentCategory();
         } elseif ($this->getSetting()->getRenderCategoriesLevel() == RenderCategoriesLevel::ROOT_CATEGORY
             || !!$this->getSetting()->getRenderAllCategoriesTree()
             || $this->getSetting()->getCategoryTreeDepth() ==  self::MIN_CATEGORY_DEPTH
@@ -135,14 +141,14 @@ class Category extends \Magento\Framework\App\Helper\AbstractHelper
                 $this->categoryManager->getCurrentStoreId()
             );
         } elseif ($this->getSetting()->getRenderCategoriesLevel() == RenderCategoriesLevel::CURRENT_CATEGORY_LEVEL) {
-            if ($this->layer->getCurrentCategory()->getId() == $this->categoryManager->getRootCategoryId()) {
-                $category = $this->layer->getCurrentCategory();
+            if ($this->getLayer()->getCurrentCategory()->getId() == $this->categoryManager->getRootCategoryId()) {
+                $category = $this->getLayer()->getCurrentCategory();
             } else {
-                $categoryId = $this->layer->getCurrentCategory()->getParentId();
+                $categoryId = $this->getLayer()->getCurrentCategory()->getParentId();
                 $category = $this->categoryRepository->get($categoryId, $this->categoryManager->getCurrentStoreId());
             }
         } else { //  RenderCategoriesLevel::CURRENT_CATEGORY_CHILDREN
-            $category = $this->layer->getCurrentCategory();
+            $category = $this->getLayer()->getCurrentCategory();
         }
         $this->startCategory = $category;
 
@@ -221,11 +227,19 @@ class Category extends \Magento\Framework\App\Helper\AbstractHelper
     }
 
     /**
-     * @return bool
+     * @return int
      */
-    public function isChildrenCategoriesBlockEnabled()
+    public function getChildrenCategoriesBlockDisplayMode()
     {
-        return $this->getChildrenCategoriesSetting('enabled', true);
+        return $this->getChildrenCategoriesSetting('display_mode');
+    }
+
+    /**
+     * @return string
+     */
+    public function getAllowCategories()
+    {
+        return $this->getChildrenCategoriesSetting('categories');
     }
 
     /**
@@ -263,12 +277,23 @@ class Category extends \Magento\Framework\App\Helper\AbstractHelper
     /**
      * @return \Amasty\ShopbyBase\Api\Data\FilterSettingInterface
      */
-    private function getSetting()
+    public function getSetting()
     {
         if ($this->setting === null) {
             $this->setting = $this->settingHelper->getSettingByAttributeCode(self::ATTRIBUTE_CODE);
         }
 
         return $this->setting;
+    }
+
+    /**
+     * @return \Magento\Catalog\Model\Layer
+     */
+    public function getLayer()
+    {
+        if (!$this->layer) {
+            $this->layer = $this->layerResolver->get();
+        }
+        return $this->layer;
     }
 }

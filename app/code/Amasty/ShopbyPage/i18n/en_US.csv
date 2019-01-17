@@ -22,6 +22,7 @@ Description,Description
 "Delete Image","Delete Image"
 Image,Image
 "Top CMS Block","Top CMS Block"
+"Bottom CMS Block","Bottom CMS Block"
 "Custom Page Information","Custom Page Information"
 "Attribute doesn't exists","Attribute doesn't exists"
 "We can't fetch attribute options.","We can't fetch attribute options."

@@ -1,7 +1,7 @@
 <?php
 /**
  * @author Amasty Team
- * @copyright Copyright (c) 2018 Amasty (https://www.amasty.com)
+ * @copyright Copyright (c) 2019 Amasty (https://www.amasty.com)
  * @package Amasty_Shopby
  */
 
@@ -50,6 +50,7 @@ class State extends \Magento\LayeredNavigation\Block\Navigation\State
         \Magento\Framework\Pricing\PriceCurrencyInterface $priceCurrency,
         ShopbyHelper $helper,
         \Magento\Framework\View\Element\BlockFactory $blockFactory,
+        \Amasty\ShopbyBase\Api\UrlBuilderInterface $urlBuilder,
         array $data = []
     ) {
         $this->filterSettingHelper = $filterSettingHelper;
@@ -58,6 +59,7 @@ class State extends \Magento\LayeredNavigation\Block\Navigation\State
         $this->helper = $helper;
         $this->blockFactory = $blockFactory;
         parent::__construct($context, $layerResolver, $data);
+        $this->_urlBuilder = $urlBuilder;
     }
 
     /**
@@ -140,10 +142,10 @@ class State extends \Magento\LayeredNavigation\Block\Navigation\State
     protected function viewExtendedLabel($filter)
     {
         if ($filter->getFilter()->getRequestVar() == \Amasty\Shopby\Model\Source\DisplayMode::ATTRUBUTE_PRICE) {
-            $currencyRate = (float)$filter->getFilter()->getCurrencyRate();
+            $currencyRate = (float) $filter->getFilter()->getCurrencyRate();
 
-            if ($currencyRate !== 1) {
-                $value = $this->generateValueLabel($filter, $currencyRate);
+            if ($currencyRate != 1) {
+                $value = $this->generateValueLabel($filter);
             } else {
                 $value = $filter->getOptionLabel();
             }
@@ -155,20 +157,22 @@ class State extends \Magento\LayeredNavigation\Block\Navigation\State
     }
 
     /**
-     * @param $filter
+     * @param $filterItem
      * @param $currencyRate
      * @return \Magento\Framework\Phrase
      */
-    private function generateValueLabel($filter, $currencyRate)
+    private function generateValueLabel($filterItem)
     {
-        $arguments = $filter->getLabel()->getArguments();
-        $stepSlider = $this->filterSettingHelper->getSettingByLayerFilter($filter->getFilter())->getSliderStep();
+        $arguments = $filterItem->getLabel()->getArguments();
+        $filter = $filterItem->getFilter();
+        $filterSetting = $this->filterSettingHelper->getSettingByLayerFilter($filter);
+        $stepSlider = $filterSetting->getSliderStep();
 
         if (!isset($arguments[1])) {
             $arguments[1] = "";
         }
 
-        $currencySymbol = $filter->getFilter()->getCurrencySymbol();
+        $currencySymbol = $this->escapeHtml($filter->getCurrencySymbol());
 
         $arguments[0] = preg_replace("/[^,.0-9]/", '', $arguments[0]);
         $arguments[1] = preg_replace("/[^,.0-9]/", '', $arguments[1]);
@@ -237,14 +241,15 @@ class State extends \Magento\LayeredNavigation\Block\Navigation\State
 
     /**
      * @param $value
-     * @param $filter
+     * @param $filterItem
      * @return float|string
      */
-    public function getFilterValue($value, $filter)
+    public function getFilterValue($value, $filterItem)
     {
-        if ($filter->getFilter() instanceof \Amasty\Shopby\Model\Layer\Filter\Price && count($value) >= 2) {
-            $value[0] = $value[0];
-            $value[1] = $value[1] ?: '';
+        $filter = $filterItem->getFilter();
+        if ($filter instanceof \Amasty\Shopby\Model\Layer\Filter\Price && count($value) >= 2) {
+            $value[0] = $value[0] ? $value[0] * $filter->getCurrencyRate() : '';
+            $value[1] = $value[1] ? $value[1] * $filter->getCurrencyRate() : '';
         } elseif (is_array($value)) {
             $value = $value[0];
         }
@@ -261,7 +266,9 @@ class State extends \Magento\LayeredNavigation\Block\Navigation\State
         $value = null;
 
         if (isset($resultValue)) {
-            $value = $this->escapeHtml(is_array($resultValue) ? implode('-', $resultValue) : $resultValue, false);
+            $value = $this->escapeHtml(
+                $this->stripTags(is_array($resultValue) ? implode('-', $resultValue) : $resultValue, false)
+            );
         }
 
         return $value;

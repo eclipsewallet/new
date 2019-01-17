@@ -1,4 +1,9 @@
-"Improved Layered Navigation: All Products","Improved Layered Navigation: All Products"
-General,General
-"Enable All Products Page","Enable All Products Page"
-"All Products Page URL","All Products Page URL"
+
+
+                                                      
+  [UnexpectedValueException]                          
+  No phrases found in the specified dictionary file.  
+                                                      
+
+
+i18n:collect-phrases [-o|--output="..."] [-m|--magento] [directory]

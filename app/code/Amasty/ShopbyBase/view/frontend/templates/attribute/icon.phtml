@@ -1,29 +1,30 @@
 <?php
 /**
  * @author Amasty Team
- * @copyright Copyright (c) 2018 Amasty (https://www.amasty.com)
+ * @copyright Copyright (c) 2019 Amasty (https://www.amasty.com)
  * @package Amasty_ShopbyBase
  */
 ?>
 <?php
 
 use Amasty\ShopbyBase\Plugin\Catalog\Block\Product\View\BlockHtmlTitlePluginAbstract as TitlePlugin;
+use Amasty\ShopbyBase\Model\OptionSetting;
 
 /** @var $block \Magento\Framework\View\Element\Template */
 $optionsData = $block->getData('options_data');
 ?>
 
 <?php foreach ($optionsData as $setting) : ?>
-    <?php $title = $block->stripTags($setting[TitlePlugin::TITLE]) ?>
+    <?php
+    $title = $block->stripTags($setting[TitlePlugin::TITLE]);
+    $alt = $block->stripTags($setting[OptionSetting::SMALL_IMAGE_ALT]) ?: $title;
+    ?>
     <div class="amshopby-option-link">
         <a href="<?= /* @escapeNotVerified */ $setting[TitlePlugin::LINK_URL] ?>"
-            <?= isset($setting[TitlePlugin::TOOLTIP_JS]) ? $setting[TitlePlugin::TOOLTIP_JS] : '' ?>
-        >
-            <img
-                title="<?= /* @escapeNotVerified */ $title; ?>"
-                alt="<?= /* @escapeNotVerified */ $title; ?>"
-                src="<?= /* @escapeNotVerified */ $setting[TitlePlugin::IMAGE_URL] ?>"
-            />
+            <?= isset($setting[TitlePlugin::TOOLTIP_JS]) ? $setting[TitlePlugin::TOOLTIP_JS] : '' ?>>
+            <img title="<?= /* @escapeNotVerified */ $title; ?>"
+                alt="<?= /* @escapeNotVerified */ $alt; ?>"
+                src="<?= /* @escapeNotVerified */ $setting[TitlePlugin::IMAGE_URL] ?>"/>
         </a>
         <?php if (isset($setting[TitlePlugin::SHORT_DESCRIPTION]) && $setting[TitlePlugin::SHORT_DESCRIPTION]) : ?>
             <span class="link-short-description">

@@ -1,7 +1,7 @@
 <?php
 /**
  * @author Amasty Team
- * @copyright Copyright (c) 2018 Amasty (https://www.amasty.com)
+ * @copyright Copyright (c) 2019 Amasty (https://www.amasty.com)
  * @package Amasty_Shopby
  */
 
@@ -15,6 +15,8 @@ use Magento\Framework\App\ScopeResolverInterface;
 use Magento\Framework\DB\Ddl\Table;
 use Magento\Framework\Search\Request\BucketInterface;
 use Magento\Catalog\Model\Product;
+use Magento\Framework\Module\Manager;
+use Magento\Store\Model\Store;
 
 class DataProvider
 {
@@ -59,6 +61,16 @@ class DataProvider
     private $eavConfig;
 
     /**
+     * @var \Magento\CatalogInventory\Model\ResourceModel\Stock\Status
+     */
+    private $stockResource;
+
+    /**
+     * @var Manager
+     */
+    private $moduleManager;
+
+    /**
      * AggregationDataProvider constructor.
      * @param ResourceConnection $resource
      * @param ScopeResolverInterface $scopeResolver
@@ -77,7 +89,9 @@ class DataProvider
         \Amasty\Shopby\Model\Layer\Filter\IsNew\Helper $isNewHelper,
         \Amasty\Shopby\Model\Layer\Filter\OnSale\Helper $onSaleHelper,
         \Magento\Eav\Model\Config $eavConfig,
-        ScopeConfigInterface $scopeConfig
+        ScopeConfigInterface $scopeConfig,
+        \Magento\CatalogInventory\Model\ResourceModel\Stock\Status $stockResource,
+        Manager $moduleManager
     ) {
         $this->resource = $resource;
         $this->scopeResolver = $scopeResolver;
@@ -87,6 +101,8 @@ class DataProvider
         $this->onSaleHelper = $onSaleHelper;
         $this->scopeConfig = $scopeConfig;
         $this->eavConfig = $eavConfig;
+        $this->stockResource = $stockResource;
+        $this->moduleManager = $moduleManager;
     }
 
     /**
@@ -156,15 +172,22 @@ class DataProvider
     {
         $derivedTable = $this->resource->getConnection()->select();
         $derivedTable->from(
-            ['main_table' => $this->resource->getTableName('cataloginventory_stock_status')],
-            [
-                'value' => 'stock_status',
-            ]
+            ['e' => $this->resource->getTableName('catalog_product_entity')]
         )->joinInner(
             ['entities' => $entityIdsTable->getName()],
-            'main_table.product_id  = entities.entity_id',
+            'e.entity_id  = entities.entity_id',
             []
-        )->where('main_table.stock_id = 1');
+        );
+        $stockStatusColumn = 'stock_status';
+        if ($this->moduleManager->isEnabled('Mangeto_Inventory')) {
+            $website = $this->scopeResolver->getScope()->getWebsite();
+            $stockStatusColumn = 'is_salable';
+        } else {
+            // in old versions stock saved only for default website
+            $website = $this->scopeResolver->getScope(Store::DEFAULT_STORE_ID)->getWebsite();
+        }
+        $this->stockResource->addStockStatusToSelect($derivedTable, $website);
+        $derivedTable->columns(['value' => 'stock_status.' . $stockStatusColumn]);
 
         $select = $this->resource->getConnection()->select();
         $select->from(['main_table' => $derivedTable]);

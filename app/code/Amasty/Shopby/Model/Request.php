@@ -1,7 +1,7 @@
 <?php
 /**
  * @author Amasty Team
- * @copyright Copyright (c) 2018 Amasty (https://www.amasty.com)
+ * @copyright Copyright (c) 2019 Amasty (https://www.amasty.com)
  * @package Amasty_Shopby
  */
 
@@ -60,7 +60,7 @@ class Request extends \Magento\Framework\DataObject
     private function getParams($filter)
     {
         if ($filter->getRequestVar() == \Amasty\Shopby\Model\Source\DisplayMode::ATTRUBUTE_PRICE) {
-            $param = $this->getPostValue(Price::AM_BASE_PRICE) ?: $this->getParam($filter->getRequestVar());
+            $param = $this->getParam(Price::AM_BASE_PRICE) ?: $this->getParam($filter->getRequestVar());
         } else {
             $param = $this->getParam($filter->getRequestVar());
         }
@@ -100,6 +100,21 @@ class Request extends \Magento\Framework\DataObject
         }
 
         return $data;
+    }
+
+    public function getRequestParams()
+    {
+        $result = $this->getBulkParams();
+
+        if (!$result) {
+            foreach ($this->request->getParams() as $key => $param) {
+                if ($param && $key !== 'id') {
+                    $result[$key][] = $param;
+                }
+            }
+        }
+
+        return $result;
     }
 
     /**

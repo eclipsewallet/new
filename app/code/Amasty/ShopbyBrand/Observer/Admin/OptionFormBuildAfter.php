@@ -1,7 +1,7 @@
 <?php
 /**
  * @author Amasty Team
- * @copyright Copyright (c) 2018 Amasty (https://www.amasty.com)
+ * @copyright Copyright (c) 2019 Amasty (https://www.amasty.com)
  * @package Amasty_ShopbyBrand
  */
 
@@ -26,14 +26,18 @@ class OptionFormBuildAfter implements ObserverInterface
     private $config;
 
     /**
-     * OptionFormBuildAfter constructor.
-     * @param Page $page
-     * @param \Magento\Framework\App\Config\ScopeConfigInterface $config
+     * @var \Amasty\ShopbyBase\Helper\Data
      */
-    public function __construct(Page $page, \Magento\Framework\App\Config\ScopeConfigInterface $config)
-    {
+    private $helper;
+
+    public function __construct(
+        Page $page,
+        \Magento\Framework\App\Config\ScopeConfigInterface $config,
+        \Amasty\ShopbyBase\Helper\Data $helper
+    ) {
         $this->page = $page;
         $this->config = $config;
+        $this->helper = $helper;
     }
 
     /**
@@ -120,6 +124,20 @@ class OptionFormBuildAfter implements ObserverInterface
             'textarea',
             ['name' => 'description', 'label' => __('Description'), 'title' => __('Description')]
         );
+
+        if ($model->getFilterCode() == 'attr_' . $this->helper->getBrandAttributeCode()) {
+            $productListFieldset->addField(
+                'short_description',
+                'textarea',
+                [
+                    'name' => 'short_description',
+                    'label' => __('Short Description'),
+                    'title' => __('Short Description')
+                ],
+                'description'
+            );
+        }
+
         $categoryImage = '';
         $categoryImageUseDefault = $model->getData('image_use_default') && $model->getCurrentStoreId();
         if ($model->getImageUrl()) {
@@ -155,7 +173,21 @@ class OptionFormBuildAfter implements ObserverInterface
                 'name' => 'top_cms_block_id',
                 'label' => __('Top CMS Block'),
                 'title' => __('Top CMS Block'),
-                'values'=>$listCmsBlocks
+                'values' => $listCmsBlocks
+            ]
+        );
+
+        $productListFieldset->addField(
+            'bottom_cms_block_id',
+            'select',
+            [
+                'name' => 'bottom_cms_block_id',
+                'label' => __('Bottom CMS Block'),
+                'title' => __('Bottom CMS Block'),
+                'values' => $listCmsBlocks,
+                'note' => __("Please make sure the attribute is selected in the following setting: STORES -> 
+                Configuration -> Improved Layered Navigation -> Category Title and Description -> 
+                'Add the title & description of the selected filters'")
             ]
         );
     }
@@ -202,6 +234,16 @@ class OptionFormBuildAfter implements ObserverInterface
                 'title' => __('Small Image'),
                 'note'  => $note,
                 'after_element_html'=>$sliderImage
+            ]
+        );
+
+        $featuredFieldset->addField(
+            'small_image_alt',
+            'text',
+            [
+                'name' => 'small_image_alt',
+                'label' => __('Small Image Alt'),
+                'title' => __('Small Image Alt')
             ]
         );
     }

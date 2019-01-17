@@ -1,7 +1,7 @@
 <?php
 /**
  * @author Amasty Team
- * @copyright Copyright (c) 2018 Amasty (https://www.amasty.com)
+ * @copyright Copyright (c) 2019 Amasty (https://www.amasty.com)
  * @package Amasty_ShopbyBrand
  */
 
@@ -59,6 +59,7 @@ class BrandSlider extends BrandListAbstract implements \Magento\Widget\Block\Blo
         Registry $registry,
         DataHelper $helper,
         \Magento\Framework\Message\ManagerInterface $messageManager,
+        \Amasty\ShopbyBase\Api\UrlBuilderInterface $amUrlBuilder,
         array $data = []
     ) {
         parent::__construct(
@@ -72,6 +73,7 @@ class BrandSlider extends BrandListAbstract implements \Magento\Widget\Block\Blo
             $categoryRepository,
             $helper,
             $messageManager,
+            $amUrlBuilder,
             $data
         );
         $this->registry = $registry;
@@ -95,10 +97,11 @@ class BrandSlider extends BrandListAbstract implements \Magento\Widget\Block\Blo
         }
 
         return [
-            'label'    => $setting->getLabel(),
-            'url'      => $this->getBrandUrl($option),
-            'img'      => $setting->getSliderImageUrl(),
-            'position' => $setting->getSliderPosition()
+            'label' => $setting->getLabel(),
+            'url' => $this->getBrandUrl($option),
+            'img' => $setting->getSliderImageUrl(),
+            'position' => $setting->getSliderPosition(),
+            'alt' => $setting->getSmallImageAlt() ?: $setting->getLabel()
         ];
     }
 

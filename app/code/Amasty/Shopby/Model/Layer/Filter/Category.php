@@ -1,7 +1,7 @@
 <?php
 /**
  * @author Amasty Team
- * @copyright Copyright (c) 2018 Amasty (https://www.amasty.com)
+ * @copyright Copyright (c) 2019 Amasty (https://www.amasty.com)
  * @package Amasty_Shopby
  */
 
@@ -25,6 +25,8 @@ class Category extends \Magento\Catalog\Model\Layer\Filter\AbstractFilter
     use FilterTrait;
 
     const MIN_CATEGORY_DEPTH = 1;
+
+    const DENY_PERMISSION = '-2';
 
     /**
      * @var \Amasty\Shopby\Model\Search\Adapter\Mysql\AggregationAdapter
@@ -99,6 +101,11 @@ class Category extends \Magento\Catalog\Model\Layer\Filter\AbstractFilter
      */
     private $messageManager;
 
+    /**
+     * @var \Magento\Framework\App\ProductMetadataInterface
+     */
+    private $productMetadata;
+
     public function __construct(
         \Magento\Catalog\Model\Layer\Filter\ItemFactory $filterItemFactory,
         \Magento\Store\Model\StoreManagerInterface $storeManager,
@@ -118,6 +125,7 @@ class Category extends \Magento\Catalog\Model\Layer\Filter\AbstractFilter
         \Amasty\Shopby\Helper\Category $categoryHelper,
         SearchEngine $searchEngine,
         \Magento\Framework\Message\ManagerInterface $messageManager,
+        \Magento\Framework\App\ProductMetadataInterface $productMetadata,
         array $data = []
     ) {
         parent::__construct(
@@ -142,6 +150,7 @@ class Category extends \Magento\Catalog\Model\Layer\Filter\AbstractFilter
         $this->categoryFactory = $categoryFactory;
         $this->searchEngine = $searchEngine;
         $this->messageManager = $messageManager;
+        $this->productMetadata = $productMetadata;
     }
 
     /**
@@ -236,7 +245,8 @@ class Category extends \Magento\Catalog\Model\Layer\Filter\AbstractFilter
     {
         /** @var CategoryItems $itemsCollection */
         $itemsCollection = $this->categoryItemsFactory->create();
-        if ($data = $this->getExtendedCategoryData()) {
+        $data = $this->getExtendedCategoryData();
+        if ($data && ($data['count'] > 1 || !$this->isMultiselect())) {
             $itemsCollection->setStartPath($data['startPath']);
             $itemsCollection->setCount($data['count']);
             foreach ($data['items'] as $path => $items) {
@@ -250,6 +260,7 @@ class Category extends \Magento\Catalog\Model\Layer\Filter\AbstractFilter
         }
 
         $this->_items = $itemsCollection;
+
         return $this;
     }
 
@@ -328,7 +339,9 @@ class Category extends \Magento\Catalog\Model\Layer\Filter\AbstractFilter
         $collection = $this->getExtendedCategoryCollection($startCategory);
         $currentCategoryParents = $this->getLayer()->getCurrentCategory()->getParentIds();
         foreach ($collection as $category) {
+            $isAllowed = $this->isAllowedOnEnterprise($category);
             if (!isset($optionsFacetedData[$category->getId()])
+                || !$isAllowed
                 || (!$this->isRenderAllTree()
                     && !in_array($category->getParentId(), $currentCategoryParents)
                     && $this->getCategoriesTreeDept() != self::MIN_CATEGORY_DEPTH
@@ -357,6 +370,21 @@ class Category extends \Magento\Catalog\Model\Layer\Filter\AbstractFilter
         }
 
         return $itemsData;
+    }
+
+    /**
+     * @param $category
+     * @return bool
+     */
+    private function isAllowedOnEnterprise($category)
+    {
+        $isAllowed = true;
+        if ($this->productMetadata->getEdition() == 'Enterprise') {
+            $permissions = $category->getPermissions();
+            $isAllowed = $permissions['grant_catalog_category_view'] !== self::DENY_PERMISSION;
+        }
+
+        return $isAllowed;
     }
 
     /**
@@ -436,6 +464,7 @@ class Category extends \Magento\Catalog\Model\Layer\Filter\AbstractFilter
         $requestBuilder->removePlaceholder(CategoryHelper::ATTRIBUTE_CODE);
 
         $requestBuilder->bind(CategoryHelper::ATTRIBUTE_CODE, $category->getId());
+        $requestBuilder->setAggregationsOnly(CategoryHelper::ATTRIBUTE_CODE);
         $queryRequest = $requestBuilder->create();
 
         $alteredQueryResponse = $this->searchEngine->search($queryRequest);
@@ -516,20 +545,35 @@ class Category extends \Magento\Catalog\Model\Layer\Filter\AbstractFilter
     {
         $alteredQueryResponse = null;
 
-        if ($this->hasCurrentValue() ||
-            $this->getRenderCategoriesLevel() == RenderCategoriesLevel::CURRENT_CATEGORY_LEVEL ||
-            $this->getRenderCategoriesLevel() == RenderCategoriesLevel::ROOT_CATEGORY
-        ) {
-            /** @var \Amasty\Shopby\Model\ResourceModel\Fulltext\Collection $productCollection */
-            $productCollection = $this->getLayer()->getProductCollection();
-            $requestBuilder = clone $productCollection->getMemRequestBuilder();
-            $requestBuilder->removePlaceholder(CategoryHelper::ATTRIBUTE_CODE);
-            $requestBuilder->bind(CategoryHelper::ATTRIBUTE_CODE, $this->getRootCategory()->getId());
-            $queryRequest = $requestBuilder->create();
+        $isCurrentLevel = $this->getRenderCategoriesLevel() == RenderCategoriesLevel::CURRENT_CATEGORY_LEVEL;
+        $isRootLevel = $this->getRenderCategoriesLevel() == RenderCategoriesLevel::ROOT_CATEGORY;
 
-            $alteredQueryResponse = $this->searchEngine->search($queryRequest);
+        if ($this->hasCurrentValue() || (($isCurrentLevel || $isRootLevel) && $this->isMultiselect())) {
+            $alteredQueryResponse = $this->searchEngine->search($this->buildQueryRequest($isCurrentLevel));
         }
+
         return $alteredQueryResponse;
+    }
+
+    /**
+     * @param $isCurrentLevel
+     * @return \Magento\Framework\Search\RequestInterface
+     */
+    private function buildQueryRequest($isCurrentLevel)
+    {
+        $categoryId = $isCurrentLevel && $this->isMultiselect()
+            ? $this->getLayer()->getCurrentCategory()->getId()
+            : $this->getRootCategory()->getId();
+
+        /** @var \Amasty\Shopby\Model\ResourceModel\Fulltext\Collection $productCollection */
+        $productCollection = $this->getLayer()->getProductCollection();
+        $requestBuilder = clone $productCollection->getMemRequestBuilder();
+        $requestBuilder->removePlaceholder(CategoryHelper::ATTRIBUTE_CODE);
+        $requestBuilder->bind(CategoryHelper::ATTRIBUTE_CODE, $categoryId);
+        $requestBuilder->setAggregationsOnly(CategoryHelper::ATTRIBUTE_CODE);
+        $queryRequest = $requestBuilder->create();
+
+        return $queryRequest;
     }
 
     /**
@@ -625,5 +669,13 @@ class Category extends \Magento\Catalog\Model\Layer\Filter\AbstractFilter
         }
 
         return $this->filterSetting;
+    }
+
+    /**
+     * @return int
+     */
+    public function getPosition()
+    {
+        return $this->helper->getCategoryPosition();
     }
 }
