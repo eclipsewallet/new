@@ -77,9 +77,9 @@ class File extends \Magento\Customer\Model\Metadata\Form\File
         $helper = ObjectManager::getInstance()->get(Data::class);
 
         if ($helper->versionCompare('2.2.0')) {
-            parent::__construct($localeDate, $logger, $attribute, $localeResolver, $value, $entityTypeCode, $isAjax, $urlEncoder, $fileValidator, $fileSystem, $uploaderFactory, $fileProcessorFactory);
-        } else {
             parent::__construct($localeDate, $logger, $attribute, $localeResolver, $value, $entityTypeCode, $isAjax, $urlEncoder, $fileValidator, $fileSystem, $uploaderFactory);
+        } else {
+            parent::__construct($localeDate, $logger, $attribute, $localeResolver, $value, $entityTypeCode, $isAjax, $urlEncoder, $fileValidator, $fileSystem, $uploaderFactory, $fileProcessorFactory);
         }
     }
 }
