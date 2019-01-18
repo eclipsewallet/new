@@ -1,6 +1,7 @@
 define([
     'jquery',
     'thailand',
+    'thaieng',
     'uiComponent',
     'Magento_Checkout/js/checkout-data',
     'uiRegistry',
@@ -8,6 +9,7 @@ define([
     'text!Marvelic_Postcode/js/database/raw_database/raw_database1.json'
 ], function ($,
              Thailand,
+             ThaiAddressEnTh,
              Component,
              checkoutData,
              uiRegistry,
@@ -49,7 +51,10 @@ define([
                             }
                             
                             //var dbUrl = require.toUrl('') + '/Marvelic_Postcode/js/database/'+country_code+'.json';
-                            var dbUrl = require.toUrl('') + '/Marvelic_Postcode/js/database/raw_database/raw_database1.json';
+                            //var dbUrl = require.toUrl('') + '/Marvelic_Postcode/js/database/raw_database/raw_database1.json';
+                            var dbUrl = require.toUrl('') + '/Marvelic_Postcode/js/thai_address_database_en_th.js';
+                            var storecode = document.getElementById('storecode').textContent;
+                            
                             $.ajax({
                                 url: dbUrl,
                                 error: function()
@@ -58,16 +63,36 @@ define([
                                 },
                                 success: function()
                                 {
-                                    $.Thailand.setup({
-                                        database: dbUrl // path หรือ url ไปยัง database
-                                    });
-                                    $.Thailand({
-                                        $district_en: $('#' + districtAddress), // input ของตำบล
-                                        $amphoe_en: $('#' + cityAddress), // input ของอำเภอ
-                                        $province_en: $('#' + provinceAddress), // input ของจังหวัด
-                                        $zipcode: $('#' + postcodeAddress), // input ของรหัสไปรษณีย์
-                                        onLoad: function () {
-                                            console.info('Autocomplete is ready!');
+                                    // $.Thailand.setup({
+                                    //     database: dbUrl // path หรือ url ไปยัง database
+                                    // });
+                                    // $.Thailand({
+                                    //     $district_en: $('#' + districtAddress), // input ของตำบล
+                                    //     $amphoe_en: $('#' + cityAddress), // input ของอำเภอ
+                                    //     $province_en: $('#' + provinceAddress), // input ของจังหวัด
+                                    //     $zipcode: $('#' + postcodeAddress), // input ของรหัสไปรษณีย์
+                                    //     onLoad: function () {
+                                    //         console.info('Autocomplete is ready!');
+                                    //     }
+                                    // });
+                                    var lang ="";
+                                    if(storecode==1){
+                                        lang = "TH";
+                                    }
+                                    else{
+                                        lang = "EN";
+                                    }
+                                    
+                                    $.ThaiAddressEnTh({
+                                        lang:  lang,
+                                        database: dbUrl,
+                                        district: $('#' + districtAddress), // input ของตำบล
+                                        amphoe: $('#' + cityAddress), // input ของอำเภอ
+                                        province: $('#' + provinceAddress), // input ของจังหวัด
+                                        zipcode: $('#' + postcodeAddress), // input ของรหัสไปรษณีย์
+                                        
+                                        onLoad: function(){
+                                             console.info('Autocomplete is ready!');
                                         }
                                     });
                                 }
