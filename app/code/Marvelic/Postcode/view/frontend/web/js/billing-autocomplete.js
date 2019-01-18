@@ -1,6 +1,7 @@
 define([
     'jquery',
     'thailand',
+    'thaieng',
     'uiComponent',
     'Magento_Checkout/js/checkout-data',
     'uiRegistry',
@@ -8,6 +9,7 @@ define([
     'text!Marvelic_Postcode/js/database/db.json'
 ], function ($,
              Thailand,
+             ThaiAddressEnTh,
              Component,
              checkoutData,
              uiRegistry,
@@ -48,7 +50,8 @@ define([
                                 var postcodeAddress = uiRegistry.get("checkout.steps.shipping-step.billingAddress.billing-address-fieldset.postcode").uid;
                             }
  
-                            var dbUrl = require.toUrl('') + '/Marvelic_Postcode/js/database/'+country_code+'.json';
+                            //var dbUrl = require.toUrl('') + '/Marvelic_Postcode/js/database/'+country_code+'.json';
+                            var dbUrl = require.toUrl('') + '/Marvelic_Postcode/js/thai_address_database_en_th.js';
  
                             $.ajax({
                                 url: dbUrl,
@@ -58,16 +61,28 @@ define([
                                 },
                                 success: function()
                                 {
-                                    $.Thailand.setup({
-                                        database: dbUrl // path หรือ url ไปยัง database
-                                    });
-                                    $.Thailand({
-                                        $district: $('#' + districtAddress), // input ของตำบล
-                                        $amphoe: $('#' + cityAddress), // input ของอำเภอ
-                                        $province: $('#' + provinceAddress), // input ของจังหวัด
-                                        $zipcode: $('#' + postcodeAddress), // input ของรหัสไปรษณีย์
+                                    // $.Thailand.setup({
+                                    //     database: dbUrl // path หรือ url ไปยัง database
+                                    // });
+                                    // $.Thailand({
+                                    //     $district: $('#' + districtAddress), // input ของตำบล
+                                    //     $amphoe: $('#' + cityAddress), // input ของอำเภอ
+                                    //     $province: $('#' + provinceAddress), // input ของจังหวัด
+                                    //     $zipcode: $('#' + postcodeAddress), // input ของรหัสไปรษณีย์
+                                    //     onLoad: function () {
+                                    //         console.info('Billing Autocomplete is ready!');
+                                    //     }
+                                    // });
+                                    $.ThaiAddressEnTh({
+                                        lang: 'TH',
+                                        database: dbUrl,
+                                        district: $('#' + districtAddress), // input ของตำบล
+                                        amphoe: $('#' + cityAddress), // input ของอำเภอ
+                                        province: $('#' + provinceAddress), // input ของจังหวัด
+                                        zipcode: $('#' + postcodeAddress), // input ของรหัสไปรษณีย์
+                                        
                                         onLoad: function () {
-                                            console.info('Billing Autocomplete is ready!');
+                                                console.info('Billing Autocomplete is ready!');
                                         }
                                     });
                                 }
