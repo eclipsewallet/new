@@ -1,9 +1,0 @@
-
-
-                                                      
-  [UnexpectedValueException]                          
-  No phrases found in the specified dictionary file.  
-                                                      
-
-
-i18n:collect-phrases [-o|--output="..."] [-m|--magento] [directory]
