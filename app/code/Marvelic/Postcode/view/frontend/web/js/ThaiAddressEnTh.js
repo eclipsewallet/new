@@ -26,11 +26,12 @@ define([
                 var field_zipcode = "zipcode";
             }
         
-        
+            var countryselect = document.getElementsByName("country_id")[0].value;
+            if(countryselect==="TH"){
             $.getJSON(options['database'], function (result) {
                 ThaiAddressEnTh = result;
             });
-        
+            }
             var SelectItem = function(item){
                 if(typeof item !== 'undefined'){
                     if(options['lang'] == "TH"){
@@ -71,7 +72,8 @@ define([
                     $(".suggestion").remove();
                 }
             }
-        
+            
+
             var SearchData = function (obj, field, keycode, keyword) {
         
                 if(keycode == 38){ // Key Up
