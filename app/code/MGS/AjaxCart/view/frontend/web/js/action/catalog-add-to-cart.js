@@ -14,21 +14,14 @@ define([
                 this._super();
                 this._on({
                     'submit': function(event) {
-                        event.preventDefault();;
-                        if(!this.element.valid()){
-                            return;
-                        }
-                        var data = this.element.serializeArray();
-                        var formData = new FormData();
-                        for(var i = 0; i < data.length; i++){
-                            formData.append(data[i].name, data[i].value);
-                        }
-                        var files = $('input[type="file"]');
-                        files.each(function(index){
-                            formData.append(files[index].name, files[index].files[0]);
-                        });
-                        formData.append('action_url', this.element.attr('action'));
-                        this.fire(this.element,this.getActionId(), this.element.attr('action'), formData, this.options.redirectToCatalog);
+                        event.preventDefault();
+
+						var data = this.element.serializeArray();
+						data.push({
+							name: 'action_url',
+							value: this.element.attr('action')
+						});
+						this.fire(this.element,this.getActionId(), this.element.attr('action'), data, this.options.redirectToCatalog);
                     }
                 });
             }

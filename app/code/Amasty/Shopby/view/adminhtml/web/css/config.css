@@ -1,8 +1,0 @@
-
-fieldset[id^="amshopby"] tr[id*="not_instaled"] .value{
-    color: #f70606;
-}
-
-fieldset[id^="amshopby"] tr[id*="is_instaled"] .value{
-    color: #00f702;
-}

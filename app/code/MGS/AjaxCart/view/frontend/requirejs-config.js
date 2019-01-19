@@ -3,6 +3,7 @@ var config = {
         '*': {
             catalogAddToCart:       'MGS_AjaxCart/js/action/catalog-add-to-cart',
             widgetAddToCart:        'MGS_AjaxCart/js/action/widget-add-to-cart',
+            mgsAjaxCartFooter:         'MGS_AjaxCart/js/footer',
         }
     },
     shim: {
