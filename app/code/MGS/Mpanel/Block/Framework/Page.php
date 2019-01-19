@@ -167,6 +167,9 @@ class Page extends \Magento\Framework\View\Result\Page
 		if($this->getStoreConfig('mgstheme/general/dark')){
 			$this->pageConfig->addBodyClass('dark');
 		}
+        if($this->getStoreConfig('ajaxcart/additional/animation_type') == 'flycart'){
+			$this->pageConfig->addBodyClass('flycart');
+		}
 		
         return $this;
     }
