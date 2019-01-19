@@ -1,0 +1,119 @@
+<?php
+/**
+ * Mageplaza
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Mageplaza.com license that is
+ * available through the world-wide-web at this URL:
+ * https://www.mageplaza.com/LICENSE.txt
+ *
+ * DISCLAIMER
+ *
+ * Do not edit or add to this file if you wish to upgrade this extension to newer
+ * version in the future.
+ *
+ * @category    Mageplaza
+ * @package     Mageplaza_StoreLocator
+ * @copyright   Copyright (c) Mageplaza (https://www.mageplaza.com/)
+ * @license     https://www.mageplaza.com/LICENSE.txt
+ */
+
+/** @var \Mageplaza\StoreLocator\Helper\Data $helperData */
+/** @var \Magento\Backend\Block\Template $block */
+$helperData = $this->helper('Mageplaza\StoreLocator\Helper\Data');
+$mapApi     = $helperData->getMapSetting('api_key');
+?>
+
+<div class="mpstorelocator_review_map">
+    <div class="mpstorelocator_map" id="mpstorelocator_map" style="height: 550px;width: 93%;">
+    </div>
+</div>
+<script>
+    require([
+        'jquery',
+        "https://maps.googleapis.com/maps/api/js?key=<?php echo $mapApi ?>"
+    ], function ($) {
+        var latitude = $('input#location_latitude').val(),
+            longitude = $('input#location_longitude').val();
+
+        function markerMap(latitude, longitude) {
+            var mapLatLng = new google.maps.LatLng(latitude, longitude),
+                mapOptions = {
+                    draggable: true,
+                    zoom: 16,
+                    center: mapLatLng,
+                    mapTypeId: 'roadmap'
+                },
+
+                map = new google.maps.Map(document.getElementById("mpstorelocator_map"), mapOptions),
+                marker = new google.maps.Marker({
+                    draggable: true,
+                    position: mapLatLng,
+                    map: map,
+                    animation: google.maps.Animation.DROP
+                });
+            google.maps.event.addListener(marker, 'dragend', function() {
+                $('input#location_latitude').val(marker.getPosition().lat());
+                $('input#location_longitude').val(marker.getPosition().lng());
+            });
+        }
+
+        markerMap(latitude, longitude);
+
+        $('#sl_load_review_map').click(function () {
+            var street = $('input#location_street').val(),
+                city = $('input#location_city').val(),
+                state = $('input#location_state_province').val(),
+                country = $('input#location_country').val(),
+                address = street + ' ' + state + ', ' + city + ', ' + country;
+
+            $.ajax({
+                url: 'https://maps.googleapis.com/maps/api/geocode/json',
+                type: 'GET',
+                showLoader: true,
+                data: {
+                    "address": address,
+                    "key": '<?php echo $mapApi ?>'
+                },
+                success: function (response) {
+                    switch (response.status) {
+                        case 'OVER_QUERY_LIMIT':
+                            $('#location_country').parent().append('<?php echo $helperData->getMessagesHtml('adderror', 'API Key is incorrect. Please enter the correct one.') ?>');
+                            break;
+                        case 'ZERO_RESULTS':
+                            $('#location_country').parent().append('<?php echo $helperData->getMessagesHtml('adderror', 'The address could not be found. Please make sure you enter the real one. ') ?>');
+                            break;
+                        case 'REQUEST_DENIED':
+                            $('#location_country').parent().append('<?php echo $helperData->getMessagesHtml('adderror', 'The request has been denied. ') ?>');
+                            break;
+                        case 'INVALID_REQUEST':
+                            $('#location_country').parent().append('<?php echo $helperData->getMessagesHtml('adderror', 'The query (address, components or latitude/longitude) is missing.') ?>');
+                            break;
+                        case 'UNKNOWN_ERROR':
+                            $('#location_country').parent().append('<?php echo $helperData->getMessagesHtml('adderror', 'The request could not be processed due to a server error. Please try again.') ?>');
+                            break;
+                        default:
+                            var latitude = response.results[0].geometry.location.lat,
+                                longitude = response.results[0].geometry.location.lng;
+
+                            $('input#location_latitude').val(latitude);
+                            $('input#location_longitude').val(longitude);
+
+                            markerMap(latitude, longitude);
+                    }
+                }
+            })
+        });
+
+        $('#location_latitude').keyup(function () {
+            var longitude = $('input#location_longitude').val();
+            markerMap($(this).val(), longitude);
+        });
+
+        $('#location_longitude').keyup(function () {
+            var latitude = $('input#location_latitude').val();
+            markerMap(latitude, $(this).val());
+        })
+    });
+</script>

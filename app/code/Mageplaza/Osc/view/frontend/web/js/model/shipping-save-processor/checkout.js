@@ -115,6 +115,10 @@ define(
             },
 
             payloadExtender: function (payload) {
+                if (!payload.addressInformation.hasOwnProperty('shipping_address')) {
+                    return payload;
+                }
+
                 var deliveryData = {
                     mp_delivery_date: $('#mp-delivery-date').val(),
                     mp_delivery_time: $('#mp-delivery-time').val(),
@@ -122,38 +126,14 @@ define(
                     mp_delivery_comment: $('#mp-delivery-comment').val()
                 };
 
-                var wk_vat_save_tmp;
-                if ($('#wk-vat-save').is(":checked"))
-                {
-                    wk_vat_save_tmp=true;
-                }
-                else
-                {
-                    wk_vat_save_tmp=false;
+                if (!payload.addressInformation.shipping_address.hasOwnProperty('extension_attributes')) {
+                    payload.addressInformation.shipping_address.extension_attributes = {};
                 }
 
-                var vatData = {
-                    wk_vat_number: $('#wk-vat-number').val(),
-                    wk_vat_company: $('#wk-vat-company').val(),
-                    wk_vat_address: $('#wk-vat-address').val(),
-                    wk_vat_save: wk_vat_save_tmp
-                };
-
-                if (!payload.addressInformation.hasOwnProperty('extension_attributes')) {
-                    payload.addressInformation['extension_attributes'] = {};
-                }
-
-                payload.addressInformation.extension_attributes = _.extend(
-                    payload.addressInformation['extension_attributes'],
+                payload.addressInformation.shipping_address.extension_attributes = $.extend(
+                    payload.addressInformation.shipping_address.extension_attributes,
                     deliveryData
                 )
-                if ($('#vat-information').is(":checked"))
-                {
-                    payload.addressInformation.extension_attributes = _.extend(
-                        payload.addressInformation['extension_attributes'],
-                        vatData
-                    )
-                }
             }
         };
     }

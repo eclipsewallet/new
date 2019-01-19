@@ -1,0 +1,123 @@
+<?php
+/**
+ * Mageplaza
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Mageplaza.com license that is
+ * available through the world-wide-web at this URL:
+ * https://www.mageplaza.com/LICENSE.txt
+ *
+ * DISCLAIMER
+ *
+ * Do not edit or add to this file if you wish to upgrade this extension to newer
+ * version in the future.
+ *
+ * @category    Mageplaza
+ * @package     Mageplaza_StoreLocator
+ * @copyright   Copyright (c) Mageplaza (https://www.mageplaza.com/)
+ * @license     https://www.mageplaza.com/LICENSE.txt
+ */
+
+/** @var \Mageplaza\StoreLocator\Block\Adminhtml\System\OpenTime $block */
+$openCloseConfig = $block->getOpenCloseConfig();
+?>
+<td id="<?php echo $block->getDayName() ?>-label" class="label">
+    <label for="<?php echo $block->getElement()->getId(); ?>_select"><span><?php echo ucfirst($block->getDayName()) ?></span></label>
+</td>
+<td id="<?php echo $block->getDayName() ?>-value" class="value">
+    <select id="<?php echo $block->getElement()->getId(); ?>_select"
+            name="<?php echo $block->getElement()->getName() ?>[<?php echo $block->getDayName() ?>][value]"
+            class=" select admin__control-select">
+        <?php foreach ($block->getOpenCloseOption() as $option): ?>
+            <option value="<?php echo $option['value'] ?>" <?php echo ($openCloseConfig[$block->getDayName()]['value'] == $option['value']) ? 'selected' : ''; ?>><?php echo $option['label'] ?></option>
+        <?php endforeach; ?>
+    </select>
+</td>
+<td class="mp-open-from label mp-select-time-<?php echo $block->getDayName() ?>">
+    <label for="<?php echo $block->getElement()->getId(); ?>_from"><span>From</span></label>
+</td>
+<td class="mp-open-from-value value mp-select-time-<?php echo $block->getDayName() ?>">
+    <input type="hidden" id="<?php echo $block->getElement()->getId(); ?>_from">
+    <select id="mp-hour"
+            name="<?php echo $block->getElement()->getName() ?>[<?php echo $block->getDayName() ?>][from][]"
+            style="width:80px"
+            class=" select admin__control-select">
+        <option value="00" selected="selected">00</option>
+        <?php for ($i = 1; $i <= 23; $i++):
+            $hourValue = str_pad((string)$i, 2, '0', STR_PAD_LEFT);
+            ?>
+            <option value="<?php echo $hourValue ?>" <?php echo ($openCloseConfig[$block->getDayName()]['from'][0] == $hourValue) ? 'selected' : '' ?>><?php echo $hourValue ?></option>
+        <?php endfor; ?>
+    </select> :&nbsp;
+    <select id="mp-minute"
+            name="<?php echo $block->getElement()->getName() ?>[<?php echo $block->getDayName() ?>][from][]"
+            style="width:80px"
+            class=" select admin__control-select">
+        <option value="00" selected="selected">00</option>
+        <?php for ($i = 1; $i <= 59; $i++):
+            $minuteValue = str_pad((string)$i, 2, '0', STR_PAD_LEFT);
+            ?>
+            <option value="<?php echo $minuteValue ?>" <?php echo ($openCloseConfig[$block->getDayName()]['from'][1] == $minuteValue) ? 'selected' : '' ?>><?php echo $minuteValue ?></option>
+        <?php endfor; ?>
+    </select>
+</td>
+<td class="mp-open-to label mp-select-time-<?php echo $block->getDayName() ?>">
+    <label for="<?php echo $block->getElement()->getId(); ?>_to"><span>To</span></label>
+</td>
+<td class="mp-open-to-value value mp-select-time-<?php echo $block->getDayName() ?>">
+    <input type="hidden" id="<?php echo $block->getElement()->getId(); ?>_to">
+    <select id="mp-hour"
+            name="<?php echo $block->getElement()->getName() ?>[<?php echo $block->getDayName() ?>][to][]"
+            style="width:80px"
+            class=" select admin__control-select">
+        <option value="00" selected="selected">00</option>
+        <?php for ($i = 1; $i <= 23; $i++):
+            $toHourValue = str_pad((string)$i, 2, '0', STR_PAD_LEFT);
+            ?>
+            <option value="<?php echo $toHourValue ?>" <?php echo ($openCloseConfig[$block->getDayName()]['to'][0] == $toHourValue) ? 'selected' : '' ?>><?php echo $toHourValue ?></option>
+        <?php endfor; ?>
+    </select> :&nbsp;
+    <select id="mp-minute"
+            name="<?php echo $block->getElement()->getName() ?>[<?php echo $block->getDayName() ?>][to][]"
+            style="width:80px"
+            class=" select admin__control-select">
+        <option value="00" selected="selected">00</option>
+        <?php for ($i = 1; $i <= 59; $i++):
+            $toMinuteValue = str_pad((string)$i, 2, '0', STR_PAD_LEFT);
+            ?>
+            <option value="<?php echo $toMinuteValue ?>" <?php echo ($openCloseConfig[$block->getDayName()]['to'][1] == $toMinuteValue) ? 'selected' : '' ?>><?php echo $toMinuteValue ?></option>
+        <?php endfor; ?>
+    </select>
+</td>
+<script>
+    require([
+        'jquery'
+    ], function ($) {
+        var timeElement = $('#<?php echo $block->getElement()->getId(); ?>_select');
+        if ($(timeElement).val() === '0') {
+            $('.mp-select-time-<?php echo $block->getDayName() ?>').hide();
+        } else {
+            $('.mp-select-time-<?php echo $block->getDayName() ?>').show();
+        }
+        timeElement.on('change', function () {
+            if ($(this).val() === '0') {
+                $('.mp-select-time-<?php echo $block->getDayName() ?>').hide();
+            } else {
+                $('.mp-select-time-<?php echo $block->getDayName() ?>').show();
+            }
+        });
+    });
+</script>
+<style>
+    #storelocator_time_default colgroup.label, #<?php echo $block->getDayName() ?>-label {
+        width: 12%;
+    }
+
+    #storelocator_time_default colgroup.value, #<?php echo $block->getDayName() ?>-value {
+        width: 32%;
+    }
+    .mp-open-from, .mp-open-to {
+        width: <?php echo ($block->helperData->versionCompare('2.2.0'))? '5%':'1%'; ?> !important;
+    }
+</style>

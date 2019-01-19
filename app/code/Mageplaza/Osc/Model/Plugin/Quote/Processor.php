@@ -66,8 +66,7 @@ class Processor
         Product $candidate
     )
     {
-        if ($this->_stockState->getStockQty($candidate->getId()) == 0 ||
-            $this->_stockState->getStockQty($candidate->getId()) == $candidate->getCartQty()) {
+        if ($this->_stockState->getStockQty($candidate->getId()) == $candidate->getCartQty()) {
             /**
              * We specify qty after we know about parent (for stock)
              */

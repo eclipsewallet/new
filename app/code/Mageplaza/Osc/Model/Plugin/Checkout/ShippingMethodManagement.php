@@ -133,10 +133,11 @@ class ShippingMethodManagement
 
         if (!$quote->isVirtual()) {
             $addressData = [
-                EstimateAddressInterface::KEY_COUNTRY_ID => $address->getCountryId(),
-                EstimateAddressInterface::KEY_POSTCODE   => $address->getPostcode(),
-                EstimateAddressInterface::KEY_REGION_ID  => $address->getRegionId(),
-                EstimateAddressInterface::KEY_REGION     => $address->getRegion()
+                AddressInterface::KEY_COUNTRY_ID      => $address->getCountryId(),
+                AddressInterface::KEY_POSTCODE        => $address->getPostcode(),
+                AddressInterface::KEY_REGION_ID       => $address->getRegionId(),
+                AddressInterface::KEY_REGION          => $address->getRegion(),
+                AddressInterface::CUSTOMER_ADDRESS_ID => $address->getId()
             ];
 
             $shippingAddress = $quote->getShippingAddress();

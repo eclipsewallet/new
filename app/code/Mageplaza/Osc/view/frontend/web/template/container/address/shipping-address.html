@@ -70,10 +70,6 @@
             <!-- ko template: 'Mageplaza_Osc/container/address/shipping/form' --><!-- /ko -->
             <!-- /ko -->
 
-            <!-- ko foreach: getRegion('vatInfomation') -->
-            <!-- ko template: getTemplate() --><!-- /ko -->
-            <!--/ko-->
-
             <!-- ko if: (!isCustomerLoggedIn() && !quoteIsVirtual) -->
                 <!-- ko foreach: getRegion('customer-email') -->
                     <!-- ko template: 'Mageplaza_Osc/container/address/billing/create' --><!-- /ko -->

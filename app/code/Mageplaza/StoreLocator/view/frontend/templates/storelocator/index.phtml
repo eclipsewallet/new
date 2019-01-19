@@ -1,0 +1,212 @@
+<?php
+/**
+ * Mageplaza
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Mageplaza.com license that is
+ * available through the world-wide-web at this URL:
+ * https://www.mageplaza.com/LICENSE.txt
+ *
+ * DISCLAIMER
+ *
+ * Do not edit or add to this file if you wish to upgrade this extension to newer
+ * version in the future.
+ *
+ * @category    Mageplaza
+ * @package     Mageplaza_StoreLocator
+ * @copyright   Copyright (c) Mageplaza (https://www.mageplaza.com/)
+ * @license     https://www.mageplaza.com/LICENSE.txt
+ */
+
+/** @var \Mageplaza\StoreLocator\Block\Frontend $block */
+
+/** @var \Mageplaza\StoreLocator\Helper\Data $helperData */
+$helperData = $this->helper('Mageplaza\StoreLocator\Helper\Data');
+$locations = $block->getLocationList(); ?>
+
+<script>
+    window.zoomConfig = <?php echo $block->getZoom(); ?>;
+</script>
+<div class="bh-sl-container"
+	 <?php if(count($locations) > 0): ?>
+        data-mage-init='{"mpStoreLocator":{"dataConfig": <?php echo $block->getDataConfigLocation() ?>,
+        "mapStyles": <?php echo $block->getMapTemplate() ?>}}'
+     <?php endif; ?>>
+    <div id="mp-storelocator-header">
+        <?php echo $block->getChildHtml('store_locator_head'); ?>
+    </div>
+    <?php if(count($locations) > 0): ?>
+    <div id="bh-sl-map-container" class="bh-sl-map-container">
+        <div id="bh-sl-map" class="bh-sl-map"></div>
+        <div class="mp-dialog-setting" style="display: none">
+            <div class="mp-filter-radius">
+                <span class="mp-radius-label"><?php echo __('Filter Radius') ?></span>
+                <div class="mp-filter-radius-box">
+                    <select id="bh-sl-maxdistance" name="bh-sl-maxdistance">
+                        <option value="<?php echo $block->getDefaultRadius() ?>"><?php echo __('Default') ?></option>
+                        <?php if ($block->getFilterRadius()): ?>
+                        <?php foreach ($block->getFilterRadius() as $radius): ?>
+                            <option value="<?php echo $block->convertKmtoMiles($radius) ?>"><?php echo $radius . ' ' . $block->getUnitText() ?></option>
+                        <?php endforeach; ?>
+                        <?php endif; ?>
+                    </select>
+                </div>
+            </div>
+            <span class="mp-btn-close"><img src="<?php echo $block->getUrlImg('btn-close.png'); ?>"/></span>
+        </div>
+        <div class="bh-sl-loc-list" id="mp-store-loc-list">
+            <?php if ($block->isFilter()): ?>
+            <form id="bh-sl-user-location" method="post" action="#">
+                <div class="mp-menu-icon">
+                    <img src="<?php echo $block->getUrlImg('icon-menu.png'); ?>"/>
+                </div>
+                <div class="form-input">
+                    <input type="text" id="bh-sl-address" name="bh-sl-address" />
+                </div>
+                <button id="bh-sl-submit" class="primary" type="submit" title="Search">
+                    <img src="<?php echo $block->getUrlImg('icon-search.png'); ?>"/>
+                </button>
+                <?php if ($block->isEnableFilterRadius()): ?>
+                <button id="mp-location-icon" class="primary" type="submit" title="Filter">
+                    <img src="<?php echo $block->getUrlImg('icon-filter.png'); ?>"/>
+                </button>
+                <?php endif ?>
+            </form>
+            <?php endif; ?>
+            <ul class="list mp-storelocator-list-location"></ul>
+
+            <div class="mp-store-info" style="display: none;">
+				<?php foreach ($locations as $store): ?>
+                    <div class="mp-detail-info mp-detail-info-<?php echo $store->getLocationId() ?>" style="display: none">
+                        <div class="mp-back-results">
+                            <img src="<?php echo $block->getUrlImg('icon-back.png'); ?>"/>
+                            <span><?php echo __('Back to results') ?></span>
+                        </div>
+						<?php if ($helperData->getConfigGeneral('enable_direction')): ?>
+                            <div class="mp-get-directions loc-directions loc-directions-<?php echo $store->getLocationId() ?>">
+                                <img src="<?php echo $block->getUrlImg('direction.png'); ?>" class="mp-direction"/>
+                                <span><?php echo __('Get Directions') ?></span>
+                                <hr>
+                            </div>
+						<?php endif; ?>
+                        <h3 class="mp-detail-store-name"><?php echo $store->getName() ?></h3>
+                        <div id="mp-detail-store-address" class="mp-detail-info-item">
+                            <img src="<?php echo $block->getUrlImg('icon-marker.png') ?>" class="mp-marker-icon"/>
+                            <span class="mp-detail-info-text"><?php echo $store->getStreet() . ' ' .
+                                    $store->getStateProvince() . ' ' .
+                                    $store->getCity() . ' ' .
+                                    $store->getCountry(); ?>
+                            </span>
+                        </div>
+                        <div id="mp-detail-store-open" class="mp-detail-info-item">
+                            <img src="<?php echo $block->getUrlImg('icon-time.png') ?>" class="mp-time-icon"/>
+                            <span class="mp-detail-info-text mp-detail-info-status">
+                                <span <?php if ($block->getOpenCloseNotify($store) === 'Closed'): ?>
+                                    style="color: #DB4437; margin-right: 10px"
+								<?php endif ?>>
+                                    <?php echo $block->getOpenCloseNotify($store); ?></span>
+                                <i class="fas fa-angle-double-down"></i>
+                            </span>
+                            <table class="mp-openday-list" style="display: none">
+                                <tr <?php echo ($block->getCurrentDay($store) == Mageplaza\StoreLocator\Helper\Data::MONDAY) ? 'class="mp-font-bold"' : '' ?> >
+                                    <td class="mp-openday-list-title"><?php echo __('Monday') ?></td>
+                                    <td class="mp-openday-list-value"><?php echo $block->getDayTime($store->getOperationMon()) ?></td>
+                                </tr>
+                                <tr <?php echo ($block->getCurrentDay($store) == Mageplaza\StoreLocator\Helper\Data::TUESDAY) ? 'class="mp-font-bold"' : '' ?>>
+                                    <td class="mp-openday-list-title"><?php echo __('Tuesday') ?></td>
+                                    <td class="mp-openday-list-value"><?php echo $block->getDayTime($store->getOperationTue()) ?></td>
+                                </tr>
+                                <tr <?php echo ($block->getCurrentDay($store) == Mageplaza\StoreLocator\Helper\Data::WEDNESDAY) ? 'class="mp-font-bold"' : '' ?>>
+                                    <td class="mp-openday-list-title"><?php echo __('Wednesday') ?></td>
+                                    <td class="mp-openday-list-value"><?php echo $block->getDayTime($store->getOperationWed()) ?></td>
+                                </tr>
+                                <tr <?php echo ($block->getCurrentDay($store) == Mageplaza\StoreLocator\Helper\Data::THURSDAY) ? 'class="mp-font-bold"' : '' ?>>
+                                    <td class="mp-openday-list-title"><?php echo __('Thursday') ?></td>
+                                    <td class="mp-openday-list-value"><?php echo $block->getDayTime($store->getOperationThu()) ?></td>
+                                </tr>
+                                <tr <?php echo ($block->getCurrentDay($store) == Mageplaza\StoreLocator\Helper\Data::FRIDAY) ? 'class="mp-font-bold"' : '' ?>>
+                                    <td class="mp-openday-list-title"><?php echo __('Friday') ?></td>
+                                    <td class="mp-openday-list-value"><?php echo $block->getDayTime($store->getOperationFri()) ?></td>
+                                </tr>
+                                <tr <?php echo ($block->getCurrentDay($store) == Mageplaza\StoreLocator\Helper\Data::SATURDAY) ? 'class="mp-font-bold"' : '' ?>>
+                                    <td class="mp-openday-list-title"><?php echo __('Saturday') ?></td>
+                                    <td class="mp-openday-list-value"><?php echo $block->getDayTime($store->getOperationSat()) ?></td>
+                                </tr>
+                                <tr <?php echo ($block->getCurrentDay($store) == Mageplaza\StoreLocator\Helper\Data::SUNDAY) ? 'class="mp-font-bold"' : '' ?>>
+                                    <td class="mp-openday-list-title"><?php echo __('Sunday') ?></td>
+                                    <td class="mp-openday-list-value"><?php echo $block->getDayTime($store->getOperationSun()) ?></td>
+                                </tr>
+                            </table>
+                        </div>
+						<?php if ($store->getPhoneOne()): ?>
+                        <div id="mp-detail-store-phone-number" class="mp-detail-info-item">
+                            <img src="<?php echo $block->getUrlImg('icon-call.png') ?>" class="mp-phone-icon"/>
+                            <span class="mp-detail-phone-text"><?php echo $store->getPhoneOne() ?>&nbsp;&nbsp;&nbsp;
+                                <i class="fas fa-angle-double-down"></i>
+                            </span>
+                            <table class="mp-phone-list" style="display: none">
+                                <?php if ($store->getPhoneTwo()): ?>
+                                <tr>
+                                    <td class="mp-phone-list-title"><?php echo __('Phone 2') ?></td>
+                                    <td class="mp-phone-list-value"><?php echo $store->getPhoneTwo() ?></td>
+                                </tr>
+                                <?php endif; ?>
+                                <?php if ($store->getFax()): ?>
+                                <tr>
+                                    <td class="mp-fax-title"><?php echo __('Fax') ?></td>
+                                    <td class="mp-fax-value"><?php echo $store->getFax() ?></td>
+                                </tr>
+                                <?php endif; ?>
+                            </table>
+                        </div>
+                        <?php endif; ?>
+                        <?php if ($store->getEmail()): ?>
+                            <div id="mp-detail-store-email" class="mp-detail-info-item">
+                                <img src="<?php echo $block->getUrlImg('icon-mail.png') ?>" class="mp-marker-icon" style="width: 20px; height: 20px;"/>
+                                <span class="mp-detail-info-text"><?php echo $store->getEmail(); ?></span>
+                            </div>
+                        <?php endif; ?>
+                        <?php if ($store->getWebsite()): ?>
+                        <div id="mp-detail-store-web" class="mp-detail-info-item">
+                            <img src="<?php echo $block->getUrlImg('icon-web.png') ?>" class="mp-web-icon"/>
+                            <a href="<?php echo $store->getWebsite() ?>" target="_blank" class="mp-detail-info-text"><?php echo $store->getWebsite() ?></a>
+                        </div>
+                        <?php endif; ?>
+                        <?php if ($block->getStoreImages($store)): ?>
+                            <div class="mpstorelocator-list-img owl-carousel owl-theme">
+                            <?php foreach ($block->getStoreImages($store) as $image): ?>
+                                <div class="item"><img src="<?php echo $block->resizeImage($image['file'], '300x') ?>" alt="<?php echo ($image['label']) ?: _('Store Image') ?>"/></div>
+                            <?php endforeach; ?>
+                            </div>
+                            <script>
+                                 /**
+                                  * Owl slider image
+                                  */
+                                require(['jquery', 'owlSlider'], function ($) {
+                                    $('.mpstorelocator-list-img').owlCarousel({
+                                        items: 1,
+                                        autoplay: false,
+                                        autoHeight: true,
+                                        margin: 0,
+                                        dots: false,
+                                        nav: true,
+                                        navText: ["<i class='fa fa-chevron-left'></i>", "<i class='fa fa-chevron-right'></i>"]
+                                    });
+                                });
+                            </script>
+                        <?php endif ?>
+                </div>
+				<?php endforeach; ?>
+            </div>
+        </div>
+    </div>
+    <script async src="https://maps.google.com/maps/api/js?key=<?php echo $helperData->getMapSetting('api_key')?>&libraries=places,geometry"></script>
+    <?php else: ?>
+        <div class="mp-no-location"><?php echo __('There is no locations found.') ?></div>
+	<?php endif; ?>
+    <div id="mp-storelocator-footer">
+        <?php echo $block->getChildHtml('store_locator_footer'); ?>
+    </div>
+</div>
+

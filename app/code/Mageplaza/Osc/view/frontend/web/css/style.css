@@ -30,25 +30,6 @@
 .step-title .fa {display: none;}
 .step-content {border-radius: 0 !important; padding-top: 20px !important;}
 .mp-hidden {display: none}
-.opc-wrapper .field.choice>input {
-    position: unset;
-    top: 0;
-}
-.opc-wrapper .minicart-items .product>.product-image-container {
-    float: unset;
-}
-.one-step-checkout-wrapper .minicart-items-wrapper div.product-item-detail {
-    padding-left: 0;
-    float: unset;
-    width: auto;
-    display: block;
-}
-.opc-wrapper #co-place-order-area > .col-mp {
-    display: inline-block;
-}
-.opc-wrapper #co-place-order-area .osc-addition-content-wrapper {
-    padding-top: 20px;
-}
 /**************************************************** Authetication area ****************************************************/
 .osc-authentication-wrapper {padding-left: 10px}
 .osc-authentication-toggle {cursor: pointer}
@@ -115,7 +96,7 @@ fieldset.field.col-mp {padding: 0 10px !important;}
 .opc-block-summary .table-totals tbody .mark, .opc-block-summary .table-totals tfoot .mark {text-align: right;}
 .opc-block-summary .table-totals tbody .amount, .opc-block-summary .table-totals tfoot .amount {width: 150px;padding-right: 20px;}
 .opc-block-summary .table-totals .grand .mark {padding-right: 0 !important;}
-/* .one-step-checkout-wrapper .mp-4 .minicart-items-wrapper .product-image-container { display: none;} */
+.one-step-checkout-wrapper .mp-4 .minicart-items-wrapper .product-image-container { /*display: none;*/}
 .one-step-checkout-wrapper .mp-4 .opc-block-summary {padding: 0 10px}
 .one-step-checkout-wrapper .mp-4 #checkout-review-table thead th, .one-step-checkout-wrapper .mp-4 #checkout-review-table tbody tr td, .one-step-checkout-wrapper .mp-4 #checkout-review-table tfoot tr td {padding-left: 5px !important;padding-right: 5px !important;}
 .cart-gift-item {float: left;margin-left: 0;width: 100%}

@@ -1,0 +1,55 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Mageplaza
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the mageplaza.com license that is
+ * available through the world-wide-web at this URL:
+ * https://www.mageplaza.com/LICENSE.txt
+ *
+ * DISCLAIMER
+ *
+ * Do not edit or add to this file if you wish to upgrade this extension to newer
+ * version in the future.
+ *
+ * @category    Mageplaza
+ * @package     Mageplaza_StoreLocator
+ * @copyright   Copyright (c) Mageplaza (https://www.mageplaza.com/)
+ * @license     https://www.mageplaza.com/LICENSE.txt
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Store:etc/config.xsd">
+    <default>
+        <storelocator>
+            <general>
+                <enabled>1</enabled>
+                <title>Find a store</title>
+                <show_on>0</show_on>
+                <description>We have more than 100 stores all over the globe. Find the nearest store to get your favorite stuff.</description>
+                <show_on>1,2,3</show_on>
+                <url_key>find-a-store</url_key>
+                <bottom_static_block>mp-storelocator-block</bottom_static_block>
+                <filter_store>
+                    <enabled>1</enabled>
+                    <search_by>1</search_by>
+                </filter_store>
+            </general>
+            <default_value>
+                <store_view>0</store_view>
+                <customer_group>0</customer_group>
+                <is_login>1</is_login>
+                <is_buyer>1</is_buyer>
+                <customer_action>1</customer_action>
+            </default_value>
+            <time_default>
+                <time_zone>UTC</time_zone>
+            </time_default>
+            <seo>
+                <enable_local_seo>1</enable_local_seo>
+            </seo>
+        </storelocator>
+    </default>
+</config>

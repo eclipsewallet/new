@@ -58,6 +58,11 @@
                                 <item name="geoip" xsi:type="array">
                                     <item name="component" xsi:type="string">Mageplaza_Osc/js/view/geoip</item>
                                 </item>
+                                <item name="progressBar" xsi:type="array">
+                                    <item name="config" xsi:type="array">
+                                        <item name="componentDisabled" xsi:type="boolean">true</item>
+                                    </item>
+                                </item>
                                 <item name="steps" xsi:type="array">
                                     <item name="children" xsi:type="array">
                                         <item name="shipping-step" xsi:type="array">
