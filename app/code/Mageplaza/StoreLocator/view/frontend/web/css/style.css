@@ -1,0 +1,592 @@
+.column.main {
+    float: left;
+}
+
+/** head block style */
+.mp_storelocator_head {
+    position: relative;
+}
+
+.mp_storelocator_background {
+    height: 330px;
+    width: 100%;
+}
+
+.mp_storelocator_logo {
+    position: absolute;
+    right: 6.5%;
+    width: 285px;
+    top: 18%;
+    max-height: 67%;
+}
+
+.mp_storelocator_head h1 {
+    font-size: 4rem;
+    position: absolute;
+    top: 30%;
+    left: 7%;
+}
+
+.mp_storelocator_description {
+    position: absolute;
+    top: 44%;
+    left: 7%;
+    width: 300px;
+    font-size: 16px;
+}
+
+@media only screen and (max-width: 1024px) {
+    .mp_storelocator_background {
+        height: 310px;
+    }
+
+    .mp_storelocator_logo {
+        right: 6.5%;
+        width: 260px;
+        top: 18%;
+    }
+
+    .mp_storelocator_head h1 {
+        font-size: 3rem;
+        top: 24%;
+    }
+
+    .mp_storelocator_description {
+        width: 260px;
+        font-size: 15px;
+    }
+}
+
+@media only screen and (max-width: 768px) {
+    .mp_storelocator_background {
+        height: 250px;
+    }
+
+    .mp_storelocator_logo {
+        right: 7.5%;
+        width: 200px;
+        top: 18%;
+    }
+
+    .mp_storelocator_head h1 {
+        font-size: 2.8rem;
+        top: 20%;
+    }
+
+    .mp_storelocator_description {
+        width: 230px;
+        font-size: 14px;
+    }
+}
+
+@media only screen and (max-width: 578px) {
+    .mp_storelocator_background {
+        height: 160px;
+    }
+
+    .mp_storelocator_logo {
+        right: 7.5%;
+        width: 130px;
+        top: 18%;
+    }
+
+    .mp_storelocator_head h1 {
+        font-size: 2rem;
+        top: 20%;
+    }
+
+    .mp_storelocator_description {
+        width: 180px;
+        font-size: 11px;
+        top: 50%;
+    }
+}
+
+@media only screen and (max-width: 400px) {
+    .mp_storelocator_background {
+        height: 120px;
+    }
+
+    .mp_storelocator_logo {
+        right: 7.5%;
+        width: 95px;
+        top: 18%;
+    }
+
+    .mp_storelocator_head h1 {
+        font-size: 2rem;
+        top: 9%;
+    }
+
+    .mp_storelocator_description {
+        width: 135px;
+        font-size: 9px;
+        top: 50%;
+    }
+}
+
+.mp-no-location {
+    margin-top: 30px;
+}
+
+/** footer block style */
+#mp-storelocator-footer {
+    float: left;
+    width: 100%;
+    margin-top: 20px;
+}
+
+/** list location style */
+.mp.store-view {
+    background: #FFFFFF !important;
+    border-bottom: 1px solid #eee;
+}
+
+.mp-store-view-info {
+    width: 90%;
+    margin: 0 auto;
+    padding-top: 20px;
+}
+
+.mp-store-view-info::after {
+    content: '';
+    display: inline-block;
+    padding-top: 10px;
+    width: 100%;
+    border-top: 1px solid #CCCCCC;
+}
+
+.mp-row-store-img img {
+    width: 100%;
+    cursor: pointer;
+}
+
+.mp-row-store-img {
+    width: 35%;
+    float: left;
+}
+
+.mp .row-store-info {
+    float: right;
+    width: 60%;
+}
+
+.row-store-info .mp-store-name {
+    margin-bottom: 5px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.mp-store-name span {
+    font-size: 18px;
+    color: #333;
+}
+
+.row-store-info .store-phone {
+    margin-bottom: 5px;
+    display: inline-block;
+    width: 100%;
+}
+
+.row-store-info .store-addr {
+    margin-bottom: 10px;
+}
+
+.store-addr span.mp-main-addr {
+    display: block;
+    font-size: 14px;
+    overflow: hidden;
+}
+
+.store-addr span.mp-state-addr {
+    font-size: 13px;
+    color: #888;
+    display: block;
+}
+
+.store-addr .loc-web {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.loc-web span {
+    display: block;
+}
+
+.mp-detail-store-view {
+    margin: 0 0 10px 20px;
+    color: rgb(153, 153, 153);
+    font-weight: 600;
+    font-size: 12px;
+}
+
+/** css form search */
+#bh-sl-user-location {
+    position: absolute;
+    top: 2.5%;
+    left: 2.5%;
+    width: 95%;
+    height: 45px;
+    background: #fff;
+    border-radius: 5px;
+}
+
+.form-input {
+    width: calc(100% - 125px) !important;
+    height: 40px;
+    left: 6px;
+    border-radius: 4px;
+    display: inline;
+    z-index: 10;
+}
+
+#bh-sl-address {
+    width: 120%;
+    margin: 0;
+    height: 100%;
+    border: none;
+    outline: none;
+}
+
+#bh-sl-submit {
+    outline: none;
+    background: #fff !important;
+    display: inline-block;
+    height: 40px;
+    width: 40px;
+    padding-top: 10px;
+    margin-top: 1px !important;
+    color: inherit;
+}
+
+.mp-filter-radius {
+    padding: 30px 0 0 30px;
+}
+
+.mp-radius-label {
+    display: inline-block;
+    margin: 5px;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.mp-filter-radius-box {
+    width: 120px;
+    display: inline-block;
+}
+
+button#mp-location-icon {
+    height: 40px;
+}
+
+.link-detail {
+    position: relative
+}
+
+.link-detail p {
+    position: absolute;
+    font-size: 16px;
+    top: -3px;
+    left: 43px;
+}
+
+.mp-store-info {
+    overflow: auto;
+    position: absolute;
+    top: 12%;
+    left: 5%;
+    width: 90%;
+    height: 85%;
+    background: #FFFFFF;
+}
+
+#bh-sl-address:focus {
+    box-shadow: none !important;
+}
+
+#mp-store-loc-list {
+    position: relative;
+}
+
+.mp-dialog-setting {
+    width: 33%;
+    position: absolute;
+    height: 100%;
+    background: #FFFFFF;
+    top: 0;
+    left: 0;
+    z-index: 100;
+    border-right: 1px solid #d1d1d1;
+}
+
+span.mp-btn-close {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    cursor: pointer;
+}
+
+.mp-menu-icon {
+    cursor: pointer;
+    position: absolute;
+    top: 15px;
+    left: 15px;
+}
+
+/*INFOWINDOW STYLE*/
+
+.mp-loc-img {
+    display: inline-block;
+    float: left;
+    margin-right: 15px;
+}
+
+.mp-loc-img img {
+    width: 40px;
+}
+
+.mp-loc-info {
+    display: inline-block;
+    line-height: 1.4;
+}
+
+/*STYLE DETAIL STORE LOCATION VIEW*/
+
+.mp-back-results {
+    padding: 10px 0 0 15px;
+    position: relative;
+}
+
+.mp-back-results span {
+    font-size: 12px;
+    color: rgb(153, 153, 153);
+    font-weight: 600;
+    position: absolute;
+    left: 45px;
+}
+
+.mp-back-results img {
+    cursor: pointer;
+}
+
+.mp-get-directions {
+    position: relative;
+    cursor: pointer;
+    width: 90%;
+    margin: 20px auto;
+}
+
+.mp-get-directions span {
+    font-size: 20px;
+    position: absolute;
+    top: 23%;
+    left: 44%;
+    color: rgb(0, 0, 0);
+}
+
+.mp-direction {
+    margin-left: 30px;
+}
+
+.mp-detail-store-name {
+    font-size: 20px;
+    color: rgb(0, 0, 0);
+    font-weight: bold;
+}
+
+.mp-detail-info {
+    color: #000000;
+}
+
+.mp-detail-info-text {
+    margin-left: 10px;
+}
+
+.mp-detail-info-item {
+    position: relative;
+    padding: 15px 0 0 15px;
+}
+
+
+.item img {
+    width: 100%;
+    height: 100%;
+}
+
+.mp-detail-info hr {
+    margin-left: 23px;
+    margin-right: 23px;
+}
+
+.mp-detail-info h3 {
+    padding-left: 16px;
+}
+
+.mp-detail-info-item .mp-detail-info-text {
+    display: block;
+    padding-left: 25px;
+}
+
+.mp-detail-info-item img {
+    position: absolute;
+}
+
+.mpstorelocator-list-img {
+    margin-top: 7px;
+}
+
+
+.mpstorelocator-list-img .item, #mpstorelocator-noimg-img .item {
+    width: 89%;
+    padding: 20px;
+}
+
+.mpstorelocator-list-img .owl-prev {
+    position: absolute;
+    top: 45%;
+    font-size: 22px;
+    color: #e4e4e4;
+    left: -0px;
+}
+
+.mpstorelocator-list-img .owl-next {
+    position: absolute;
+    top: 44%;
+    font-size: 22px;
+    right: 0px;
+    color: #e4e4e4;
+}
+
+#mp-detail-store-open i {
+    cursor: pointer;
+}
+
+.mp-openday-list {
+    margin-left: 25px;
+    width: 80%;
+}
+
+.mp-openday-list td {
+    padding: 5px 10px 0 10px;
+}
+
+.mp-openday-list .mp-openday-list-title {
+    width: 32%;
+}
+
+.mp-font-bold td {
+    font-weight: bold;
+}
+
+span.mp-detail-phone-text {
+    padding-left: 35px;
+}
+
+.mp-phone-list {
+    margin-left: 25px;
+    width: 80%;
+}
+
+.mp-phone-list td {
+    padding: 5px 10px 0 10px;
+}
+
+.mp-phone-list .mp-phone-list-title {
+    width: 32%;
+}
+
+.mp-phone-list .mp-fax-title {
+    width: 32%;
+}
+
+.mp-detail-phone-text i {
+    cursor: pointer;
+}
+
+
+/*DEFAULT BLOCK STATIC STYLE*/
+#mp-static-block-carousel .owl-carousel {
+    margin-top: 2.5rem;
+    padding: 0;
+    position: relative;
+}
+
+#mp-static-block-carousel .owl-carousel li {
+    list-style-type: none;
+    width: 300px;
+    height: 160px;
+    border: solid 1px #dfdfdf;
+    margin: auto;
+}
+
+#mp-static-block-carousel .owl-carousel img {
+    max-height: 160px;
+}
+
+#mp-static-block-carousel .owl-next {
+    font-size: 35px;
+    position: absolute;
+    top: 32%;
+    right: 0;
+}
+
+#mp-static-block-carousel .owl-prev {
+    font-size: 35px;
+    position: absolute;
+    top: 32%;
+    left: 0;
+}
+
+#mp-static-block-contact {
+    float: left;
+}
+
+.mp-static-block-contact-desc h2 {
+    font-weight: 400;
+    font-size: 2.8rem;
+}
+
+.mp-static-block-contact-phone {
+    padding: 20px;
+    background: #f5f5f5;
+}
+
+
+/*CUSTOM SCROLL*/
+.mp-storelocator-list-location::-webkit-scrollbar-track {
+    -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+    background-color: #F5F5F5;
+    border-radius: 5px;
+}
+
+.mp-storelocator-list-location::-webkit-scrollbar {
+    width: 5px;
+    background-color: #F5F5F5;
+}
+
+.mp-storelocator-list-location::-webkit-scrollbar-thumb {
+    background-color: #AAA;
+    border-radius: 5px;
+}
+
+.mp-store-info::-webkit-scrollbar-track {
+    -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+    background-color: #F5F5F5;
+    border-radius: 5px;
+}
+
+.mp-store-info::-webkit-scrollbar {
+    width: 5px;
+    background-color: #F5F5F5;
+}
+
+.mp-store-info::-webkit-scrollbar-thumb {
+    background-color: #AAA;
+    border-radius: 5px;
+}
+
+.bh-sl-noresults-desc {
+    padding-bottom: 20px;
+}

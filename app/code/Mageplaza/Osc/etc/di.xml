@@ -33,4 +33,7 @@
     <type name="Magento\Customer\Model\AccountManagement">
         <plugin name="mz_osc_newaccount" type="Mageplaza\Osc\Model\Plugin\Customer\AccountManagement"/>
     </type>
+    <type name="Magento\Checkout\Model\TotalsInformationManagement">
+        <plugin name="saveShipingMethodOnCalculate" type="Mageplaza\Osc\Model\Plugin\Checkout\TotalsInformationManagement"/>
+    </type>
 </config>

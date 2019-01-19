@@ -64,12 +64,10 @@ class Link
      */
     public function beforeGetUrl(\Magento\Framework\Url $subject, $routePath = null, $routeParams = null)
     {
-        // if ($this->oscHelper->isEnabled() && $routePath == 'checkout' && $this->_request->getFullActionName() != 'checkout_index_index') {
-        //     return ['onestepcheckout', $routeParams];
-        // }
-        if ($routePath == 'checkout' && $this->_request->getFullActionName() != 'checkout_index_index') {
+        if ($this->oscHelper->isEnabled() && $routePath == 'checkout' && $this->_request->getFullActionName() != 'checkout_index_index') {
             return ['onestepcheckout', $routeParams];
         }
+
         return null;
     }
 }

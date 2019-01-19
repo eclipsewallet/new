@@ -1,0 +1,18 @@
+{{#location}}
+<div class="mp-loc-img">
+    <img src="{{markerUrl}}" class="mp-loc-marker-icon"/>
+</div>
+<div class="mp-loc-info">
+    <div class="mp-loc-name" style="font-weight: bold">{{name}}</div>
+    <span class="mp-main-addr">
+        {{street}} {{state}}, {{city}}  {{country}}
+    </span><br>
+    {{#if time}}
+    <div class="mp-loc-time">{{time}}</div>
+    {{/if}}
+    {{#if phone1}}
+    <div class="mp-loc-phone1">{{phone1}}</div>
+    {{/if}}
+    <div class="mp-loc-web"><a href="{{web}}" target="_blank">{{niceURL web}}</a></div>
+</div>
+{{/location}}

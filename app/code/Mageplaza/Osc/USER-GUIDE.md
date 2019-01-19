@@ -9,7 +9,6 @@
 - License agreement: https://www.mageplaza.com/LICENSE.txt
 
 
-
 ## How to install
 
 Install ready-to-paste package (Recommended)
