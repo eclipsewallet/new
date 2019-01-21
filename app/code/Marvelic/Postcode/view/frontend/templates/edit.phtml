@@ -158,6 +158,8 @@
     require(['jquery','thaieng'],function($, ThaiAddressEnTh){
         var config = <?php echo $block->getConfig('postcode/options/enable') ?>;
         var countrystore = <?php echo $store->getStore()->getId(); ?>;
+        
+        
         var lang="";
         if(countrystore==1){
             lang= "TH";
@@ -165,8 +167,9 @@
         else{
             lang = "EN";
         }
-        var selectcountry = document.getElementById('country_id');
+        
         if(config == 1) {
+           
             $.ThaiAddressEnTh({
                 lang: lang,
                 database: '<?php echo $this->getViewFileUrl('Marvelic_Postcode::js/thai_address_database_en_th.js'); ?>',
@@ -179,7 +182,7 @@
                      console.info('Autocomplete is ready!');
                 }
             });
-            s.value = "TH";
+        
             
         //     $.Thailand({
         //         database: '<?php echo $this->getViewFileUrl('Marvelic_Postcode::js/database/raw_database/thai_address_database_en_th.json'); ?>', // ฐานข้อมูลเป็นไฟล์ zip
