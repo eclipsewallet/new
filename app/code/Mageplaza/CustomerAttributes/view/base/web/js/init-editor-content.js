@@ -20,40 +20,44 @@
 
 define([
     'jquery',
-    'tinymce',
+    'tinymce4',
     'mage/adminhtml/wysiwyg/tiny_mce/setup'
-], function($, tinyMCE) {
+], function ($, tinyMCE) {
     'use strict';
 
-    return function(elem, repeat, breakdown) {
+    return function (elem, repeat, breakdown) {
         var config = {
-            width: '100%',
+            width: $(elem).parent().hasClass('_with-tooltip') ? 'calc(100% - 36px)' : '100%',
             settings: {
                 theme_advanced_buttons1: 'bold,italic,|,justifyleft,justifycenter,justifyright,|,fontsizeselect'
-                    + ',|,forecolor,backcolor,|,link,unlink,image,|,bullist,numlist,|,code',
+                + ',|,forecolor,backcolor,|,link,unlink,image,|,bullist,numlist,|,code',
                 theme_advanced_buttons2: null,
                 theme_advanced_buttons3: null,
                 theme_advanced_buttons4: null
+            },
+            tinymce4:{
+                'content_css': null,
             }
         };
 
-        if (breakdown){
+        if (breakdown) {
             $.extend(config.settings, {
                 theme_advanced_buttons1: 'bold,italic,|,justifyleft,justifycenter,justifyright,|,fontsizeselect',
                 theme_advanced_buttons2: 'forecolor,backcolor,|,link,unlink,image,|,bullist,numlist,|,code'
             });
         }
 
-        var editor = new tinyMceWysiwygSetup(elem.attr('id'), config);
-        if ($.isReady){
+        var editor = new wysiwygSetup(elem.attr('id'), config);
+        if ($.isReady) {
             tinyMCE.dom.Event.domLoaded = true;
         }
-        if (repeat){
+        if (repeat) {
             editor.turnOff();
         }
-        editor.turnOn();
+        editor.wysiwygInstance.turnOn();
         elem.addClass('wysiwyg-editor').data('wysiwygEditor', editor);
 
         return elem;
     };
 });
+
