@@ -7,6 +7,9 @@ define([
     'jquery',
     'typeahead',
     'jql'],function($,typeahead,JQL){
+        var selectcountry = "";
+        
+          
         $.ThaiAddressEnTh = function (options) {
             
             options = $.extend({}, $.ThaiAddressEnTh.defaults, options);
@@ -27,6 +30,22 @@ define([
             }
         
             var countryselect = document.getElementsByName("country_id")[0].value;
+            var selectcountry = "";
+            $(document).on('change', '#country', function() {
+                selectcountry = document.getElementById('country').value;
+                
+                if(selectcountry==="TH"){
+                    $.getJSON(options['database'], function (result) {
+                        ThaiAddressEnTh = result;
+                    });
+                }
+                else{
+                    $.getJSON(options['database'], function (result) {
+                        ThaiAddressEnTh = "";
+                    });
+                }
+              });
+
             if(countryselect==="TH"){
             $.getJSON(options['database'], function (result) {
                 ThaiAddressEnTh = result;
