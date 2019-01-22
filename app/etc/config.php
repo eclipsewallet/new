@@ -82,7 +82,6 @@ return [
         'Magento_Cookie' => 1,
         'Magento_Email' => 1,
         'Magento_CurrencySymbol' => 1,
-        'Bss_CustomOrderNumber' => 1,
         'Magento_Analytics' => 1,
         'Magento_CustomerGraphQl' => 1,
         'Magento_CustomerImportExport' => 1,
@@ -201,7 +200,6 @@ return [
         'Magento_Webapi' => 1,
         'Magento_SwaggerWebapi' => 1,
         'Magento_SwaggerWebapiAsync' => 1,
-        'Bss_Simpledetailconfigurable' => 1,
         'Magento_SwatchesGraphQl' => 1,
         'Magento_SwatchesLayeredNavigation' => 1,
         'Magento_SwatchesSampleData' => 0,
@@ -209,7 +207,6 @@ return [
         'Magento_TaxGraphQl' => 1,
         'Magento_TaxImportExport' => 1,
         'Magento_CustomerSampleData' => 0,
-        'Bss_AutoCancelOrder' => 1,
         'Magento_CmsSampleData' => 0,
         'Magento_Tinymce3' => 1,
         'Magento_Translation' => 1,
@@ -258,7 +255,6 @@ return [
         'P2c2p_P2c2pPayment' => 1,
         'Potato_Compressor' => 1,
         'Temando_Shipping' => 1,
-        'Vertex_Tax' => 1,
         'Wiki_VAT' => 1
     ]
 ];
