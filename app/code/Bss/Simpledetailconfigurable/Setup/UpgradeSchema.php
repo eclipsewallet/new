@@ -46,6 +46,9 @@ class UpgradeSchema implements UpgradeSchemaInterface
         if (version_compare($context->getVersion(), '1.1.2', '<')) {
             $this->addCustomUrlTable($setup);
         }
+
+        $this->fixSdcpPreselect($setup);
+
         $setup->endSetup();
     }
     public function addProductEnabledTable($setup)
@@ -140,6 +143,51 @@ class UpgradeSchema implements UpgradeSchemaInterface
                     'Preselect key for configurable product'
                 );
                 $setup->getConnection()->createTable($table);
+        }
+    }
+
+    public function fixSdcpPreselect($setup)
+    {
+
+        if (!$setup->tableExists('sdcp_preselect')) {
+            $table = $setup->getConnection()
+                ->newTable(
+                    $setup->getTable('sdcp_preselect')
+                )
+                ->addColumn(
+                    'preselect_id',
+                    \Magento\Framework\DB\Ddl\Table::TYPE_INTEGER,
+                    10,
+                    ['primary' => true, 'auto_increment' => true, 'nullable' => false],
+                    'Key ID'
+                )
+                ->addColumn(
+                    'product_id',
+                    \Magento\Framework\DB\Ddl\Table::TYPE_INTEGER,
+                    10,
+                    ['nullable' => false],
+                    'Product ID'
+                )->addColumn(
+                    'attribute_key',
+                    \Magento\Framework\DB\Ddl\Table::TYPE_TEXT,
+                    255,
+                    ['nullable' => false],
+                    'Attribute name'
+                )
+                ->addColumn(
+                    'value_key',
+                    \Magento\Framework\DB\Ddl\Table::TYPE_TEXT,
+                    255,
+                    ['nullable' => false],
+                    'Value Name'
+                )->addIndex(
+                    $setup->getIdxName('sdcp_preselect', ['product_id']),
+                    ['product_id']
+                )
+                ->setComment(
+                    'Preselect key for configurable product'
+                );
+            $setup->getConnection()->createTable($table);
         }
     }
 }
