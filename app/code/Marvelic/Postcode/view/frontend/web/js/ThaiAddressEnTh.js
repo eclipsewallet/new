@@ -29,28 +29,13 @@ define([
                 var field_zipcode = "zipcode";
             }
         
-            var countryselect = document.getElementsByName("country_id")[0].value;
-            var selectcountry = "";
-            $(document).on('change', '#country', function() {
-                selectcountry = document.getElementById('country').value;
-                
-                if(selectcountry==="TH"){
-                    $.getJSON(options['database'], function (result) {
-                        ThaiAddressEnTh = result;
-                    });
-                }
-                else{
-                    $.getJSON(options['database'], function (result) {
-                        ThaiAddressEnTh = "";
-                    });
-                }
-              });
+            
 
-            if(countryselect==="TH"){
+            
             $.getJSON(options['database'], function (result) {
                 ThaiAddressEnTh = result;
             });
-            }
+            
             var SelectItem = function(item){
                 if(typeof item !== 'undefined'){
                     if(options['lang'] == "TH"){

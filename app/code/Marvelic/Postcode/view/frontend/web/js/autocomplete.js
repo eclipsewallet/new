@@ -54,6 +54,7 @@ define([
                             //var dbUrl = require.toUrl('') + '/Marvelic_Postcode/js/database/raw_database/raw_database1.json';
                             var dbUrl = require.toUrl('') + '/Marvelic_Postcode/js/thai_address_database_en_th.js';
                             var storecode = document.getElementById('storecode').textContent;
+                            var countryselect = document.getElementsByName("country_id")[0].value;
                             
                             $.ajax({
                                 url: dbUrl,
@@ -82,19 +83,36 @@ define([
                                     else{
                                         lang = "EN";
                                     }
-                                    
-                                    $.ThaiAddressEnTh({
-                                        lang:  lang,
-                                        database: dbUrl,
-                                        district: $('#' + districtAddress), // input ของตำบล
-                                        amphoe: $('#' + cityAddress), // input ของอำเภอ
-                                        province: $('#' + provinceAddress), // input ของจังหวัด
-                                        zipcode: $('#' + postcodeAddress), // input ของรหัสไปรษณีย์
-                                        
-                                        onLoad: function(){
-                                             console.info('Autocomplete is ready!');
-                                        }
-                                    });
+                                    if(countryselect=="TH"){
+                                        $.ThaiAddressEnTh({
+                                            lang:  lang,
+                                            database: dbUrl,
+                                            district: $('#' + districtAddress), // input ของตำบล
+                                            amphoe: $('#' + cityAddress), // input ของอำเภอ
+                                            province: $('#' + provinceAddress), // input ของจังหวัด
+                                            zipcode: $('#' + postcodeAddress), // input ของรหัสไปรษณีย์
+                                            
+                                            onLoad: function(){
+                                                console.info('Autocomplete is ready!');
+                                            }
+                                        });
+                                        console.log("Thai");
+                                    }
+                                    else{
+                                        $.ThaiAddressEnTh({
+                                            lang:  "",
+                                            database: "",
+                                            district: $('#' + districtAddress), // input ของตำบล
+                                            amphoe: $('#' + cityAddress), // input ของอำเภอ
+                                            province: $('#' + provinceAddress), // input ของจังหวัด
+                                            zipcode: $('#' + postcodeAddress), // input ของรหัสไปรษณีย์
+                                            
+                                            onLoad: function(){
+                                                console.info('Autocomplete is ready!');
+                                            }
+                                        });
+                                        console.log("Not Thai");
+                                    }
                                 }
                             });
                                                    
