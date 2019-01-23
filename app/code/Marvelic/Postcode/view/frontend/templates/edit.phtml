@@ -167,8 +167,26 @@
         else{
             lang = "EN";
         }
-        
+        selectcountry_firstload = document.getElementById('country').value;
+            if(selectcountry_firstload==="TH"){
+                $.ThaiAddressEnTh({
+                        lang: lang,
+                        database: '<?php echo $this->getViewFileUrl('Marvelic_Postcode::js/thai_address_database_en_th.js'); ?>',
+                        district: $('#district'),
+                        amphoe: $('#city'),
+                        province: $('#region'),
+                        zipcode: $('#zip'),
+                        
+                        onLoad: function(){
+                            console.info('Autocomplete is ready!');
+                        }
+                    });
+            }
+            else{
+                console.log("Not Thai");
+            }
         if(config == 1) {
+            
             $(document).on('change', '#country', function() {
                 selectcountry = document.getElementById('country').value;
                 
