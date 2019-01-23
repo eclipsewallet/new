@@ -169,19 +169,28 @@
         }
         
         if(config == 1) {
-           
-            $.ThaiAddressEnTh({
-                lang: lang,
-                database: '<?php echo $this->getViewFileUrl('Marvelic_Postcode::js/thai_address_database_en_th.js'); ?>',
-                district: $('#district'),
-                amphoe: $('#city'),
-                province: $('#region'),
-                zipcode: $('#zip'),
+            $(document).on('change', '#country', function() {
+                selectcountry = document.getElementById('country').value;
                 
-                onLoad: function(){
-                     console.info('Autocomplete is ready!');
+                if(selectcountry==="TH"){
+                    $.ThaiAddressEnTh({
+                        lang: lang,
+                        database: '<?php echo $this->getViewFileUrl('Marvelic_Postcode::js/thai_address_database_en_th.js'); ?>',
+                        district: $('#district'),
+                        amphoe: $('#city'),
+                        province: $('#region'),
+                        zipcode: $('#zip'),
+                        
+                        onLoad: function(){
+                            console.info('Autocomplete is ready!');
+                        }
+                    });
+                }
+                else{
+                    console.log("Not Thai");
                 }
             });
+            
         
             
         //     $.Thailand({
