@@ -183,7 +183,18 @@
                     });
             }
             else{
-                console.log("Not Thai");
+                $.ThaiAddressEnTh({
+                        lang: "",
+                        database: "",
+                        district: $('#district'),
+                        amphoe: $('#city'),
+                        province: $('#region'),
+                        zipcode: $('#zip'),
+                        
+                        onLoad: function(){
+                            console.info('Autocomplete is ready!');
+                        }
+                    });
             }
         if(config == 1) {
             
@@ -205,7 +216,18 @@
                     });
                 }
                 else{
-                    console.log("Not Thai");
+                    $.ThaiAddressEnTh({
+                        lang: "",
+                        database: "",
+                        district: $('#district'),
+                        amphoe: $('#city'),
+                        province: $('#region'),
+                        zipcode: $('#zip'),
+                        
+                        onLoad: function(){
+                            console.info('Autocomplete is ready!');
+                        }
+                    });
                 }
             });
             
