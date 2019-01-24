@@ -52,7 +52,8 @@ define([
  
                             //var dbUrl = require.toUrl('') + '/Marvelic_Postcode/js/database/'+country_code+'.json';
                             var dbUrl = require.toUrl('') + '/Marvelic_Postcode/js/thai_address_database_en_th.js';
- 
+                            var storecode = document.getElementById('storecode').textContent;
+                            var countryselect = document.getElementsByName("country_id")[1].value;
                             $.ajax({
                                 url: dbUrl,
                                 error: function()
@@ -73,18 +74,43 @@ define([
                                     //         console.info('Billing Autocomplete is ready!');
                                     //     }
                                     // });
-                                    $.ThaiAddressEnTh({
-                                        lang: 'TH',
-                                        database: dbUrl,
-                                        district: $('#' + districtAddress), // input ของตำบล
-                                        amphoe: $('#' + cityAddress), // input ของอำเภอ
-                                        province: $('#' + provinceAddress), // input ของจังหวัด
-                                        zipcode: $('#' + postcodeAddress), // input ของรหัสไปรษณีย์
-                                        
-                                        onLoad: function () {
-                                                console.info('Billing Autocomplete is ready!');
-                                        }
-                                    });
+                                    var lang ="";
+                                    if(storecode==1){
+                                        lang = "TH";
+                                    }
+                                    else{
+                                        lang = "EN";
+                                    }
+                                    if(countryselect=="TH"){
+                                        $.ThaiAddressEnTh({
+                                            lang:  lang,
+                                            database: dbUrl,
+                                            district: $('#' + districtAddress), // input ของตำบล
+                                            amphoe: $('#' + cityAddress), // input ของอำเภอ
+                                            province: $('#' + provinceAddress), // input ของจังหวัด
+                                            zipcode: $('#' + postcodeAddress), // input ของรหัสไปรษณีย์
+                                            
+                                            onLoad: function(){
+                                                console.info('Autocomplete is ready!');
+                                            }
+                                        });
+                                        console.log("Thai");
+                                    }
+                                    else{
+                                        $.ThaiAddressEnTh({
+                                            lang:  "",
+                                            database: "",
+                                            district: $('#' + districtAddress), // input ของตำบล
+                                            amphoe: $('#' + cityAddress), // input ของอำเภอ
+                                            province: $('#' + provinceAddress), // input ของจังหวัด
+                                            zipcode: $('#' + postcodeAddress), // input ของรหัสไปรษณีย์
+                                            
+                                            onLoad: function(){
+                                                console.info('Autocomplete is ready!');
+                                            }
+                                        });
+                                        console.log("Not Thai");
+                                    }
                                 }
                             });
  
