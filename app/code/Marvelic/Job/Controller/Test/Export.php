@@ -80,22 +80,22 @@ class Export extends \Magento\Framework\App\Action\Action
      */
     protected $_objectManager;
 
-    public function __construct(\Psr\Log\LoggerInterface $logger,
-                                \Magento\Sales\Model\Order $order,
-                                \Magento\Sales\Model\ResourceModel\Order\CollectionFactory $orderCollectionFactory,
-                                \Magento\Framework\Stdlib\DateTime\DateTime $date,
-                                \Magento\Framework\Stdlib\DateTime\TimezoneInterface $storeTime,
-                                \Magento\Sales\Model\ResourceModel\Order\Invoice\CollectionFactory $invoiceOrder,
-                                \Magento\Framework\Filesystem\DirectoryList $dir,
-                                \Magento\Framework\Filesystem\Io\File $file,
-                                \Magento\Store\Model\StoreManagerInterface $storeManager,
-                                \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
-                                \Magento\Customer\Api\CustomerRepositoryInterface $customerRepositoryInterface,
-                                \Marvelic\Job\Model\ExportFactory $exportFactory,
-                                \Magento\Framework\ObjectManagerInterface $objectManager,
-                                \Magento\Framework\App\Action\Context $context
-    )
-    {
+    public function __construct(
+        \Psr\Log\LoggerInterface $logger,
+        \Magento\Sales\Model\Order $order,
+        \Magento\Sales\Model\ResourceModel\Order\CollectionFactory $orderCollectionFactory,
+        \Magento\Framework\Stdlib\DateTime\DateTime $date,
+        \Magento\Framework\Stdlib\DateTime\TimezoneInterface $storeTime,
+        \Magento\Sales\Model\ResourceModel\Order\Invoice\CollectionFactory $invoiceOrder,
+        \Magento\Framework\Filesystem\DirectoryList $dir,
+        \Magento\Framework\Filesystem\Io\File $file,
+        \Magento\Store\Model\StoreManagerInterface $storeManager,
+        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
+        \Magento\Customer\Api\CustomerRepositoryInterface $customerRepositoryInterface,
+        \Marvelic\Job\Model\ExportFactory $exportFactory,
+        \Magento\Framework\ObjectManagerInterface $objectManager,
+        \Magento\Framework\App\Action\Context $context
+    ) {
         parent::__construct($context);
         $this->logger                   = $logger;
         $this->_orderCollectionFactory  = $orderCollectionFactory;
@@ -115,7 +115,13 @@ class Export extends \Magento\Framework\App\Action\Action
     /**
      * Execute the cron
      *
-     * @return void
+     * @return bool
+     * @throws \Magento\Framework\Exception\FileSystemException
+     * @throws \Magento\Framework\Exception\LocalizedException
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
+     * @throws \PHPExcel_Exception
+     * @throws \PHPExcel_Reader_Exception
+     * @throws \PHPExcel_Writer_Exception
      */
     public function execute()
     {
@@ -135,37 +141,37 @@ class Export extends \Magento\Framework\App\Action\Action
             $this->logger->info('dataExport', ['dataExport' => $dataExport]);
 
             // create invoices excel file
-            $objPHPExcel    = new \PHPExcel;
+            $objPHPExcel    = new \PHPExcel();
 
-            $styleHeadBlue = array(
-                'fill' => array(
+            $styleHeadBlue = [
+                'fill' => [
                     'type' => \PHPExcel_Style_Fill::FILL_SOLID,
-                    'color' => array('rgb' => '9DC3E6')
-                ));
+                    'color' => ['rgb' => '9DC3E6']
+                ]];
 
-            $styleHeadSollidYellow = array(
-                'fill' => array(
+            $styleHeadSollidYellow = [
+                'fill' => [
                     'type' => \PHPExcel_Style_Fill::FILL_SOLID,
-                    'color' => array('rgb' => 'FFC000')
-                ));
+                    'color' => ['rgb' => 'FFC000']
+                ]];
 
-            $styleYellow = array(
-                'fill' => array(
+            $styleYellow = [
+                'fill' => [
                     'type' => \PHPExcel_Style_Fill::FILL_SOLID,
-                    'color' => array('rgb' => 'FFE699')
-                ));
+                    'color' => ['rgb' => 'FFE699']
+                ]];
 
-            $styleLightYellow = array(
-                'fill' => array(
+            $styleLightYellow = [
+                'fill' => [
                     'type' => \PHPExcel_Style_Fill::FILL_SOLID,
-                    'color' => array('rgb' => 'FFF2CC')
-                ));
+                    'color' => ['rgb' => 'FFF2CC']
+                ]];
 
-            $styleAlignLeft = array(
-                'alignment' => array(
+            $styleAlignLeft = [
+                'alignment' => [
                     'horizontal' => \PHPExcel_Style_Alignment::HORIZONTAL_LEFT
-                )
-            );
+                ]
+            ];
 
             $objPHPExcel->getActiveSheet()->getStyle('A1:M1')->applyFromArray($styleHeadBlue);
             $objPHPExcel->getActiveSheet()->getStyle('E1')->applyFromArray($styleHeadSollidYellow);
@@ -181,39 +187,39 @@ class Export extends \Magento\Framework\App\Action\Action
                 ->setKeywords("office PHPExcel php")
                 ->setCategory("Result file");
 
-                $objPHPExcel->setActiveSheetIndex(0)
-                ->setCellValue('A1', 'shopId')
+            $objPHPExcel->setActiveSheetIndex(0)
+                ->setCellValue('A1', 'Shop Id')
                 ->setCellValue('B1', 'Consignee Name')
                 ->setCellValue('C1', 'Address Line 1')
                 ->setCellValue('D1', 'Province')
                 ->setCellValue('E1', 'District')
                 ->setCellValue('F1', 'Sub District')
-                ->setCellValue('G1', 'postcode')
-                ->setCellValue('H1', 'email')
-                ->setCellValue('I1', 'tel')
-                ->setCellValue('J1', 'deliveryMode')
-                ->setCellValue('K1', 'note')
-                ->setCellValue('L1', 'saleAgentCode')
-                ->setCellValue('M1', 'customerRef')
-                ->setCellValue('N1', 'orderNumber')
+                ->setCellValue('G1', 'Postcode')
+                ->setCellValue('H1', 'Email')
+                ->setCellValue('I1', 'Tel')
+                ->setCellValue('J1', 'Delivery Mode')
+                ->setCellValue('K1', 'Note')
+                ->setCellValue('L1', 'Sale Agent Code')
+                ->setCellValue('M1', 'Customer Ref')
+                ->setCellValue('N1', 'Order Number')
                 ->setCellValue('O1', 'Order ID')
-                ->setCellValue('P1', 'sms')
-                ->setCellValue('Q1', 'billingTitle')
-                ->setCellValue('R1', 'deliveryDate')
-                ->setCellValue('S1', 'CreateDateTime')
+                ->setCellValue('P1', 'SMS')
+                ->setCellValue('Q1', 'Billing Title')
+                ->setCellValue('R1', 'Delivery Date')
+                ->setCellValue('S1', 'Create Date Time')
                 ->setCellValue('T1', 'Payment Method')
-                ->setCellValue('U1', 'paymentDate')
-                ->setCellValue('V1', 'paymentTime')
-                ->setCellValue('W1', 'paymentAmount')
-                ->setCellValue('X1', 'urgent')
-                ->setCellValue('Y1', 'status')
-                ->setCellValue('Z1', 'serviceId1')
-                ->setCellValue('AA1', 'serviceId2')
-                ->setCellValue('AB1', 'serviceId3')
-                ->setCellValue('AC1', 'itemId')
-                ->setCellValue('AD1', 'amount')
-                ->setCellValue('AE1', 'price')
-                ->setCellValue('AF1', 'itemType');
+                ->setCellValue('U1', 'Payment Date')
+                ->setCellValue('V1', 'Payment Time')
+                ->setCellValue('W1', 'Payment Amount')
+                ->setCellValue('X1', 'Urgent')
+                ->setCellValue('Y1', 'Status')
+                ->setCellValue('Z1', 'Service Id 1')
+                ->setCellValue('AA1', 'Service Id 2')
+                ->setCellValue('AB1', 'Service Id 3')
+                ->setCellValue('AC1', 'Item Id')
+                ->setCellValue('AD1', 'Amount')
+                ->setCellValue('AE1', 'Price')
+                ->setCellValue('AF1', 'Item Type');
 
             $objPHPExcel->getActiveSheet()->getColumnDimension('A')->setWidth(20);
             $objPHPExcel->getActiveSheet()->getColumnDimension('B')->setWidth(20);
@@ -251,34 +257,34 @@ class Export extends \Magento\Framework\App\Action\Action
             $periodTime = $dataDateConfig['period'];
             $typeTime   = $dataDateConfig['type_time'];
             $to         = date("Y:m:d h:i:s"); // current date
-            $from       = strtotime('-'.$periodTime.' '.$typeTime, strtotime($to));
+            $from       = strtotime('-' . $periodTime . ' ' . $typeTime, strtotime($to));
             $from       = date('Y:m:d h:i:s', $from); // days before
             $invoices   = $this->_invoiceOrder->create()
                 ->addAttributeToSelect('*')
-                ->addFieldToFilter('created_at', array('from'=>$from, 'to'=>$to));
+                ->addFieldToFilter('created_at', ['from'=>$from, 'to'=>$to]);
             $ordColA    = ord('A');
             $row        = 2;
             $dataExcel  = [
                 'shopId'                => '',
-                'ConsigneeName'         => '',
-                'AddressLine1'          => '',
-                'Province'              => '',
-                'District'              => '',
-                'SubDistrict'           => '',
-                'PostCode'              => '',
-                'Email'                 => '',
-                'Tel'                   => '',
-                'DeliveryMode'          => '',
-                'Note'                  => '',
-                'SaleAgentCode'         => '',
-                'CustomerRef'           => '',
-                'OrderNumber'           => '',
-                'OrderID'               => '',
-                'Sms'                   => '',
+                'consigneeName'         => '',
+                'addressLine1'          => '',
+                'province'              => '',
+                'district'              => '',
+                'subDistrict'           => '',
+                'postcode'              => '',
+                'email'                 => '',
+                'tel'                   => '',
+                'deliveryMode'          => '',
+                'note'                  => '',
+                'saleAgentCode'         => '',
+                'customerRef'           => '',
+                'orderNumber'           => '',
+                'orderID'               => '',
+                'sms'                   => '',
                 'billingTitle'          => '',
                 'deliveryDate'          => '',
-                'CreateDateTime'        => '',
-                'PaymentMethod'         => '',
+                'createDateTime'        => '',
+                'paymentMethod'         => '',
                 'paymentDate'           => '',
                 'paymentTime'           => '',
                 'paymentAmount'         => '',
@@ -292,27 +298,12 @@ class Export extends \Magento\Framework\App\Action\Action
                 'amount'                => '',
                 'price'                 => '',
                 'itemType'              => ''
-
-
-                // 'productId'             => '',
-                // 'productTitle'          => '',
-                // 'saleQuantity'          => '',
-                // 'customerCardId'        => '',
-                // 'shippingAddressTo'     => '',
-                // 'shippingAddressName'   => '',
-                // 'shippingTumbolName'    => '',
-                // 'shippingAmphurName'    => '',
-                // 'shippingProvinceName'  => '',
-                // 'shippingPostcode'      => '',
-                // 'shippingPhone'         => '',
-                // 'deliveryType'          => '',
-                // 'postCodeName'          => ''
             ];
             foreach ($invoices as $key => $invoice) {
                 $order      = $this->_order->load($invoice->getOrderId());
                 $customerId = $order->getCustomerId();
 
-                if ($customerId){
+                if ($customerId) {
                     $objAddresss    = $this->_customer->getById($customerId)->getAddresses()[0];
                     $tumbon         = $objAddresss->getCustomAttribute('tumbon')
                         ? $objAddresss->getCustomAttribute('tumbon')->getValue()
@@ -322,19 +313,18 @@ class Export extends \Magento\Framework\App\Action\Action
                         ? $objAddresss->getCustomAttribute('province')->getValue()
                         : 'None';
                     $customerCardId = ($this->_customer->getById($customerId)->getCustomAttribute('personal_id'))
-                        ?  $this->_customer->getById($customerId)->getCustomAttribute('personal_id')
+                        ? $this->_customer->getById($customerId)->getCustomAttribute('personal_id')
                         : 'None';
-                }else{
+                } else {
                     $tumbon         = 'None';
                     $province       = 'None';
                     $customerCardId = 'None';
                 }
                 $shipment = $invoice->getData();
-                //echo("<pre>");print_r($shipment);
                 $time = strtotime($shipment["created_at"]);
-                
+
                 $dataExcel['shopId']                = $order->getStoreId();
-                $dataExcel['ConsigneeName']         = $order->getShippingAddress()->getFirstName().' '.$order->getShippingAddress()->getLastName();
+                $dataExcel['ConsigneeName']         = $order->getShippingAddress()->getFirstName() . ' ' . $order->getShippingAddress()->getLastName();
                 $dataExcel['AddressLine1']          = $order->getShippingAddress()->getStreet()[0];
                 $dataExcel['Province']              = $order->getShippingAddress()->getProvince();
                 $dataExcel['District']              = $order->getShippingAddress()->getDistrict();
@@ -350,57 +340,43 @@ class Export extends \Magento\Framework\App\Action\Action
                 $dataExcel['OrderID']               = $order->getId();
                 $dataExcel['Sms']                   = $order->getStoreId();
                 $dataExcel['billingTitle']          = $order->getBillingAddress()->getFirstName();
-                $dataExcel['deliveryDate']          = date('Y-m-d',$time);
-                $dataExcel['CreateDateTime']        = date('Y-m-d H:i:s',$time);
+                $dataExcel['deliveryDate']          = date('Y-m-d', $time);
+                $dataExcel['CreateDateTime']        = date('Y-m-d H:i:s', $time);
                 $dataExcel['PaymentMethod']         = $order->getPayment()->getMethod();
-                $dataExcel['paymentDate']           = date('Y-m-d',$time);
-                $dataExcel['paymentTime']           = date('H:i:s',$time);
+                $dataExcel['paymentDate']           = date('Y-m-d', $time);
+                $dataExcel['paymentTime']           = date('H:i:s', $time);
                 $dataExcel['paymentAmount']         = $order->getPayment()->getBaseAmountPaid();
                 $dataExcel['urgent']                = "XXX";
                 $dataExcel['status']                = $order->getStatus();
                 $dataExcel['serviceId1']            = "0";
                 $dataExcel['serviceId2']            = "0";
                 $dataExcel['serviceId3']            = "0";
-                
+
                 $str = "";
                 foreach ($order->getAllItems() as $item) {
-                    
                     $dataExcel['itemId']        = $item->getProductId();
                     $dataExcel['amount']        = $item->getQtyOrdered();
                     $dataExcel['price']         = $item->getPrice();
                     $dataExcel['itemType']        = $item->getProductType();
-                    
+
                     $colPosition                = 0;
                     $alph = 0;
                     foreach ($dataExcel as $key => $data) {
-                        // if ($key === 'saleQuantity' || $key === 'customerCardId' || $key === 'deliveryType'){
-                        //     $objPHPExcel->getActiveSheet()->getStyle(chr($colPosition).$row)->applyFromArray($styleLightYellow);
-                        // }
-                        // if ($key === 'postCodeName'){
-                        //     $objPHPExcel->getActiveSheet()->getStyle(chr($colPosition).$row)->applyFromArray($styleYellow);
-                        // }
-                        $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($colPosition,$row, $data);
+                        $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($colPosition, $row, $data);
                         $colPosition++;
                         $str .= $data;
                     }
-                    echo "".$str."\r\n";
+                    echo "" . $str . "\r\n";
                     $row++;
                 }
             }
 
             $io = \PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel2007');
-
-            if ( !file_exists($this->_dir->getPath('media').'/ktb')) {
-                $this->_file->mkdir($this->_dir->getPath('media').'/ktb', 0777);
-            }
-
             $fileCreatedAt = date("F j, Y h:i:s A", strtotime('+7 hours', strtotime($to)));
-            $pathSave = $this->_dir->getPath('media').'/ktb/'.$dataExport['title']."-".$fileCreatedAt.'-Rin.xlsx';
-            $io->save($pathSave);
-            //echo "Success";
+            $pathSave = $this->_dir->getPath('media') . '/' . $dataExportSource['file_path'] . "/" . $dataExport['title'] . "-" . $fileCreatedAt . '.xlsx';
 
             // Upload SFTP
-            if ($dataExportSource['type'] == 'sftp'){
+            if ($dataExportSource['type'] == 'sftp') {
                 $client = $this->_objectManager->create('Marvelic\Job\Model\Source\Type\Sftp');
                 $argsConfig = [
                     'host'          => $dataExportSource['host'],
@@ -414,12 +390,17 @@ class Export extends \Magento\Framework\App\Action\Action
                 $this->logger->info('argsConfig', ['argsConfig' => $argsConfig]);
 
                 $client->run($argsConfig);
+            } elseif ($dataExportSource['type'] == 'file') {
+                if (!file_exists($this->_dir->getPath('media') . '/' . $dataExportSource['file_path'] . "")) {
+                    $this->_file->mkdir($this->_dir->getPath('media') . '/' . $dataExportSource['file_path'] . "", 0777);
+                }
+
+                $io->save($pathSave);
             }
 
             return true;
         }
 
         return false;
-
     }
 }
