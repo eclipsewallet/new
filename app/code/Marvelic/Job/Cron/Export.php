@@ -152,18 +152,6 @@ class Export
                     'color' => ['rgb' => 'FFC000']
                 ]];
 
-            $styleYellow = [
-                'fill' => [
-                    'type' => \PHPExcel_Style_Fill::FILL_SOLID,
-                    'color' => ['rgb' => 'FFE699']
-                ]];
-
-            $styleLightYellow = [
-                'fill' => [
-                    'type' => \PHPExcel_Style_Fill::FILL_SOLID,
-                    'color' => ['rgb' => 'FFF2CC']
-                ]];
-
             $styleAlignLeft = [
                 'alignment' => [
                     'horizontal' => \PHPExcel_Style_Alignment::HORIZONTAL_LEFT
@@ -374,11 +362,11 @@ class Export
                 $this->_file->mkdir($this->_dir->getPath('media') . '/ktb', 0777);
             }
 
+            $io = \PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel2007');
             $fileCreatedAt = date("F j, Y h:i:s A", strtotime('+7 hours', strtotime($to)));
-            $pathSave = $this->_dir->getPath('media') . '/ktb/' . $dataExport['title'] . "-" . $fileCreatedAt . '-Rin.xlsx';
-            $io->save($pathSave);
+            $pathSave = $this->_dir->getPath('media') . '/' . $dataExportSource['file_path'] . "/" . $dataExport['title'] . "-" . $fileCreatedAt . '.xlsx';
 
-            // Upload SFTP
+            // File, FTP, SFTP
             if ($dataExportSource['type'] == 'sftp') {
                 $client = $this->_objectManager->create('Marvelic\Job\Model\Source\Type\Sftp');
                 $argsConfig = [
@@ -393,6 +381,12 @@ class Export
                 $this->logger->info('argsConfig', ['argsConfig' => $argsConfig]);
 
                 $client->run($argsConfig);
+            } elseif ($dataExportSource['type'] == 'file') {
+                if (!file_exists($this->_dir->getPath('media') . '/' . $dataExportSource['file_path'])) {
+                    $this->_file->mkdir($this->_dir->getPath('media') . '/' . $dataExportSource['file_path'] . "", 0777);
+                }
+
+                $io->save($pathSave);
             }
 
             return true;
