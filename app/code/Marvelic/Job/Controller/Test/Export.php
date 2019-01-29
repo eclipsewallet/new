@@ -130,7 +130,7 @@ class Export extends \Magento\Framework\App\Action\Action
         $this->logger->info('matches', ['matches' => $matches]);
         if (/*isset($matches[1]) && (int)$matches[1] > 0*/ true) {
             // $jobId  = (int)$matches[1];
-            $jobId = 1;
+            $jobId = 4;
 
             $dataExport         = $this->_exportFactory->create()->load($jobId)->getData();
             $dataDateConfig     = json_decode($dataExport['date_config'], true);
@@ -153,18 +153,6 @@ class Export extends \Magento\Framework\App\Action\Action
                 'fill' => [
                     'type' => \PHPExcel_Style_Fill::FILL_SOLID,
                     'color' => ['rgb' => 'FFC000']
-                ]];
-
-            $styleYellow = [
-                'fill' => [
-                    'type' => \PHPExcel_Style_Fill::FILL_SOLID,
-                    'color' => ['rgb' => 'FFE699']
-                ]];
-
-            $styleLightYellow = [
-                'fill' => [
-                    'type' => \PHPExcel_Style_Fill::FILL_SOLID,
-                    'color' => ['rgb' => 'FFF2CC']
                 ]];
 
             $styleAlignLeft = [
@@ -391,7 +379,7 @@ class Export extends \Magento\Framework\App\Action\Action
 
                 $client->run($argsConfig);
             } elseif ($dataExportSource['type'] == 'file') {
-                if (!file_exists($this->_dir->getPath('media') . '/' . $dataExportSource['file_path'] . "")) {
+                if (!file_exists($this->_dir->getPath('media') . '/' . $dataExportSource['file_path'])) {
                     $this->_file->mkdir($this->_dir->getPath('media') . '/' . $dataExportSource['file_path'] . "", 0777);
                 }
 

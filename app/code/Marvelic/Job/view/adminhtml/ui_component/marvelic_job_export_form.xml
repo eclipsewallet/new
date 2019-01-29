@@ -178,6 +178,17 @@
                 <dataScope>period</dataScope>
             </settings>
         </field>
+		<field formElement="hidden" name="date_config" sortOrder="30">
+			<argument name="data" xsi:type="array">
+				<item name="config" xsi:type="array">
+					<item name="source" xsi:type="string">export</item>
+				</item>
+			</argument>
+			<settings>
+				<dataType>text</dataType>
+				<dataScope>date_config</dataScope>
+			</settings>
+		</field>
     </fieldset>
     <fieldset name="source">
 		<argument name="data" xsi:type="array">
@@ -223,7 +234,7 @@
                 <dataType>text</dataType>
                 <label translate="true">File path</label>
                 <dataScope>file_path</dataScope>
-                <notice>The file must match the format. Use relative path to Magento installation, e.g. var/import/products.csv (Make sure folder have correct write permissions - 775 , for more details please see Magento 2 Permissions guide)</notice>
+                <notice>The file must match the format. Use relative path to Magento installation, e.g. export/products.xlsx and the file will export to pub/media/export/products.xlsx (Make sure folder have correct write permissions - 775 , for more details please see Magento 2 Permissions guide)</notice>
             </settings>
         </field>
         <field formElement="input" name="host" sortOrder="30">
@@ -286,5 +297,16 @@
                 <dataScope>password</dataScope>
             </settings>
         </field>
+		<field formElement="hidden" name="data_export_source" sortOrder="70">
+			<argument name="data" xsi:type="array">
+				<item name="config" xsi:type="array">
+					<item name="source" xsi:type="string">export</item>
+				</item>
+			</argument>
+			<settings>
+				<dataType>text</dataType>
+				<dataScope>export_source</dataScope>
+			</settings>
+		</field>
 	</fieldset>
 </form>
