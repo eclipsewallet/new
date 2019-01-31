@@ -519,7 +519,111 @@
         color: #FFFFFF;
     }
 }
+.cms-test,.cms-contact-us,.cms-careers,.cms-terms-and-conditions,.cms-sizechart{
+    .center{
+        .buttons{
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 30px;
+            .seemore{
+                font-size: 17px;
+                overflow: hidden;
+                min-width: 450px;
+                color: #fff;
+                text-align: center;
+                margin-top: 30px;
+                position: relative;
+                .inner{
+                    background: #d95927;
+                    padding: 7px 20px;
+                    width: 90%;
+                    margin: auto;
+                }
+            }
+            .seemore:hover:before{
+                background:#ec7242;
+                transition:all 0.3s ease-in-out;
+            }
+            .seemore:hover:after{
+                background:#ec7242;
+                transition:all 0.3s ease-in-out;
+            }
+            .seemore:hover{
+                .inner{
+                    background:#ec7242;
+                    transition:all 0.3s ease-in-out;
+                }
+                
+            }
+            .seemore:before{
+                content: '';
+                position: absolute;
+                height: 100%;
+                width: 6%;
+                top: 4px;
+                left: 16px;
+                background: #d95927;
+                transform: rotate(16deg);
+            }
+            .seemore:after{
+                content: '';
+                position: absolute;
+                height: 100%;
+                width: 6%;
+                bottom: 4px;
+                right: 15px;
+                background: #d95927;
+                transform: rotate(16deg);
+            }
+        }
+        h2{
+            text-align: center;
+        }
+    }
+    .sizechart{
+        display: block;
+        margin: auto;
+    }
+    .recruit_position{
+        list-style-type: decimal;
+        margin-left: 40px;
+        color: #000;
+    }
+    h2.rec-title{
+        color: #f95635;
+    }
+    h2.rec-title:hover{
+        color: #373737;
+        transition:all 0.2s ease-in-out;
+    }
 
+    p{
+        span{
+            white-space: pre-wrap;
+        }
+        
+    }
+    
+    p.rec {
+        margin: 20px 0;
+        color: #000;
+    }
+    p.un{
+        text-decoration: underline;
+        color: #000;
+        margin-top: 40px;
+    }
+    p.wrap:first-of-type > span:last-of-type {
+        color: #4c4a4a;
+    }
+    p.wrap:first-of-type > span {
+        color: #000;
+    }
+    p.wrap{
+        color: #4c4a4a;
+    }
+}
 @media screen and (max-width:1199px) and (min-width:768px){
     .cms-home .widget.block.block-static-block{
         display: block!important;
