@@ -32,17 +32,17 @@ class Sftp
      * @param \Magento\Framework\ObjectManagerInterface $objectManager
      * @param \Magento\Framework\Filesystem\DirectoryList $dir
      */
-    public function __construct(\Magento\Framework\ObjectManagerInterface $objectManager,
-                                \Magento\Framework\Filesystem\DirectoryList $dir)
-    {
+    public function __construct(
+        \Magento\Framework\ObjectManagerInterface $objectManager,
+        \Magento\Framework\Filesystem\DirectoryList $dir
+    ) {
         $this->_objectManager   = $objectManager;
         $this->_dir             = $dir;
     }
 
     /**
-     * @param $model
+     * @param array $args
      * @return string
-     * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function run(array $args = [])
     {
@@ -58,9 +58,9 @@ class Sftp
         $dataFolder = explode('/', $args['file_path']);
 
         foreach ($dataFolder as $folderName) {
-            if (!$folderName == ''){
+            if (!$folderName == '') {
                 $exist = $ioSftp->cd($folderName);
-                if ($exist == false){
+                if ($exist == false) {
                     $ioSftp->mkdir($folderName, 0777, false);
                     $ioSftp->cd($folderName);
                 }
@@ -68,7 +68,7 @@ class Sftp
         }
 
         $fileSource = $args['file_source'];
-        $sttUpload  = $ioSftp->write( $ioSftp->pwd().'/'.basename($fileSource) , $fileSource);
+        $sttUpload  = $ioSftp->write($ioSftp->pwd() . '/' . basename($fileSource), $fileSource);
 
         $ioSftp->close();
     }

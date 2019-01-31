@@ -31,6 +31,7 @@ class Sftp extends \Magento\Framework\Filesystem\Io\Sftp
         $username  = $args['username'];
         $password = $args['password'];
         $this->_connection = new \phpseclib\Net\SFTP($host, $port, $args['timeout']);
+        /** @var TYPE_NAME $this */
         if (!$this->_connection->login($username, $password)) {
             throw new \Magento\Framework\Exception\LocalizedException(
                 __("Unable to open SFTP connection as %1@%2", $username, $password)
