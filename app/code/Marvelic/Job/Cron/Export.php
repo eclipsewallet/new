@@ -351,22 +351,29 @@ class Export
                         $colPosition++;
                         $str .= $data;
                     }
-                    //echo "" . $str . "\r\n";
                     $row++;
                 }
             }
 
             $io = \PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel2007');
+            $fileCreatedAt = date("F j, Y h:i:s A", strtotime('+7 hours', strtotime($to)));
+        }
 
-            if (!file_exists($this->_dir->getPath('media') . '/ktb')) {
-                $this->_file->mkdir($this->_dir->getPath('media') . '/ktb', 0777);
+        // Upload export file
+        if ($dataExportSource['type'] == 'file') {
+            if (!file_exists($this->_dir->getPath('media') . '/' . $dataExportSource['file_path'])) {
+                $this->_file->mkdir($this->_dir->getPath('media') . '/' . $dataExportSource['file_path'], 0777);
             }
 
-            $io = \PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel2007');
-            $fileCreatedAt = date("F j, Y h:i:s A", strtotime('+7 hours', strtotime($to)));
             $pathSave = $this->_dir->getPath('media') . '/' . $dataExportSource['file_path'] . "/" . $dataExport['title'] . "-" . $fileCreatedAt . '.xlsx';
+            $io->save($pathSave);
+        } else {
+            if (!file_exists($this->_dir->getPath('media') . '/tmpExport')) {
+                $this->_file->mkdir($this->_dir->getPath('media') . '/tmpExport', 0777);
+            }
+            $pathSave = $this->_dir->getPath('media') . '/tmpExport/' . $dataExport['title'] . '-' . $fileCreatedAt . '.xlsx';
 
-            // File, FTP, SFTP
+            // Upload export SFTP and FTP
             if ($dataExportSource['type'] == 'sftp') {
                 $client = $this->_objectManager->create('Marvelic\Job\Model\Source\Type\Sftp');
                 $argsConfig = [
@@ -378,16 +385,25 @@ class Export
                     'file_source'   => $pathSave
                 ];
 
-                $this->logger->info('argsConfig', ['argsConfig' => $argsConfig]);
-
+                $io->save($pathSave);
                 $client->run($argsConfig);
-            } elseif ($dataExportSource['type'] == 'file') {
-                if (!file_exists($this->_dir->getPath('media') . '/' . $dataExportSource['file_path'])) {
-                    $this->_file->mkdir($this->_dir->getPath('media') . '/' . $dataExportSource['file_path'] . "", 0777);
-                }
+            } elseif ($dataExportSource['type'] == 'ftp') {
+                $client = $this->_objectManager->create('Marvelic\Job\Model\Source\Type\Ftp');
+                $argsConfig = [
+                    'host'          => $dataExportSource['host'],
+                    'port'          => $dataExportSource['port'],
+                    'user'          => $dataExportSource['username'],
+                    'password'      => $dataExportSource['password'],
+                    'file_path'     => $dataExportSource['file_path'],
+                    'file_source'   => $pathSave
+                ];
 
                 $io->save($pathSave);
+                $client->run($argsConfig);
             }
+
+            // Clear tmp file
+            $this->_file->rm($pathSave);
 
             return true;
         }
