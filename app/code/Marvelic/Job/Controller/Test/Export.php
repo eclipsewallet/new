@@ -312,25 +312,25 @@ class Export extends \Magento\Framework\App\Action\Action
                 $time = strtotime($shipment["created_at"]);
 
                 $dataExcel['shopId']                = $order->getStoreId();
-                $dataExcel['ConsigneeName']         = $order->getShippingAddress()->getFirstName() . ' ' . $order->getShippingAddress()->getLastName();
-                $dataExcel['AddressLine1']          = $order->getShippingAddress()->getStreet()[0];
-                $dataExcel['Province']              = $order->getShippingAddress()->getProvince();
-                $dataExcel['District']              = $order->getShippingAddress()->getDistrict();
-                $dataExcel['SubDistrict']           = $order->getShippingAddress()->getSubDistrict();
-                $dataExcel['PostCode']              = $order->getShippingAddress()->getPostCode();
-                $dataExcel['Email']                 = $order->getShippingAddress()->getEmail();
-                $dataExcel['Tel']                   = $order->getShippingAddress()->getTelephone();
-                $dataExcel['DeliveryMode']          = "";
-                $dataExcel['Note']                  = $order->getCustomerNote();
-                $dataExcel['SaleAgentCode']         = "";
-                $dataExcel['CustomerRef']           = "";
-                $dataExcel['OrderNumber']           = $key;
-                $dataExcel['OrderID']               = $order->getId();
-                $dataExcel['Sms']                   = $order->getStoreId();
+                $dataExcel['consigneeName']         = $order->getShippingAddress()->getFirstName() . ' ' . $order->getShippingAddress()->getLastName();
+                $dataExcel['addressLine1']          = $order->getShippingAddress()->getStreet()[0];
+                $dataExcel['province']              = $order->getShippingAddress()->getProvince();
+                $dataExcel['district']              = $order->getShippingAddress()->getDistrict();
+                $dataExcel['subDistrict']           = $order->getShippingAddress()->getSubDistrict();
+                $dataExcel['postcode']              = $order->getShippingAddress()->getPostCode();
+                $dataExcel['email']                 = $order->getShippingAddress()->getEmail();
+                $dataExcel['tel']                   = $order->getShippingAddress()->getTelephone();
+                $dataExcel['deliveryMode']          = "";
+                $dataExcel['note']                  = $order->getCustomerNote();
+                $dataExcel['saleAgentCode']         = "";
+                $dataExcel['customerRef']           = "";
+                $dataExcel['orderNumber']           = $key;
+                $dataExcel['orderID']               = $order->getId();
+                $dataExcel['sms']                   = $order->getStoreId();
                 $dataExcel['billingTitle']          = $order->getBillingAddress()->getFirstName();
                 $dataExcel['deliveryDate']          = date('Y-m-d', $time);
-                $dataExcel['CreateDateTime']        = date('Y-m-d H:i:s', $time);
-                $dataExcel['PaymentMethod']         = $order->getPayment()->getMethod();
+                $dataExcel['createDateTime']        = date('Y-m-d H:i:s', $time);
+                $dataExcel['paymentMethod']         = $order->getPayment()->getMethod();
                 $dataExcel['paymentDate']           = date('Y-m-d', $time);
                 $dataExcel['paymentTime']           = date('H:i:s', $time);
                 $dataExcel['paymentAmount']         = $order->getPayment()->getBaseAmountPaid();
@@ -361,6 +361,8 @@ class Export extends \Magento\Framework\App\Action\Action
             $io = \PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel2007');
             $fileCreatedAt = date("F j, Y h:i:s A", strtotime('+7 hours', strtotime($to)));
         }
+
+        // Upload export file
         if ($dataExportSource['type'] == 'file') {
             if (!file_exists($this->_dir->getPath('media') . '/' . $dataExportSource['file_path'])) {
                 $this->_file->mkdir($this->_dir->getPath('media') . '/' . $dataExportSource['file_path'], 0777);
@@ -374,7 +376,7 @@ class Export extends \Magento\Framework\App\Action\Action
             }
             $pathSave = $this->_dir->getPath('media') . '/tmpExport/' . $dataExport['title'] . '-' . $fileCreatedAt . '.xlsx';
 
-            // Upload SFTP and FTP
+            // Upload export SFTP and FTP
             if ($dataExportSource['type'] == 'sftp') {
                 $client = $this->_objectManager->create('Marvelic\Job\Model\Source\Type\Sftp');
                 $argsConfig = [
@@ -392,6 +394,7 @@ class Export extends \Magento\Framework\App\Action\Action
                 $client = $this->_objectManager->create('Marvelic\Job\Model\Source\Type\Ftp');
                 $argsConfig = [
                         'host'          => $dataExportSource['host'],
+                        'port'          => $dataExportSource['port'],
                         'user'          => $dataExportSource['username'],
                         'password'      => $dataExportSource['password'],
                         'file_path'     => $dataExportSource['file_path'],
@@ -401,6 +404,9 @@ class Export extends \Magento\Framework\App\Action\Action
                 $io->save($pathSave);
                 $client->run($argsConfig);
             }
+
+            // Clear tmp file
+            $this->_file->rm($pathSave);
 
             return true;
         }

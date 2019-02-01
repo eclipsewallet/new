@@ -9,77 +9,59 @@ class Ftp
      */
     protected $code = 'ftp';
 
+    /**
+     * @var \Magento\Framework\Filesystem\DirectoryList
+     */
     protected $_dir;
 
     /**
-     * @var \Magento\Framework\Filesystem\Io\File
+     * @var \Magento\Framework\ObjectManagerInterface
      */
-    protected $file;
+    protected $_objectManager;
 
-    /**
-     * @var \Firebear\ImportExport\Model\Filesystem\Io\Ftp
-     */
-    protected $ftp;
-
-    /**
-     * Ftp constructor.
-     *
-     * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
-     * @param \Magento\Framework\Filesystem $filesystem
-     * @param \Firebear\ImportExport\Model\Filesystem\File\ReadFactory $readFactory
-     * @param \Magento\Framework\Filesystem\Directory\WriteFactory $writeFactory
-     * @param \Magento\Framework\Filesystem\File\WriteFactory $fileWrite
-     * @param \Magento\Framework\Stdlib\DateTime\Timezone $timezone
-     * @param \Firebear\ImportExport\Model\Source\Factory $factory
-     * @param \Magento\Framework\Filesystem\Io\File $file
-     * @param \Marvelic\Job\Model\Filesystem\Io\Ftp $ftp
-     */
     public function __construct(
-        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
         \Magento\Framework\Filesystem\DirectoryList $dir,
-        \Magento\Framework\Filesystem\Io\File $file,
-        \Marvelic\Job\Model\Filesystem\Io\Ftp $ftp
+        \Magento\Framework\ObjectManagerInterface $objectManager
     ) {
         $this->_dir     = $dir;
-        $this->file     = $file;
-        $this->ftp      = $ftp;
+        $this->_objectManager = $objectManager;
     }
 
     /**
      * @param array $args
      * @return bool
-     * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function run(array $args = [])
     {
-        $arrDataFtp = [
-            'host'      => $args['host'],
-            'user'      => $args['user'],
-            'password'  => $args['password']
-        ];
-
         try {
-            $this->ftp->open($arrDataFtp);
+            $arrDataFtp = [
+                'host'      => $args['host'],
+                'port'      => $args['port'],
+                'user'      => $args['user'],
+                'password'  => $args['password']
+            ];
+
+            $ioFtp         = $this->_objectManager->create('Marvelic\Job\Model\Filesystem\Io\Ftp');
+            $ioFtp->open($arrDataFtp);
             $dataFolder = explode('/', $args['file_path']);
 
             foreach ($dataFolder as $folderName) {
                 if (!$folderName == '') {
-                    $exist = $this->ftp->cd($folderName);
+                    $exist = $ioFtp->cd($folderName);
                     if ($exist == false) {
-                        $this->ftp->mkdir($folderName, 0777, false);
-                        $this->ftp->cd($folderName);
+                        $ioFtp->mkdir($folderName, 0777, false);
+                        $ioFtp->cd($folderName);
                     }
                 }
             }
 
             $fileSource = $args['file_source'];
-            $sttUpload  = $this->ftp->write($this->ftp->pwd() . '/' . basename($fileSource), $fileSource);
-
-            $this->ftp->close();
+            $sttUpload  = $ioFtp->write($ioFtp->pwd() . '/' . basename($fileSource), $fileSource);
+            $ioFtp->close();
         } catch (\Exception $e) {
-            $result = false;
             $errors[] = __('Folder for import / export don\'t have enough permissions! Please set 775');
         }
 
+        return $sttUpload;
     }
 }
