@@ -72,7 +72,7 @@ $zipcode = $this->getRequest()->getParam('zipcode', '');
 						</div>
                     </div>
 
-                   
+
                 </form>
             </div>
         </div>
@@ -241,7 +241,7 @@ $zipcode = $this->getRequest()->getParam('zipcode', '');
                     $.ajax({
                         type: "GET",
                         dataType: "json",
-                        url: "http://maps.googleapis.com/maps/api/geocode/json",
+                        url: "https://maps.googleapis.com/maps/api/geocode/json",
                         data: {'address': $('#location').val(),'key':'<?php echo $apikey?>'},
                         success: function(data){
                             if(data.results.length){

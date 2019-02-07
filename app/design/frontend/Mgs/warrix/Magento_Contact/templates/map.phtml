@@ -7,7 +7,7 @@
 // @codingStandardsIgnoreFile
 
 ?>
-<?php 
+<?php
 	$themeHelper = $this->helper('MGS\Mpanel\Helper\Data');
 	$themeSettings = $themeHelper->getThemeSettings();
 	$canUsePanel = $themeHelper->acceptToUsePanel();
@@ -40,17 +40,17 @@
 			$.ajax({
 				type: "GET",
 				dataType: "json",
-				url: "http://maps.googleapis.com/maps/api/geocode/json",
+				url: "https://maps.googleapis.com/maps/api/geocode/json",
 				data: {'address': address,'sensor':false},
 				success: function(data){
 					if(data.results.length){
 						latitude = data.results[0].geometry.location.lat;
 						longitude = data.results[0].geometry.location.lng;
-						
+
 						var locations = [
 					[html, latitude, longitude, 2]
 					];
-				
+
 					var map = new google.maps.Map(document.getElementById('map-contact'), {
 						zoom: 14,
 						scrollwheel: false,
@@ -61,20 +61,20 @@
 						center: new google.maps.LatLng(latitude, longitude),
 						mapTypeId: google.maps.MapTypeId.ROADMAP
 					});
-				
+
 					var infowindow = new google.maps.InfoWindow();
-				
+
 					var marker, i;
-				
-					for (i = 0; i < locations.length; i++) {  
-				  
-						marker = new google.maps.Marker({ 
-						position: new google.maps.LatLng(locations[i][1], locations[i][2]), 
+
+					for (i = 0; i < locations.length; i++) {
+
+						marker = new google.maps.Marker({
+						position: new google.maps.LatLng(locations[i][1], locations[i][2]),
 						map: map ,
 						icon: image
 						});
-				
-				
+
+
 					  google.maps.event.addListener(marker, 'click', (function(marker, i) {
 						return function() {
 						  infowindow.setContent(locations[i][0]);
