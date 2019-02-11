@@ -14,9 +14,14 @@ define([
              checkoutData,
              uiRegistry,
              Thailand_loader) {
+
+
+                $('.suggestion div').on('click',function(e){
+                    alert('Changed!')
+                });
     var config = window.checkoutConfig.postcode.options.enable;
     var method = window.checkoutConfig.postcode.activePaymentMethods;
-
+    
     delete method.paypal_billing_agreement;
     delete method.free;
 
@@ -97,6 +102,7 @@ define([
                                             }
                                         });
                                         console.log("Thai");
+                                        var city = document.getElementsByName("city")[0].value;
                                     }
                                     else{
                                         $.ThaiAddressEnTh({

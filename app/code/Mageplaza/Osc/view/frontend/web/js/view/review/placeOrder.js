@@ -94,6 +94,8 @@ define(
             },
             placeOrder: function () {
                 var self = this;
+                var city = document.getElementsByName("city")[0].value;
+                $(".input-text").append(" ");
                 if (additionalValidators.validate()) {
                     this.preparePlaceOrder().done(function () {
                         self._placeOrder();
