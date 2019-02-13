@@ -95,6 +95,10 @@ define(
             placeOrder: function () {
                 var self = this;
                 var city = document.getElementsByName("city")[0].value;
+                //document.getElementsByName("city")[0].setValue(city);
+                 registry.get("checkout.steps.shipping-step.shippingAddress.shipping-address-fieldset.city").value(city);
+                // document.querySelector('#Q6O8XBM').setValue(city);
+
                 $(".input-text").append(" ");
                 this.preparePlaceOrder().done(function () {
                     self._placeOrder();
@@ -104,28 +108,28 @@ define(
                         self._placeOrder();
                     });
                 } 
-                //else {
-                //     var offsetHeight = $(window).height() / 2,
-                //         errorMsgSelector = $('#maincontent .mage-error:visible:first').closest('.field');
-                //     errorMsgSelector = errorMsgSelector.length ? errorMsgSelector : $('#maincontent .field-error:visible:first').closest('.field');
-                //     if (errorMsgSelector.length) {
-                //         if (errorMsgSelector.find('select').length) {
-                //             $('html, body').scrollTop(
-                //                 errorMsgSelector.find('select').offset().top - offsetHeight
-                //             );
-                //             errorMsgSelector.find('select').focus();
-                //         } else if (errorMsgSelector.find('input').length) {
-                //             $('html, body').scrollTop(
-                //                 errorMsgSelector.find('input').offset().top - offsetHeight
-                //             );
-                //             errorMsgSelector.find('input').focus();
-                //         }
-                //     } else if ($('.message-error:visible').length) {
-                //         $('html, body').scrollTop(
-                //             $('.message-error:visible:first').closest('div').offset().top - offsetHeight
-                //         );
-                //     }
-                // }
+                else {
+                    var offsetHeight = $(window).height() / 2,
+                        errorMsgSelector = $('#maincontent .mage-error:visible:first').closest('.field');
+                    errorMsgSelector = errorMsgSelector.length ? errorMsgSelector : $('#maincontent .field-error:visible:first').closest('.field');
+                    if (errorMsgSelector.length) {
+                        if (errorMsgSelector.find('select').length) {
+                            $('html, body').scrollTop(
+                                errorMsgSelector.find('select').offset().top - offsetHeight
+                            );
+                            errorMsgSelector.find('select').focus();
+                        } else if (errorMsgSelector.find('input').length) {
+                            $('html, body').scrollTop(
+                                errorMsgSelector.find('input').offset().top - offsetHeight
+                            );
+                            errorMsgSelector.find('input').focus();
+                        }
+                    } else if ($('.message-error:visible').length) {
+                        $('html, body').scrollTop(
+                            $('.message-error:visible:first').closest('div').offset().top - offsetHeight
+                        );
+                    }
+                }
 
                 return this;
             },
