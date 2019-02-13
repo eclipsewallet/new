@@ -140,6 +140,8 @@ class LayoutProcessor implements LayoutProcessorInterface
             }
         }
 
+        $jsLayout['components']['checkout']['children']['steps']['children']['shipping-step']['children']
+        ['shippingAddress']['children']['shipping-address-fieldset']['children']['city']['validation'] = ['required-entry'=>false];
         return $jsLayout;
     }
 
