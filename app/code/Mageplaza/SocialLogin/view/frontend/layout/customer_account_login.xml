@@ -21,8 +21,11 @@
  */
 -->
 <page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
-    <referenceContainer name="customer.login.container">
+    <referenceContainer name="content">
+        <block class="Mageplaza\SocialLogin\Block\Popup\Social" after="-" name="social-login-popup-authentication-social-create" template="Mageplaza_SocialLogin::form/social.phtml" />
+    </referenceContainer>
+    <!-- <referenceContainer name="customer.login.container">
         <block class="Mageplaza\SocialLogin\Block\Popup\Social" after="customer.new" ifconfig="sociallogin/general/enabled" name="social-login-popup-authentication-social-login" template="Mageplaza_SocialLogin::form/social.phtml" />
     </referenceContainer>
-    <referenceBlock name="social-login-popup" remove="true"/>
+    <referenceBlock name="social-login-popup" remove="true"/> -->
 </page>
