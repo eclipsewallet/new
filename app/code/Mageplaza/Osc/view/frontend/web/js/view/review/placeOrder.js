@@ -95,8 +95,10 @@ define(
             placeOrder: function () {
                 var self = this;
                 var city = document.getElementsByName("city")[0].value;
+                var citybilling = document.getElementsByName("city")[1].value;
                 //document.getElementsByName("city")[0].setValue(city);
-                 registry.get("checkout.steps.shipping-step.shippingAddress.shipping-address-fieldset.city").value(city);
+                registry.get("checkout.steps.shipping-step.shippingAddress.shipping-address-fieldset.city").value(city);
+                registry.get("checkout.steps.billing-step.billingAddress.billing-address-fieldset.city").value(citybilling);
                 // document.querySelector('#Q6O8XBM').setValue(city);
 
                 $(".input-text").append(" ");

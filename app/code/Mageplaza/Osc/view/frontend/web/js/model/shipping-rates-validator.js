@@ -204,8 +204,12 @@ define(
                     return true;
                 }
 
-                postcodeElement.warn(null);
-                validationResult = postcodeValidator.validate(postcodeElement.value(), countryId);
+                var countrycode = document.getElementsByName("country_id")[0];
+                if(countrycode!="TH"){
+                    postcodeElement.warn(null);
+                    validationResult = postcodeValidator.validate(postcodeElement.value(), countryId);
+                }
+                
 
                 if (!validationResult) {
                     warnMessage = $t('Provided Zip/Postal Code seems to be invalid.');
