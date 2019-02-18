@@ -17,7 +17,7 @@
 	<div class="dropdown dropdown-switcher language switcher-language" id="switcher-language<?php /* @escapeNotVerified */ echo $id?>">
 		<?php foreach ($block->getStores() as $_lang): ?>
 			<?php if ($_lang->getId() == $block->getCurrentStoreId()): ?>
-				<img alt="<?php echo $_lang->getCode(); ?>" src="<?php /* @escapeNotVerified */ echo $block->getViewFileUrl('images/flags/' . $_lang->getCode() . '.png') ?>" />
+				<img class="storeflag" alt="<?php echo $_lang->getCode(); ?>" src="<?php /* @escapeNotVerified */ echo $block->getViewFileUrl('images/flags/' . $_lang->getCode() . '.png') ?>" />
 				<button class="switcher-toggle dropdown-toggle" type="button" data-toggle="dropdown">
 					<?php echo $block->escapeHtml($_lang->getName()) ?>
 					<i class="fa fa-angle-down" aria-hidden="true"></i>

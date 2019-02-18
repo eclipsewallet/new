@@ -204,7 +204,7 @@ define(
                     return true;
                 }
 
-                var countrycode = document.getElementsByName("country_id")[0];
+                var countrycode = document.getElementsByName("country_id")[0].value;
                 if(countrycode!="TH"){
                     postcodeElement.warn(null);
                     validationResult = postcodeValidator.validate(postcodeElement.value(), countryId);
