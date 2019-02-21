@@ -65,8 +65,18 @@
     <?php $htmlWishlist .= '</a></div>'; ?>
 <?php endif ?>
 
+
 <?php // Top Link ?>
-<?php $htmlTopLink = '<div class="dropdown dropdown-toplinks"><button class="dropdown-toggle" type="button" data-toggle="dropdown"><i class="pe-7s-user"></i></button><div class="dropdown-menu">'. $block->getChildHtml('top.links') .'</div></div>'; ?>
+<?php $greeting = ""; ?>
+<?php //echo("<pre>");print_r($customerSession->getCustomer()->getData()); ?>
+<?php if(!empty($customerSession->getCustomer()->getData())): ?>
+    <?php $greeting = '<div class="greeting">Hi, '.$customerSession->getCustomer()->getFirstname().'</div>'; ?>
+<?php else:?>
+    <?php $greeting = "";?>
+<?php endif;?>
+
+<?php $htmlTopLink = '<div class="dropdown dropdown-toplinks flex-box"><button class="dropdown-toggle" type="button" data-toggle="dropdown"><i class="pe-7s-user"></i></button><div class="dropdown-menu">'. $block->getChildHtml('top.links') .'</div>'.$greeting.'</div>'; ?>
+
 
 <?php // HEADER CONTENT ?>
 <?php if($header == "" || $header == 'header_1' || $header == 'header_2' || $header == 'header_3'): ?>
