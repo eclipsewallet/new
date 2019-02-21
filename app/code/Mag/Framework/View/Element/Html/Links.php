@@ -85,7 +85,7 @@ class Links extends \Magento\Framework\View\Element\Template
             $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
             $customerSession = $objectManager->create('Magento\Customer\Model\Session');
             if(!empty($customerSession->getCustomer()->getData())):
-                $html .= "<li><a class='greeting' href='#'>Hi, ".$customerSession->getCustomer()->getFirstname()."</a></li>";
+                $html .= "<li><a class='greeting2' href='#'>Hi, ".$customerSession->getCustomer()->getFirstname()."</a></li>";
             else:
                 $html .= "";
             endif;
