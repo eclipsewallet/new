@@ -48,25 +48,24 @@ class ShippingInformationManagement
     public function __construct(
         CheckoutSession $checkoutSession,
         MpDtHelper $mpDtHelper
-    )
-    {
+    ) {
         $this->checkoutSession = $checkoutSession;
-        $this->mpDtHelper      = $mpDtHelper;
+        $this->mpDtHelper = $mpDtHelper;
     }
 
     /**
      * @param \Magento\Checkout\Model\ShippingInformationManagement $subject
      * @param int $cartId
      * @param ShippingInformationInterface $addressInformation
+     *
      * @return array
      */
     public function beforeSaveAddressInformation(
         \Magento\Checkout\Model\ShippingInformationManagement $subject,
         $cartId,
         ShippingInformationInterface $addressInformation
-    )
-    {
-        if ($this->mpDtHelper->isEnabled() && $extensionAttributes = $addressInformation->getExtensionAttributes()) {
+    ) {
+        if ($this->mpDtHelper->isEnabled() && $extensionAttributes = $addressInformation->getShippingAddress()->getExtensionAttributes()) {
             $deliveryInformation = [
                 'deliveryDate'      => $extensionAttributes->getMpDeliveryDate(),
                 'deliveryTime'      => $extensionAttributes->getMpDeliveryTime(),

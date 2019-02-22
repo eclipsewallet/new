@@ -54,6 +54,7 @@ class Data extends AbstractData
 
     /**
      * Data constructor.
+     *
      * @param Context $context
      * @param ObjectManagerInterface $objectManager
      * @param StoreManagerInterface $storeManager
@@ -66,9 +67,8 @@ class Data extends AbstractData
         StoreManagerInterface $storeManager,
         DateTime $date,
         Timezone $timeZone
-    )
-    {
-        $this->date     = $date;
+    ) {
+        $this->date = $date;
         $this->timeZone = $timeZone;
 
         parent::__construct($context, $objectManager, $storeManager);
@@ -76,6 +76,7 @@ class Data extends AbstractData
 
     /**
      * @param null $storeId
+     *
      * @return array|mixed
      * @throws \Zend_Serializer_Exception
      */
@@ -87,7 +88,7 @@ class Data extends AbstractData
             foreach ($configs as $configId => $config) {
                 if (isset($config['send']) && $config['send']) {
                     $configSeconds = 0;
-                    $configTimes   = explode(' ', $config['send']);
+                    $configTimes = explode(' ', $config['send']);
                     foreach ($configTimes as $configTime) {
                         if (strpos($configTime, 'd') !== false) {
                             $configSeconds += (int)str_replace('d', '', $configTime) * 24 * 60 * 60;
@@ -98,7 +99,7 @@ class Data extends AbstractData
                         }
                     }
                     $configs[$configId]['send'] = $configSeconds;
-                    $send[$configId]            = $configSeconds;
+                    $send[$configId] = $configSeconds;
                 }
             }
             array_multisort($send, SORT_ASC, $configs);
@@ -112,6 +113,7 @@ class Data extends AbstractData
     /**
      * @param string $code
      * @param null $storeId
+     *
      * @return mixed
      */
     public function getAnalyticsConfig($code = '', $storeId = null)
@@ -123,6 +125,7 @@ class Data extends AbstractData
 
     /**
      * @param Store $store
+     *
      * @return mixed
      */
     public function getUrlSuffix($store)
@@ -159,6 +162,7 @@ class Data extends AbstractData
      *
      * @param string $code
      * @param null $storeId
+     *
      * @return mixed
      */
     public function getCouponConfig($code = '', $storeId = null)
@@ -178,6 +182,7 @@ class Data extends AbstractData
 
     /**
      * @param null $storeId
+     *
      * @return mixed
      */
     public function onlySendToSubscribed($storeId = null)
@@ -189,13 +194,14 @@ class Data extends AbstractData
      * @param $fromDate
      * @param $toDate
      * @param null $dimension
+     *
      * @return false|int|string
      */
     public function getRangeNumbers($fromDate, $toDate, $dimension = null)
     {
         $timeZoneFrom = $this->timeZone->date($fromDate);
-        $timeZoneTo   = $this->timeZone->date($toDate);
-        $timeDiff     = $timeZoneFrom->diff($timeZoneTo);
+        $timeZoneTo = $this->timeZone->date($toDate);
+        $timeDiff = $timeZoneFrom->diff($timeZoneTo);
         if ($dimension == 'month') {
             $numbers = $timeDiff->m;
             if ($numbers == 0 && $this->date->date('m', $fromDate) != $this->date->date('m', $toDate)) {

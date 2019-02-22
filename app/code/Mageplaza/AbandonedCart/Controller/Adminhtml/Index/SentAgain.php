@@ -36,7 +36,7 @@ class SentAgain extends AbandonedCart
      */
     public function execute()
     {
-        $id  = $this->getRequest()->getParam('id');
+        $id = $this->getRequest()->getParam('id');
         $log = $this->logsFactory->create()->load($id);
         if ($log->getId()) {
             try {

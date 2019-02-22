@@ -59,6 +59,7 @@ class Chart extends Template
 
     /**
      * Toolbar constructor.
+     *
      * @param \Magento\Backend\Block\Template\Context $context
      * @param \Magento\Framework\Stdlib\DateTime\DateTime $date
      * @param Data $helperData
@@ -71,11 +72,10 @@ class Chart extends Template
         Data $helperData,
         Logs $logs,
         array $data = []
-    )
-    {
-        $this->date       = $date;
+    ) {
+        $this->date = $date;
         $this->helperData = $helperData;
-        $this->logs       = $logs;
+        $this->logs = $logs;
 
         parent::__construct($context, $data);
     }
@@ -119,9 +119,9 @@ class Chart extends Template
     {
         if ($dateRange = $this->_request->getParam('dateRange')) {
             $fromDate = $this->date->date('m/d/Y', $dateRange[0]);
-            $toDate   = $this->date->date('m/d/Y', $dateRange[1]);
+            $toDate = $this->date->date('m/d/Y', $dateRange[1]);
         } else {
-            $toDate   = $this->date->date('m/d/Y');
+            $toDate = $this->date->date('m/d/Y');
             $fromDate = $this->date->date('m/d/Y', $toDate . '-1 month');
         }
 

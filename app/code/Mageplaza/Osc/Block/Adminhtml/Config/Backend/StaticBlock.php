@@ -14,7 +14,7 @@
  * version in the future.
  *
  * @category    Mageplaza
- * @package     Mageplaza_AbandonedCart
+ * @package     Mageplaza_Osc
  * @copyright   Copyright (c) Mageplaza (https://www.mageplaza.com/)
  * @license     https://www.mageplaza.com/LICENSE.txt
  */
@@ -50,6 +50,7 @@ class StaticBlock extends AbstractFieldArray
 
     /**
      * StaticBlock constructor.
+     *
      * @param Context $context
      * @param Factory $elementFactory
      * @param StaticBlockPosition $blockPosition
@@ -62,11 +63,10 @@ class StaticBlock extends AbstractFieldArray
         StaticBlockPosition $blockPosition,
         CollectionFactory $blockFactory,
         array $data = []
-    )
-    {
+    ) {
         $this->elementFactory = $elementFactory;
-        $this->blockPosition  = $blockPosition;
-        $this->blockFactory   = $blockFactory;
+        $this->blockPosition = $blockPosition;
+        $this->blockFactory = $blockFactory;
 
         parent::__construct($context, $data);
     }
@@ -82,7 +82,7 @@ class StaticBlock extends AbstractFieldArray
         $this->addColumn('position', ['label' => __('Position')]);
         $this->addColumn('sort_order', ['label' => __('Sort Order'), 'style' => 'width: 100px']);
 
-        $this->_addAfter       = false;
+        $this->_addAfter = false;
         $this->_addButtonLabel = __('More');
 
         parent::_construct();
@@ -92,6 +92,7 @@ class StaticBlock extends AbstractFieldArray
      * Render array cell for prototypeJS template
      *
      * @param string $columnName
+     *
      * @return mixed|string
      * @throws \Exception
      */

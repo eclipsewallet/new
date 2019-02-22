@@ -82,7 +82,8 @@ class Save extends Attribute
             $data['validate_rules'] = $this->dataHelper->getValidateRules($data, $attributeObject->getValidateRules());
 
             if ($data['is_user_defined']) {
-                $data['used_in_forms'][] = $this->type == 'customer' ? 'adminhtml_' . $this->type : '';
+                //$data['used_in_forms'][] = $this->type == 'customer' ? 'adminhtml_' . $this->type : '';
+                $data['used_in_forms'] = $this->type == 'customer' ? 'adminhtml_' . $this->type : '';
             }
 
             foreach (['is_filterable_in_grid', 'is_searchable_in_grid'] as $item) {

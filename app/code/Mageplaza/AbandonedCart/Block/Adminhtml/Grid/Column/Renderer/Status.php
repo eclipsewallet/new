@@ -34,6 +34,7 @@ class Status extends AbstractRenderer
      * Render email status
      *
      * @param \Magento\Framework\DataObject $row
+     *
      * @return string
      */
     public function render(DataObject $row)
@@ -41,15 +42,15 @@ class Status extends AbstractRenderer
         switch ($this->_getValue($row)) {
             case 1:
                 $class = 'grid-severity-notice mp_ace_sent_status';
-                $text  = __('Sent');
+                $text = __('Sent');
                 break;
             case 2:
                 $class = 'grid-severity-notice';
-                $text  = __('Recover');
+                $text = __('Recover');
                 break;
             default:
                 $class = 'grid-severity-major';
-                $text  = __('Error');
+                $text = __('Error');
         }
 
         return '<span class="' . $class . '"><span>' . $text . '</span></span>';

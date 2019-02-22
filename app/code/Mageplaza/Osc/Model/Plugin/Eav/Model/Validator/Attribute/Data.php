@@ -37,21 +37,23 @@ class Data extends \Magento\Eav\Model\Validator\Attribute\Data
 
     /**
      * Data constructor.
+     *
      * @param AttributeDataFactory $attrDataFactory
      * @param HelperData $oscHelperData
      */
     public function __construct(
         AttributeDataFactory $attrDataFactory,
         HelperData $oscHelperData
-    )
-    {
-        parent::__construct($attrDataFactory);
+    ) {
         $this->_oscHelperData = $oscHelperData;
+
+        parent::__construct($attrDataFactory);
     }
 
     /**
      * @param \Magento\Eav\Model\Validator\Attribute\Data $subject
      * @param bool $result
+     *
      * @return bool
      */
     public function afterIsValid(\Magento\Eav\Model\Validator\Attribute\Data $subject, $result)

@@ -37,6 +37,7 @@ class Container extends Template
 
     /**
      * Container constructor.
+     *
      * @param Template\Context $context
      * @param OscHelper $oscHelper
      * @param array $data
@@ -45,8 +46,7 @@ class Container extends Template
         Template\Context $context,
         OscHelper $oscHelper,
         array $data = []
-    )
-    {
+    ) {
         $this->_oscHelper = $oscHelper;
 
         parent::__construct($context, $data);

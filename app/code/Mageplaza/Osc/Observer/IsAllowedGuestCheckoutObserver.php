@@ -38,14 +38,14 @@ class IsAllowedGuestCheckoutObserver extends \Magento\Downloadable\Observer\IsAl
 
     /**
      * IsAllowedGuestCheckoutObserver constructor.
+     *
      * @param ScopeConfigInterface $scopeConfig
      * @param Data $helper
      */
     public function __construct(
         ScopeConfigInterface $scopeConfig,
         Data $helper
-    )
-    {
+    ) {
         $this->_helper = $helper;
 
         parent::__construct($scopeConfig);

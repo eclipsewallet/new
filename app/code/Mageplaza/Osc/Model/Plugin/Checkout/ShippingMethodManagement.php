@@ -53,9 +53,8 @@ class ShippingMethodManagement
     public function __construct(
         CartRepositoryInterface $quoteRepository,
         AddressRepositoryInterface $addressRepository
-    )
-    {
-        $this->quoteRepository   = $quoteRepository;
+    ) {
+        $this->quoteRepository = $quoteRepository;
         $this->addressRepository = $addressRepository;
     }
 
@@ -64,6 +63,7 @@ class ShippingMethodManagement
      * @param \Closure $proceed
      * @param $cartId
      * @param EstimateAddressInterface $address
+     *
      * @return mixed
      * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
@@ -72,8 +72,7 @@ class ShippingMethodManagement
         \Closure $proceed,
         $cartId,
         EstimateAddressInterface $address
-    )
-    {
+    ) {
         $this->saveAddress($cartId, $address);
 
         return $proceed($cartId, $address);
@@ -84,6 +83,7 @@ class ShippingMethodManagement
      * @param \Closure $proceed
      * @param $cartId
      * @param AddressInterface $address
+     *
      * @return mixed
      * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
@@ -92,8 +92,7 @@ class ShippingMethodManagement
         \Closure $proceed,
         $cartId,
         AddressInterface $address
-    )
-    {
+    ) {
         $this->saveAddress($cartId, $address);
 
         return $proceed($cartId, $address);
@@ -104,6 +103,7 @@ class ShippingMethodManagement
      * @param \Closure $proceed
      * @param $cartId
      * @param $addressId
+     *
      * @return mixed
      * @throws \Magento\Framework\Exception\LocalizedException
      */
@@ -112,8 +112,7 @@ class ShippingMethodManagement
         \Closure $proceed,
         $cartId,
         $addressId
-    )
-    {
+    ) {
         $address = $this->addressRepository->getById($addressId);
         $this->saveAddress($cartId, $address);
 
@@ -122,7 +121,8 @@ class ShippingMethodManagement
 
     /**
      * @param $cartId
-     * @param $address
+     * @param EstimateAddressInterface|AddressInterface|\Magento\Customer\Api\Data\AddressInterface $address
+     *
      * @return $this
      * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
@@ -137,6 +137,8 @@ class ShippingMethodManagement
                 AddressInterface::KEY_POSTCODE        => $address->getPostcode(),
                 AddressInterface::KEY_REGION_ID       => $address->getRegionId(),
                 AddressInterface::KEY_REGION          => $address->getRegion(),
+                AddressInterface::KEY_STREET          => $address->getStreet(),
+                AddressInterface::KEY_CITY            => $address->getCity(),
                 AddressInterface::CUSTOMER_ADDRESS_ID => $address->getId()
             ];
 

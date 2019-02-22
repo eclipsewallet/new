@@ -22,7 +22,7 @@
 // @codingStandardsIgnoreFile
 
 /** @var Mageplaza\DeliveryTime\Block\Adminhtml\Config\Backend\DateOff $block */
-$_htmlId  = $block->getHtmlId() ? $block->getHtmlId() : '_' . uniqid();
+$_htmlId = $block->getHtmlId() ? $block->getHtmlId() : '_' . uniqid();
 $_colspan = $block->isAddAfter() ? 2 : 1;
 ?>
 
@@ -30,22 +30,22 @@ $_colspan = $block->isAddAfter() ? 2 : 1;
     <div class="admin__control-table-wrapper">
         <table class="admin__control-table" id="<?= $block->getElement()->getId() ?>">
             <thead>
-                <tr>
-                    <?php foreach ($block->getColumns() as $columnName => $column): ?>
-                        <th><?= $column['label'] ?></th>
-                    <?php endforeach; ?>
-                    <th class="col-actions" colspan="<?= $_colspan ?>">Action
-                    </th>
-                </tr>
+            <tr>
+                <?php foreach ($block->getColumns() as $columnName => $column): ?>
+                    <th><?= $column['label'] ?></th>
+                <?php endforeach; ?>
+                <th class="col-actions" colspan="<?= $_colspan ?>">Action
+                </th>
+            </tr>
             </thead>
             <tfoot>
-                <tr>
-                    <td colspan="<?= count($block->getColumns()) + $_colspan ?>" class="col-actions-add">
-                        <button id="addToEndBtn<?= $_htmlId ?>" class="action-add" title="<?= __('Add') ?>" type="button">
-                            <span><?= $block->getAddButtonLabel() ?></span>
-                        </button>
-                    </td>
-                </tr>
+            <tr>
+                <td colspan="<?= count($block->getColumns()) + $_colspan ?>" class="col-actions-add">
+                    <button id="addToEndBtn<?= $_htmlId ?>" class="action-add" title="<?= __('Add') ?>" type="button">
+                        <span><?= $block->getAddButtonLabel() ?></span>
+                    </button>
+                </td>
+            </tr>
             </tfoot>
             <tbody id="addRow<?= $_htmlId ?>"></tbody>
         </table>
@@ -88,12 +88,18 @@ $_colspan = $block->isAddAfter() ? 2 : 1;
                         var d = new Date(),
                             id = '_' + d.getTime() + '_' + d.getMilliseconds();
                         templateValues = {
-                            <?php foreach ($block->getColumns() as $columnName => $column): ?>
-                                <?=  $columnName ?>:'',
-                                'option_extra_attrs':{},
-                            <?php endforeach; ?>
-                            _id: id
-                        };
+                        <?php foreach ($block->getColumns() as $columnName => $column): ?>
+                        <?=  $columnName ?>:
+                        '',
+                            'option_extra_attrs'
+                    :
+                        {
+                        }
+                    ,
+                        <?php endforeach; ?>
+                        _id: id
+                    }
+                        ;
                     }
 
                     // Insert new row after specified row or at the bottom

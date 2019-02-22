@@ -32,6 +32,7 @@ class Express
     /**
      * @param \Magento\Paypal\Model\Express $express
      * @param \Magento\Framework\DataObject $data
+     *
      * @return array
      */
     public function beforeAssignData(\Magento\Paypal\Model\Express $express, \Magento\Framework\DataObject $data)

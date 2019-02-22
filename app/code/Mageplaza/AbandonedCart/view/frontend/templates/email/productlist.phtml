@@ -19,6 +19,8 @@
  * @license     https://www.mageplaza.com/LICENSE.txt
  */
 
+/** @var $block \Mageplaza\AbandonedCart\Block\Email\Template */
+
 /** @var \Magento\Tax\Helper\Data $taxHelper */
 $taxHelper = $this->helper(\Magento\Tax\Helper\Data::class);
 
@@ -50,17 +52,21 @@ $itemCollection = $block->getProductCollection();
                 <span class="product-price"><?php echo $block->getSubtotal(); ?></span>
             </td>
         </tr>
-    <?php else: ?>
+    <?php else : ?>
         <?php foreach ($itemCollection as $_item) : ?>
             <tr>
                 <td class="item-info">
                     <span class="product-image">
                         <img src="<?php echo $block->getProductImage($_item); ?>"
-                             alt="<?php echo $_item->getName(); ?>"/>
+                             alt="<?php echo $_item->getName(); ?>" width="100px" height="100px"/>
                     </span>
                 </td>
                 <td class="item-info">
-                    <p class="product-name"><?php echo $block->escapeHtml($_item->getName()); ?></p>
+                    <p class="product-name">
+                        <a href="<?php echo $_item->getProduct()->getProductUrl(); ?>" target="_blank">
+                            <?php echo $_item->getName(); ?>
+                        </a>
+                    </p>
                 </td>
                 <td class="item-qty">
                     <span class="product-qty"><?php echo (int)$_item->getQty(); ?></span>
@@ -73,13 +79,13 @@ $itemCollection = $block->getProductCollection();
     <?php endif; ?>
     </tbody>
     <tfoot class="order-totals">
-    <?php if (!$taxHelper->getConfig()->displayCartSubtotalInclTax()): ?>
+    <?php if (!$taxHelper->getConfig()->displayCartSubtotalInclTax()) : ?>
         <tr class="last-item">
             <th colspan="3" scope="row"><?php echo __('Order Total Excl. Tax'); ?></th>
             <td><?php echo $block->getSubtotal(); ?></td>
         </tr>
     <?php endif; ?>
-    <?php if (!$taxHelper->getConfig()->displayCartSubtotalExclTax()): ?>
+    <?php if (!$taxHelper->getConfig()->displayCartSubtotalExclTax()) : ?>
         <tr class="last-item">
             <th colspan="3" scope="row"><?php echo __('Order Total Incl. Tax'); ?></th>
             <td><?php echo $block->getSubtotal(true); ?></td>

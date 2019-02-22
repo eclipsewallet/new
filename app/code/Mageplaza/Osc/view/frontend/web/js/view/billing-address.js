@@ -155,6 +155,7 @@ define(
                     var self = this,
                         selectedAddress = {
                             customerAddressId: this.selectedAddress().customerAddressId,
+                            customerId: this.selectedAddress().customerId,
                             sameAsBilling: this.selectedAddress().sameAsBilling,
                             regionId: this.selectedAddress().regionId,
                             getAddressInline: function () {

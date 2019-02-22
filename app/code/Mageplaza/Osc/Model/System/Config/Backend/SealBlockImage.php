@@ -21,6 +21,10 @@
 
 namespace Mageplaza\Osc\Model\System\Config\Backend;
 
+/**
+ * Class SealBlockImage
+ * @package Mageplaza\Osc\Model\System\Config\Backend
+ */
 class SealBlockImage extends \Magento\Config\Model\Config\Backend\Image
 {
     /**

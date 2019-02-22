@@ -46,7 +46,9 @@
 {{template config_path="design/email/header_template"}}
 
 <p class="greeting">{{trans "Hello %name," name=$customer_name}}</p>
-<p>{{trans "I’m %sender from %store_name and hopefully, you haven’t forgotten us as well as the shopping cart you left in our store recently. Thus, we would love to be sure that below items will catch your attention again." sender=$sender store_name=$store.getFrontendName()}}</p>
+<p>{{trans "I’m %sender from %store_name and hopefully, you haven’t forgotten us as well as the shopping cart you left
+    in our store recently. Thus, we would love to be sure that below items will catch your attention again."
+    sender=$sender store_name=$store.getFrontendName()}}</p>
 
 {{layout handle="ace_email_quote_items" quote=$quote area="frontend"}}
 
@@ -58,7 +60,8 @@
     </tr>
 </table>
 
-<p>{{trans "Or if anything got you confused in shopping process? Feel free to contact again to discuss problems you may have. Your satisfaction is the best product we desire to deliver."}}</p>
+<p>{{trans "Or if anything got you confused in shopping process? Feel free to contact again to discuss problems you may
+    have. Your satisfaction is the best product we desire to deliver."}}</p>
 <p>
     {{depend coupon_code}}
     {{trans "Friendly remind that the coupon <b>%couponCode</b> is waiting for you." couponCode=$coupon_code |raw}}<br>

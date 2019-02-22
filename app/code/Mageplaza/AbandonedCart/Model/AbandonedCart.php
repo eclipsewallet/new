@@ -134,7 +134,18 @@ class AbandonedCart
     protected $couponConfigs = [];
 
     /**
+     * @var \Magento\Framework\App\AreaList
+     */
+    protected $areaList;
+
+    /**
+     * @var \Magento\Email\Model\Template
+     */
+    protected $emailTemplate;
+
+    /**
      * AbandonedCart constructor.
+     *
      * @param QuoteFactory $quoteFactory
      * @param Data $helper
      * @param LoggerInterface $logger
@@ -168,25 +179,28 @@ class AbandonedCart
         FactoryInterface $templateFactory,
         RuleRepositoryInterface $ruleRepositoryInterface,
         CouponManagementService $couponManagementService,
-        CouponGenerationSpecInterfaceFactory $generationSpecFactory
-    )
-    {
-        $this->objectManager           = $objectManager;
-        $this->quoteFactory            = $quoteFactory;
-        $this->helper                  = $helper;
-        $this->date                    = $date;
-        $this->logger                  = $logger;
-        $this->storeManager            = $storeManager;
-        $this->transportBuilder        = $transportBuilder;
-        $this->customerFactory         = $customerFactory;
-        $this->mathRandom              = $mathRandom;
-        $this->abandonedCartToken      = $abandonedCartToken;
-        $this->abandonedCartLogs       = $abandonedCartLogs;
-        $this->generationSpecFactory   = $generationSpecFactory;
+        CouponGenerationSpecInterfaceFactory $generationSpecFactory,
+        \Magento\Framework\App\AreaList $areaList,
+        \Magento\Email\Model\Template $emailTemplate
+    ) {
+        $this->objectManager = $objectManager;
+        $this->quoteFactory = $quoteFactory;
+        $this->helper = $helper;
+        $this->date = $date;
+        $this->logger = $logger;
+        $this->storeManager = $storeManager;
+        $this->transportBuilder = $transportBuilder;
+        $this->customerFactory = $customerFactory;
+        $this->mathRandom = $mathRandom;
+        $this->abandonedCartToken = $abandonedCartToken;
+        $this->abandonedCartLogs = $abandonedCartLogs;
+        $this->generationSpecFactory = $generationSpecFactory;
         $this->couponManagementService = $couponManagementService;
-        $this->couponFactory           = $couponFactory;
-        $this->templateFactory         = $templateFactory;
+        $this->couponFactory = $couponFactory;
+        $this->templateFactory = $templateFactory;
         $this->ruleRepositoryInterface = $ruleRepositoryInterface;
+        $this->areaList = $areaList;
+        $this->emailTemplate = $emailTemplate;
     }
 
     /**
@@ -205,6 +219,7 @@ class AbandonedCart
 
     /**
      * @param $storeId
+     *
      * @return $this
      * @throws \Zend_Serializer_Exception
      */
@@ -215,8 +230,8 @@ class AbandonedCart
             return $this;
         }
 
-        $current         = strtotime($this->date->date());
-        $lastSend        = $current - max(array_column($configs, 'send')) - 86400;
+        $current = strtotime($this->date->date());
+        $lastSend = $current - max(array_column($configs, 'send')) - 86400;
         $quoteCollection = $this->quoteFactory->create()
             ->getCollection()
             ->addFieldToFilter('items_count', ['neq' => '0'])
@@ -243,7 +258,7 @@ class AbandonedCart
             $quoteId = $quote->getId();
             foreach ($configs as $configId => $config) {
                 $validateEmail = $this->abandonedCartToken->validateEmail($quote, $configId);
-                $time          = $quoteUpdatedTime + $config['send'];
+                $time = $quoteUpdatedTime + $config['send'];
                 if ($validateEmail && $time <= $current) {
                     $coupon = [];
                     if ((bool)$config['coupon']) {
@@ -274,7 +289,7 @@ class AbandonedCart
     public function sendMail($quote, $config, $newCartToken, $coupon = [])
     {
         $customerEmail = $quote->getCustomerEmail();
-        $customerName  = trim($quote->getFirstname() . ' ' . $quote->getLastname());
+        $customerName = trim($quote->getFirstname() . ' ' . $quote->getLastname());
         if (!$customerName) {
             $customer = $quote->getCustomerId() ? $quote->getCustomer() : null;
             if ($customer && $customer->getId()) {
@@ -308,6 +323,9 @@ class AbandonedCart
             ])
         ];
 
+        $areaObject = $this->areaList->getArea($this->emailTemplate->getDesignConfig()->getArea());
+        $areaObject->load(\Magento\Framework\App\Area::PART_TRANSLATE);
+
         $transport = $this->transportBuilder->setTemplateIdentifier($config['template'])
             ->setTemplateOptions(['area' => Area::AREA_FRONTEND, 'store' => $store->getId()])
             ->setFrom($config['sender'])
@@ -326,7 +344,7 @@ class AbandonedCart
         if (!isset($config['ignore_log'])) {
             $emailBody = $template->setVars($vars)
                 ->processTemplate();
-            $subject   = html_entity_decode($template->getSubject(), ENT_QUOTES);
+            $subject = html_entity_decode($template->getSubject(), ENT_QUOTES);
 
             $this->abandonedCartLogs->create()->saveLogs($quote, $customerEmail, $customerName, $config['sender'], $subject, $emailBody, $success, $couponCode);
         }
@@ -334,6 +352,7 @@ class AbandonedCart
 
     /**
      * @param $log
+     *
      * @throws \Magento\Framework\Exception\MailException
      */
     public function sendAgain($log)
@@ -358,6 +377,7 @@ class AbandonedCart
      * Generate Coupon Code by Configuration
      *
      * @param null $storeId
+     *
      * @return $this|array
      * @throws \Exception
      * @throws \Magento\Framework\Exception\InputException
@@ -365,12 +385,12 @@ class AbandonedCart
      */
     public function createCoupon($storeId = null)
     {
-        $coupon       = [];
+        $coupon = [];
         $couponConfig = $this->getCouponConfig($storeId);
         if (!empty($couponConfig)) {
-            $couponSpec  = $this->generationSpecFactory->create(['data' => $couponConfig]);
+            $couponSpec = $this->generationSpecFactory->create(['data' => $couponConfig]);
             $couponCodes = $this->couponManagementService->generate($couponSpec);
-            $couponCode  = $couponCodes[0];
+            $couponCode = $couponCodes[0];
 
             $coupon = $this->couponFactory->create()->loadByCode($couponCode);
             if ($couponConfig['valid']) {
@@ -392,6 +412,7 @@ class AbandonedCart
 
     /**
      * @param $storeId
+     *
      * @return mixed
      */
     protected function getCouponConfig($storeId)

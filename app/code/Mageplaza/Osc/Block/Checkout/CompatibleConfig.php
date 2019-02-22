@@ -33,7 +33,7 @@ class CompatibleConfig extends Template
     /**
      * @var string $_template
      */
-    protected $_template = "onepage/compatible-config.phtml";
+    protected $_template = "Mageplaza_Osc::onepage/compatible-config.phtml";
 
     /**
      * @var OscHelper
@@ -42,6 +42,7 @@ class CompatibleConfig extends Template
 
     /**
      * CompatibleConfig constructor.
+     *
      * @param Template\Context $context
      * @param OscHelper $oscHelper
      * @param array $data
@@ -50,11 +51,10 @@ class CompatibleConfig extends Template
         Template\Context $context,
         OscHelper $oscHelper,
         array $data = []
-    )
-    {
-        parent::__construct($context, $data);
-
+    ) {
         $this->_oscHelper = $oscHelper;
+
+        parent::__construct($context, $data);
     }
 
     /**

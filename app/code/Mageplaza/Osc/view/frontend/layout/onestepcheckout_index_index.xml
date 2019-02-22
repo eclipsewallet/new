@@ -393,5 +393,11 @@
         <referenceBlock name="page.main.title">
             <block class="Mageplaza\Osc\Block\Container" name="page.main.description" template="description.phtml"/>
         </referenceBlock>
+        <referenceContainer name="columns.top">
+            <container name="page.messages.osc" htmlTag="div" htmlClass="page messages">
+                <block class="Magento\Framework\View\Element\Template" name="ajax.message.placeholder.osc" template="Magento_Theme::html/messages.phtml"/>
+                <block class="Magento\Framework\View\Element\Messages" name="messages.osc" as="messages.osc" template="Magento_Theme::messages.phtml"/>
+            </container>
+        </referenceContainer>
     </body>
 </page>

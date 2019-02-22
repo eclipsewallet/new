@@ -21,8 +21,8 @@
 
 // @codingStandardsIgnoreFile
 
-$_htmlId  = $block->getHtmlId() ? $block->getHtmlId() : '_' . uniqid();
-$storeId  = $block->getRequest()->getParam('store');
+$_htmlId = $block->getHtmlId() ? $block->getHtmlId() : '_' . uniqid();
+$storeId = $block->getRequest()->getParam('store');
 ?>
 
 <div class="design_theme_ua_regexp" id="grid<?= $_htmlId ?>">
@@ -85,12 +85,18 @@ $storeId  = $block->getRequest()->getParam('store');
                     } else {
                         var d = new Date();
                         templateValues = {
-                            <?php foreach ($block->getColumns() as $columnName => $column): ?>
-                            <?= $columnName ?>: '', 
-                                'option_extra_attrs':{},
-                            <?php endforeach; ?>
-                            _id: '_' + d.getTime() + '_' + d.getMilliseconds()
-                        };
+                        <?php foreach ($block->getColumns() as $columnName => $column): ?>
+                        <?= $columnName ?>:
+                        '',
+                            'option_extra_attrs'
+                    :
+                        {
+                        }
+                    ,
+                        <?php endforeach; ?>
+                        _id: '_' + d.getTime() + '_' + d.getMilliseconds()
+                    }
+                        ;
                     }
 
                     // Insert new row after specified row or at the bottom
@@ -123,12 +129,12 @@ $storeId  = $block->getRequest()->getParam('store');
                 send: function (rowId) {
                     var emailEl = $j('#abandonedcart_general_test_email');
                     emailEl.addClass('required-entry');
-                    if(!emailEl.valid()){
+                    if (!emailEl.valid()) {
                         emailEl.removeClass('required-entry');
                         return;
                     }
                     emailEl.removeClass('required-entry');
-                    
+
                     $j.ajax({
                         url: '<?php echo $block->getUrl('abandonedcart/index/test', ['_current' => true]) ?>',
                         data: {
@@ -141,7 +147,7 @@ $storeId  = $block->getRequest()->getParam('store');
                         showLoader: true,
                         success: function (result) {
                             var message = result.content ? result.content : result;
-                            if(!result.status){
+                            if (!result.status) {
                                 message += "<br/><br/>" + "<?php echo __('<strong>Note:</strong> Only abandoned cart from <strong>Guest Users</strong> can be sent test email.') ?>";
                             }
 

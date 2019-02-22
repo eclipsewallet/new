@@ -38,6 +38,7 @@ class AccountManagement
 
     /**
      * AccountManagement constructor.
+     *
      * @param Session $checkoutSession
      */
     public function __construct(Session $checkoutSession)
@@ -49,6 +50,7 @@ class AccountManagement
      * @param AM $subject
      * @param mixed $password
      * @param mixed $redirectUrl
+     *
      * @return mixed
      */
     public function beforeCreateAccount(AM $subject, CustomerInterface $customer, $password = null, $redirectUrl = '')

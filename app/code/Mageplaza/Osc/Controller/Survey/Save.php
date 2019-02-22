@@ -56,6 +56,7 @@ class Save extends Action
 
     /**
      * Save constructor.
+     *
      * @param Context $context
      * @param JsonHelper $jsonHelper
      * @param Session $checkoutSession
@@ -68,12 +69,11 @@ class Save extends Action
         Session $checkoutSession,
         Order $order,
         OscHelper $oscHelper
-    )
-    {
-        $this->jsonHelper       = $jsonHelper;
+    ) {
+        $this->jsonHelper = $jsonHelper;
         $this->_checkoutSession = $checkoutSession;
-        $this->_order           = $order;
-        $this->oscHelper        = $oscHelper;
+        $this->_order = $order;
+        $this->oscHelper = $oscHelper;
 
         parent::__construct($context);
     }
@@ -86,7 +86,7 @@ class Save extends Action
         $response = [];
         if ($this->getRequest()->getParam('answerChecked') && isset($this->_checkoutSession->getOscData()['survey'])) {
             try {
-                $order   = $this->_order->load($this->_checkoutSession->getOscData()['survey']['orderId']);
+                $order = $this->_order->load($this->_checkoutSession->getOscData()['survey']['orderId']);
                 $answers = '';
                 foreach ($this->getRequest()->getParam('answerChecked') as $item) {
                     $answers .= $item . ' - ';
@@ -95,11 +95,11 @@ class Save extends Action
                 $order->setData('osc_survey_answers', substr($answers, 0, -2));
                 $order->save();
 
-                $response['status']  = 'success';
+                $response['status'] = 'success';
                 $response['message'] = 'Thank you for completing our survey!';
                 $this->_checkoutSession->unsOscData();
             } catch (\Exception $e) {
-                $response['status']  = 'error';
+                $response['status'] = 'error';
                 $response['message'] = "Can't save survey answer. Please try again! ";
             }
 

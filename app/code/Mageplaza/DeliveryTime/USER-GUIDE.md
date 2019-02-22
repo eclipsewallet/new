@@ -4,10 +4,9 @@
 - User Guide: https://docs.mageplaza.com/delivery-time/
 - Product page: https://www.mageplaza.com/magento-2-delivery-time/
 - FAQs: https://www.mageplaza.com/faqs/
-- Get Support: https://mageplaza.freshdesk.com/ or support@mageplaza.com
-- Changelog: https://www.mageplaza.com/changelog/m2-delivery-time.txt
+- Get Support: https://www.mageplaza.com/contact.html or support@mageplaza.com
+- Changelog: https://www.mageplaza.com/releases/delivery-time
 - License agreement: https://www.mageplaza.com/LICENSE.txt
-
 
 
 ## How to install
@@ -34,16 +33,13 @@ php bin/magento setup:static-content:deploy
 ```
 
 
-
 ## FAQs
-
 
 #### Q: I got error: `Mageplaza_Core has been already defined`
 A: Read solution: https://github.com/mageplaza/module-core/issues/3
 
 #### Q: My site is down
 A: Please follow this guide: https://www.mageplaza.com/blog/magento-site-down.html
-
 
 
 ## Support

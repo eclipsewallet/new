@@ -36,7 +36,7 @@ class Totals extends Template
     public function initTotals()
     {
         $totalsBlock = $this->getParentBlock();
-        $source      = $totalsBlock->getSource();
+        $source = $totalsBlock->getSource();
         if ($source && !empty($source->getOscGiftWrapAmount())) {
             $totalsBlock->addTotal(new DataObject([
                 'code'  => 'gift_wrap',

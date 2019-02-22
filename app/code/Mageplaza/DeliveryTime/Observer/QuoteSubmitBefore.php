@@ -45,14 +45,14 @@ class QuoteSubmitBefore implements ObserverInterface
     /**
      * @param MpDtHelper $mpDtHelper
      * @param Session $checkoutSession
+     *
      * @codeCoverageIgnore
      */
     public function __construct(
         MpDtHelper $mpDtHelper,
         Session $checkoutSession
-    )
-    {
-        $this->mpDtHelper      = $mpDtHelper;
+    ) {
+        $this->mpDtHelper = $mpDtHelper;
         $this->checkoutSession = $checkoutSession;
     }
 

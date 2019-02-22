@@ -67,6 +67,7 @@ class LayoutProcessor implements LayoutProcessorInterface
 
     /**
      * LayoutProcessor constructor.
+     *
      * @param CheckoutSession $checkoutSession
      * @param OscHelper $oscHelper
      * @param AttributeMetadataDataProvider $attributeMetadataDataProvider
@@ -79,19 +80,19 @@ class LayoutProcessor implements LayoutProcessorInterface
         AttributeMetadataDataProvider $attributeMetadataDataProvider,
         AttributeMapper $attributeMapper,
         AttributeMerger $merger
-    )
-    {
-        $this->checkoutSession               = $checkoutSession;
-        $this->_oscHelper                    = $oscHelper;
+    ) {
+        $this->checkoutSession = $checkoutSession;
+        $this->_oscHelper = $oscHelper;
         $this->attributeMetadataDataProvider = $attributeMetadataDataProvider;
-        $this->attributeMapper               = $attributeMapper;
-        $this->merger                        = $merger;
+        $this->attributeMapper = $attributeMapper;
+        $this->merger = $merger;
     }
 
     /**
      * Process js Layout of block
      *
      * @param array $jsLayout
+     *
      * @return array
      * @throws \Magento\Framework\Exception\LocalizedException
      */
@@ -103,45 +104,45 @@ class LayoutProcessor implements LayoutProcessorInterface
 
         /** Shipping address fields */
         if (isset($jsLayout['components']['checkout']['children']['steps']['children']['shipping-step']
-                  ['children']['shippingAddress']['children']['shipping-address-fieldset']['children'])) {
-            $fields                                               = $jsLayout['components']['checkout']['children']['steps']['children']['shipping-step']['children']['shippingAddress']
-                                                                    ['children']['shipping-address-fieldset']['children'];
+            ['children']['shippingAddress']['children']['shipping-address-fieldset']['children'])) {
+            $fields = $jsLayout['components']['checkout']['children']['steps']['children']['shipping-step']['children']['shippingAddress']
+            ['children']['shipping-address-fieldset']['children'];
             $jsLayout['components']['checkout']['children']['steps']['children']['shipping-step']['children']['shippingAddress']
-            ['children']['shipping-address-fieldset']['children'] = $this->getAddressFieldset($fields, 'shippingAddress');
+            ['children']['shipping-address-fieldset']['children']
+                = $this->getAddressFieldset($fields, 'shippingAddress');
 
             if ($this->_oscHelper->isEnableAmazonPay()) {
-                $shippingConfig                                            = &$jsLayout['components']['checkout']['children']['steps']['children']['shipping-step']['children']['shippingAddress'];
-                $shippingConfig['component']                               = 'Mageplaza_Osc/js/view/shipping';
+                $shippingConfig = &$jsLayout['components']['checkout']['children']['steps']['children']['shipping-step']['children']['shippingAddress'];
+                $shippingConfig['component'] = 'Mageplaza_Osc/js/view/shipping';
                 $shippingConfig['children']['customer-email']['component'] = 'Mageplaza_Osc/js/view/form/element/email';
             }
         }
 
         /** Billing address fields */
         if (isset($jsLayout['components']['checkout']['children']['steps']['children']['shipping-step']
-                  ['children']['billingAddress']['children']['billing-address-fieldset']['children'])) {
-            $fields                                              = $jsLayout['components']['checkout']['children']['steps']['children']['shipping-step']['children']['billingAddress']
-                                                                   ['children']['billing-address-fieldset']['children'];
+            ['children']['billingAddress']['children']['billing-address-fieldset']['children'])) {
+            $fields = $jsLayout['components']['checkout']['children']['steps']['children']['shipping-step']['children']['billingAddress']
+            ['children']['billing-address-fieldset']['children'];
             $jsLayout['components']['checkout']['children']['steps']['children']['shipping-step']['children']['billingAddress']
-            ['children']['billing-address-fieldset']['children'] = $this->getAddressFieldset($fields, 'billingAddress');
+            ['children']['billing-address-fieldset']['children']
+                = $this->getAddressFieldset($fields, 'billingAddress');
         }
 
         /** Remove billing customer email if quote is not virtual */
         if (!$this->checkoutSession->getQuote()->isVirtual()) {
             unset($jsLayout['components']['checkout']['children']['steps']['children']['shipping-step']['children']['billingAddress']
-                  ['children']['customer-email']);
+                ['children']['customer-email']);
         }
 
         /** Remove billing address in payment method content */
         $fields = &$jsLayout['components']['checkout']['children']['steps']['children']['billing-step']['children']
-                   ['payment']['children']['payments-list']['children'];
+        ['payment']['children']['payments-list']['children'];
         foreach ($fields as $code => $field) {
             if ($field['component'] == 'Magento_Checkout/js/view/billing-address') {
                 unset($fields[$code]);
             }
         }
 
-        // $jsLayout['components']['checkout']['children']['steps']['children']['shipping-step']['children']
-        // ['shippingAddress']['children']['shipping-address-fieldset']['children']['city']['validation'] = ['required-entry'=>false];
         return $jsLayout;
     }
 
@@ -150,6 +151,7 @@ class LayoutProcessor implements LayoutProcessorInterface
      *
      * @param $fields
      * @param $type
+     *
      * @return array
      * @throws \Magento\Framework\Exception\LocalizedException
      */
@@ -163,8 +165,8 @@ class LayoutProcessor implements LayoutProcessorInterface
                 'prefix' => [$this->getOptions(), 'getNamePrefixOptions'],
                 'suffix' => [$this->getOptions(), 'getNameSuffixOptions'],
             ];
-            $systemAttribute     = $this->convertElementsToSelect($systemAttribute, $attributesToConvert);
-            $fields              = $this->merger->merge(
+            $systemAttribute = $this->convertElementsToSelect($systemAttribute, $attributesToConvert);
+            $fields = $this->merger->merge(
                 $systemAttribute,
                 'checkoutProvider',
                 $type,
@@ -193,12 +195,13 @@ class LayoutProcessor implements LayoutProcessorInterface
      *
      * @param $fields
      * @param $type
+     *
      * @return $this
      * @throws \Magento\Framework\Exception\LocalizedException
      */
     private function addCustomerAttribute(&$fields, $type)
     {
-        $attributes      = $this->attributeMetadataDataProvider->loadAttributesCollection(
+        $attributes = $this->attributeMetadataDataProvider->loadAttributesCollection(
             'customer',
             'customer_account_create'
         );
@@ -230,15 +233,17 @@ class LayoutProcessor implements LayoutProcessorInterface
 
     /**
      * @param $fields
+     *
      * @return $this
      */
     private function addAddressOption(&$fields)
     {
         $fieldPosition = $this->_oscHelper->getAddressHelper()->getAddressFieldPosition();
 
-        $oscField        = [];
+        $oscField = [];
         $allFieldSection = $this->_oscHelper->getAddressHelper()->getSortedField(false);
         foreach ($allFieldSection as $allfield) {
+            /** @var \Magento\Customer\Model\Attribute $field */
             foreach ($allfield as $field) {
                 $oscField[] = $field->getAttributeCode();
             }
@@ -256,9 +261,9 @@ class LayoutProcessor implements LayoutProcessorInterface
                     unset($fields[$code]);
                 }
             } else {
-                $oriClasses                           = isset($field['config']['additionalClasses']) ? $field['config']['additionalClasses'] : '';
+                $oriClasses = isset($field['config']['additionalClasses']) ? $field['config']['additionalClasses'] : '';
                 $field['config']['additionalClasses'] = "{$oriClasses} col-mp mp-{$fieldConfig['colspan']}" . ($fieldConfig['isNewRow'] ? ' mp-clear' : '');
-                $field['sortOrder']                   = (isset($field['sortOrder']) && !in_array($code, $oscField)) ? $field['sortOrder'] : $fieldConfig['sortOrder'];
+                $field['sortOrder'] = (isset($field['sortOrder']) && !in_array($code, $oscField)) ? $field['sortOrder'] : $fieldConfig['sortOrder'];
                 if ($code == 'dob') {
                     $field['options'] = ['yearRange' => '-120y:c+nn', 'maxDate' => '-1d', 'changeMonth' => true, 'changeYear' => true];
                 }
@@ -286,6 +291,7 @@ class LayoutProcessor implements LayoutProcessorInterface
      *
      * @param $field
      * @param string $template
+     *
      * @return $this
      */
     public function rewriteTemplate(&$field, $template = 'Mageplaza_Osc/container/form/element/input')
@@ -310,16 +316,18 @@ class LayoutProcessor implements LayoutProcessorInterface
 
     /**
      * Change template street when enable material design
+     *
      * @param $fields
+     *
      * @return $this
      */
     public function rewriteFieldStreet(&$fields)
     {
         if ($this->_oscHelper->isUsedMaterialDesign()) {
             $fields['country_id']['config']['template'] = 'Mageplaza_Osc/container/form/field';
-            $fields['region_id']['config']['template']  = 'Mageplaza_Osc/container/form/field';
+            $fields['region_id']['config']['template'] = 'Mageplaza_Osc/container/form/field';
             foreach ($fields['street']['children'] as $key => $value) {
-                $fields['street']['children'][0]['label']                 = $fields['street']['label'];
+                $fields['street']['children'][0]['label'] = $fields['street']['label'];
                 $fields['street']['children'][$key]['config']['template'] = 'Mageplaza_Osc/container/form/field';
             }
             $fields['street']['config']['fieldTemplate'] = 'Mageplaza_Osc/container/form/field';
@@ -347,7 +355,6 @@ class LayoutProcessor implements LayoutProcessorInterface
      */
     private function getAddressAttributes()
     {
-        /** @var \Magento\Eav\Api\Data\AttributeInterface[] $attributes */
         $attributes = $this->attributeMetadataDataProvider->loadAttributesCollection(
             'customer_address',
             'customer_register_address'
@@ -357,15 +364,21 @@ class LayoutProcessor implements LayoutProcessorInterface
             'custom'  => [],
             'default' => []
         ];
+        /** @var \Magento\Customer\Model\Attribute $attribute */
         foreach ($attributes as $attribute) {
-            $code    = $attribute->getAttributeCode();
-            $element = $this->attributeMapper->map($attribute);
-            if (isset($element['label'])) {
-                $label            = $element['label'];
-                $element['label'] = __($label);
+            if ($this->_oscHelper->isEnableCustomerAttributes() && $attribute->getIsUserDefined()) {
+                continue;
             }
 
-            ($attribute->getIsUserDefined()) ?
+            $code = $attribute->getAttributeCode();
+            $element = $this->attributeMapper->map($attribute);
+            if (isset($element['label'])) {
+                $label = $element['label'];
+                $element['label'] = __($label);
+            }
+            (
+            $attribute->getIsUserDefined()
+            ) ?
                 $elements['custom'][$code] = $element :
                 $elements['default'][$code] = $element;
         }
@@ -378,6 +391,7 @@ class LayoutProcessor implements LayoutProcessorInterface
      *
      * @param array $elements address attributes
      * @param array $attributesToConvert fields and their callbacks
+     *
      * @return array
      */
     private function convertElementsToSelect($elements, $attributesToConvert)
@@ -391,7 +405,7 @@ class LayoutProcessor implements LayoutProcessorInterface
             if (!is_array($options)) {
                 continue;
             }
-            $elements[$code]['dataType']    = 'select';
+            $elements[$code]['dataType'] = 'select';
             $elements[$code]['formElement'] = 'select';
 
             foreach ($options as $key => $value) {

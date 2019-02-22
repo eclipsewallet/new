@@ -19,9 +19,11 @@
  */
 
 var config = {
-    map: {
-        '*': {
-            'Magento_Checkout/js/model/shipping-save-processor/default': 'Mageplaza_DeliveryTime/js/model/shipping-save-processor/default-override'
+    config: {
+        mixins: {
+            'Magento_Checkout/js/action/set-shipping-information': {
+                'Mageplaza_DeliveryTime/js/action/set-shipping-information-mixin': true
+            }
         }
     }
 };

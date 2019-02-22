@@ -44,15 +44,15 @@ class Link
 
     /**
      * Link constructor.
+     *
      * @param RequestInterface $httpRequest
      * @param OscHelper $oscHelper
      */
     public function __construct(
         RequestInterface $httpRequest,
         OscHelper $oscHelper
-    )
-    {
-        $this->_request  = $httpRequest;
+    ) {
+        $this->_request = $httpRequest;
         $this->oscHelper = $oscHelper;
     }
 
@@ -60,6 +60,7 @@ class Link
      * @param \Magento\Framework\Url $subject
      * @param $routePath
      * @param $routeParams
+     *
      * @return array|null
      */
     public function beforeGetUrl(\Magento\Framework\Url $subject, $routePath = null, $routeParams = null)

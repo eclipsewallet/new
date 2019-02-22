@@ -31,6 +31,7 @@ interface GuestCheckoutManagementInterface
      * @param string $cartId
      * @param int $itemId
      * @param int $itemQty
+     *
      * @return \Mageplaza\Osc\Api\Data\OscDetailsInterface
      */
     public function updateItemQty($cartId, $itemId, $itemQty);
@@ -38,12 +39,14 @@ interface GuestCheckoutManagementInterface
     /**
      * @param string $cartId
      * @param int $itemId
+     *
      * @return \Mageplaza\Osc\Api\Data\OscDetailsInterface
      */
     public function removeItemById($cartId, $itemId);
 
     /**
      * @param string $cartId
+     *
      * @return \Mageplaza\Osc\Api\Data\OscDetailsInterface
      */
     public function getPaymentTotalInformation($cartId);
@@ -51,6 +54,7 @@ interface GuestCheckoutManagementInterface
     /**
      * @param string $cartId
      * @param bool $isUseGiftWrap
+     *
      * @return \Mageplaza\Osc\Api\Data\OscDetailsInterface
      */
     public function updateGiftWrap($cartId, $isUseGiftWrap);
@@ -60,6 +64,7 @@ interface GuestCheckoutManagementInterface
      * @param \Magento\Checkout\Api\Data\ShippingInformationInterface $addressInformation
      * @param string[] $customerAttributes
      * @param string[] $additionInformation
+     *
      * @return bool
      */
     public function saveCheckoutInformation(
@@ -72,6 +77,7 @@ interface GuestCheckoutManagementInterface
     /**
      * @param string $cartId
      * @param string $email
+     *
      * @return bool
      */
     public function saveEmailToQuote($cartId, $email);
@@ -82,6 +88,7 @@ interface GuestCheckoutManagementInterface
      * @param string $cartId
      * @param string $customerEmail
      * @param int $websiteId If not set, will use the current websiteId
+     *
      * @return bool
      * @throws \Magento\Framework\Exception\LocalizedException
      */

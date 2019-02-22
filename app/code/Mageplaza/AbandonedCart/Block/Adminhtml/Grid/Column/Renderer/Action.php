@@ -31,6 +31,7 @@ class Action extends \Magento\Backend\Block\Widget\Grid\Column\Renderer\Action
 {
     /**
      * @param \Magento\Framework\DataObject $row
+     *
      * @return string
      */
     public function render(DataObject $row)

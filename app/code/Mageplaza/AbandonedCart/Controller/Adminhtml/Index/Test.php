@@ -64,6 +64,7 @@ class Test extends Action
 
     /**
      * Test constructor.
+     *
      * @param Context $context
      * @param Data $helper
      * @param LoggerInterface $logger
@@ -78,14 +79,13 @@ class Test extends Action
         AbandonedCart $abandonedCart,
         JsonHelper $jsonHelper,
         CollectionFactory $quoteCollection
-    )
-    {
+    ) {
         parent::__construct($context);
 
-        $this->helper          = $helper;
-        $this->logger          = $logger;
-        $this->abandonedCart   = $abandonedCart;
-        $this->jsonHelper      = $jsonHelper;
+        $this->helper = $helper;
+        $this->logger = $logger;
+        $this->abandonedCart = $abandonedCart;
+        $this->jsonHelper = $jsonHelper;
         $this->quoteCollection = $quoteCollection;
     }
 
@@ -110,7 +110,7 @@ class Test extends Action
                 $quoteCollection->addFieldToFilter('store_id', $storeId);
             } else if ($websiteId = $this->getRequest()->getParam('website')) {
                 /** @var Website $website */
-                $website   = $this->helper->getStoreManager()->getWebsite($websiteId);
+                $website = $this->helper->getStoreManager()->getWebsite($websiteId);
                 $storeName = $website->getName();
                 $quoteCollection->addFieldToFilter('store_id', ['in' => $website->getStoreIds()]);
             }
@@ -118,8 +118,7 @@ class Test extends Action
             if (!$quoteCollection->getSize()) {
                 throw new LocalizedException(isset($storeName)
                     ? __('There is no abandoned cart available for %1.', '<strong>' . $storeName . '</strong>')
-                    : __('There is no abandoned cart available.')
-                );
+                    : __('There is no abandoned cart available.'));
             }
 
             /** @var \Magento\Quote\Model\Quote $quote */
@@ -139,7 +138,7 @@ class Test extends Action
 
             $this->abandonedCart->sendMail($quote, $config, 'test_email', $coupon);
 
-            $result['status']  = true;
+            $result['status'] = true;
             $result['content'] = __('Sent successfully! Please check your email box.');
         } catch (LocalizedException $e) {
             $result['content'] = $e->getMessage();

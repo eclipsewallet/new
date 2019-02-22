@@ -43,6 +43,7 @@ class DateOff extends AbstractFieldArray
 
     /**
      * DateOff constructor.
+     *
      * @param \Magento\Backend\Block\Template\Context $context
      * @param Factory $elementFactory
      * @param array $data
@@ -51,8 +52,7 @@ class DateOff extends AbstractFieldArray
         Context $context,
         Factory $elementFactory,
         array $data = []
-    )
-    {
+    ) {
         $this->elementFactory = $elementFactory;
 
         parent::__construct($context, $data);
@@ -76,6 +76,7 @@ class DateOff extends AbstractFieldArray
      * Render array cell for prototypeJS template
      *
      * @param string $columnName
+     *
      * @return mixed|string
      * @throws \Exception
      */

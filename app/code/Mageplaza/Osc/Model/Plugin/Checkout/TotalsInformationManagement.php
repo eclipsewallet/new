@@ -48,9 +48,8 @@ class TotalsInformationManagement
     public function __construct(
         CartRepositoryInterface $quoteRepository,
         CartTotalRepositoryInterface $cartTotalRepository
-    )
-    {
-        $this->quoteRepository     = $quoteRepository;
+    ) {
+        $this->quoteRepository = $quoteRepository;
         $this->cartTotalRepository = $cartTotalRepository;
     }
 
@@ -59,6 +58,7 @@ class TotalsInformationManagement
      * @param \Closure $proceed
      * @param $cartId
      * @param TotalsInformationInterface $addressInformation
+     *
      * @return \Magento\Quote\Api\Data\TotalsInterface
      * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
@@ -67,8 +67,7 @@ class TotalsInformationManagement
         \Closure $proceed,
         $cartId,
         TotalsInformationInterface $addressInformation
-    )
-    {
+    ) {
         $result = $proceed($cartId, $addressInformation);
 
         /* @var \Magento\Quote\Model\Quote $quote */

@@ -66,6 +66,7 @@ class Address extends Data
 
     /**
      * Address constructor.
+     *
      * @param Context $context
      * @param ObjectManagerInterface $objectManager
      * @param StoreManagerInterface $storeManager
@@ -84,12 +85,11 @@ class Address extends Data
         Region $regionModel,
         CustomerAddressHelper $addressHelper,
         AttributeMetadataDataProvider $attributeMetadataDataProvider
-    )
-    {
-        $this->_directoryList                = $directoryList;
-        $this->_localeResolver               = $localeResolver;
-        $this->_regionModel                  = $regionModel;
-        $this->addressHelper                 = $addressHelper;
+    ) {
+        $this->_directoryList = $directoryList;
+        $this->_localeResolver = $localeResolver;
+        $this->_regionModel = $regionModel;
+        $this->addressHelper = $addressHelper;
         $this->attributeMetadataDataProvider = $attributeMetadataDataProvider;
 
         parent::__construct($context, $objectManager, $storeManager);
@@ -124,7 +124,7 @@ class Address extends Data
     public function getAddressFieldPosition()
     {
         $fieldPosition = [];
-        $sortedField   = $this->getSortedField();
+        $sortedField = $this->getSortedField();
         foreach ($sortedField as $field) {
             $fieldPosition[$field->getAttributeCode()] = [
                 'sortOrder' => $field->getSortOrder(),
@@ -140,15 +140,15 @@ class Address extends Data
      * Get attribute collection to show on osc and manage field
      *
      * @param bool|true $onlySorted
+     *
      * @return array
      */
     public function getSortedField($onlySorted = true)
     {
         $availableFields = [];
-        $sortedFields    = [];
-        $sortOrder       = 1;
+        $sortedFields = [];
+        $sortOrder = 1;
 
-        /** @var \Magento\Eav\Api\Data\AttributeInterface[] $collection */
         $collection = $this->attributeMetadataDataProvider->loadAttributesCollection(
             'customer_address',
             'customer_register_address'
@@ -160,7 +160,6 @@ class Address extends Data
             $availableFields[] = $field;
         }
 
-        /** @var \Magento\Eav\Api\Data\AttributeInterface[] $collection */
         $collection = $this->attributeMetadataDataProvider->loadAttributesCollection(
             'customer',
             'customer_account_create'
@@ -172,7 +171,20 @@ class Address extends Data
             $availableFields[] = $field;
         }
 
-        $isNewRow    = true;
+        if ($this->isEnableCustomerAttributes()) {
+            $collection = $this->attributeMetadataDataProvider->loadAttributesCollection(
+                'customer_address',
+                'checkout_index_index'
+            );
+            foreach ($collection as $key => $field) {
+                if (!$field->getIsVisible()) {
+                    continue;
+                }
+                $availableFields[] = $field;
+            }
+        }
+
+        $isNewRow = true;
         $fieldConfig = $this->getFieldPosition();
         foreach ($fieldConfig as $field) {
             foreach ($availableFields as $key => $avField) {
@@ -195,12 +207,17 @@ class Address extends Data
     /**
      * Check if address attribute can be visible on frontend
      *
-     * @param $attribute
+     * @param \Magento\Customer\Model\Attribute $attribute
+     *
      * @return bool|null|string
      */
     public function isAddressAttributeVisible($attribute)
     {
-        $code   = $attribute->getAttributeCode();
+        if ($this->isEnableCustomerAttributes() && $attribute->getIsUserDefined()) {
+            return false;
+        }
+
+        $code = $attribute->getAttributeCode();
         $result = $attribute->getIsVisible();
         switch ($code) {
             case 'vat_id':
@@ -217,11 +234,16 @@ class Address extends Data
     /**
      * Check if customer attribute can be visible on frontend
      *
-     * @param \Magento\Eav\Api\Data\AttributeInterface $attribute
+     * @param \Magento\Customer\Model\Attribute $attribute
+     *
      * @return bool|null|string
      */
     public function isCustomerAttributeVisible($attribute)
     {
+        if ($this->isEnableCustomerAttributes() && $attribute->getIsUserDefined()) {
+            return false;
+        }
+
         $code = $attribute->getAttributeCode();
         if (in_array($code, ['gender', 'taxvat', 'dob'])) {
             return $attribute->getIsVisible();
@@ -245,6 +267,7 @@ class Address extends Data
     /**
      * @param $colSpan
      * @param $isNewRow
+     *
      * @return $this
      */
     private function checkNewRow($colSpan, &$isNewRow)
@@ -260,23 +283,32 @@ class Address extends Data
 
     /***************************************** Maxmind Db GeoIp ******************************************************/
     /**
-     * Check has library at path var/Mageplaza/Osc/GeoIp/
-     * @return bool|string
+     * @param $storeId
+     *
+     * @return bool
      */
-    public function checkHasLibrary()
+    public function isEnableGeoIP($storeId = null)
     {
-        $path = $this->_directoryList->getPath('var') . '/Mageplaza/Osc/GeoIp';
-        if (!file_exists($path)) {
+        if (!$this->getConfigGeneral('geoip') || !$this->isModuleOutputEnabled('Mageplaza_GeoIP')) {
             return false;
         }
 
-        $folder   = scandir($path, true);
-        $pathFile = $path . '/' . $folder[0] . '/GeoLite2-City.mmdb';
-        if (!file_exists($pathFile)) {
-            return false;
+        $helper = $this->getGeoIPHelper();
+        try {
+            $hasLib = $helper->checkHasLibrary();
+        } catch (\Exception $e) {
+            $hasLib = false;
         }
 
-        return $pathFile;
+        return $helper->isEnabled($storeId) && $hasLib;
+    }
+
+    /**
+     * @return \Mageplaza\GeoIP\Helper\Address
+     */
+    protected function getGeoIPHelper()
+    {
+        return $this->getObject(\Mageplaza\GeoIP\Helper\Address::class);
     }
 
     /**
@@ -284,31 +316,12 @@ class Address extends Data
      */
     public function getGeoIpData()
     {
-        $libPath = $this->checkHasLibrary();
-        if ($this->isEnableGeoIP() && $libPath && class_exists('GeoIp2\Database\Reader')) {
-            try {
-                $geoIp  = new \GeoIp2\Database\Reader($libPath, $this->getLocales());
-                $record = $geoIp->city($this->_request->getParam('fakeIp', null) ?: $this->_remoteAddress->getRemoteAddress());
+        if ($this->isEnableGeoIP()) {
+            $geoIpData = $this->getGeoIPHelper()->getGeoIpData();
 
-                $geoIpData = [
-                    'city'       => $record->city->name,
-                    'country_id' => $record->country->isoCode,
-                    'postcode'   => $record->postal->code
-                ];
-                if ($record->mostSpecificSubdivision) {
-                    $code = $record->mostSpecificSubdivision->isoCode;
-                    if ($regionId = $this->_regionModel->loadByCode($code, $record->country->isoCode)->getId()) {
-                        $geoIpData['region_id'] = $regionId;
-                    } else {
-                        $geoIpData['region'] = $record->mostSpecificSubdivision->name;
-                    }
-                }
-                $allowedCountries = $this->getConfigValue('general/country/allow');
-                $allowedCountries = explode(',', $allowedCountries);
-                if (!in_array($geoIpData['country_id'], $allowedCountries)) {
-                    $geoIpData = [];
-                }
-            } catch (\Exception $e) {
+            $allowedCountries = $this->getConfigValue('general/country/allow');
+            $allowedCountries = explode(',', $allowedCountries);
+            if (isset($geoIpData['country_id']) && !in_array($geoIpData['country_id'], $allowedCountries)) {
                 $geoIpData = [];
             }
 
@@ -316,21 +329,5 @@ class Address extends Data
         }
 
         return [];
-    }
-
-    /**
-     * @return array
-     */
-    protected function getLocales()
-    {
-        $locale   = $this->_localeResolver->getLocale();
-        $language = substr($locale, 0, 2) ? substr($locale, 0, 2) : 'en';
-
-        $locales = [$language];
-        if ($language != 'en') {
-            $locales[] = 'en';
-        }
-
-        return $locales;
     }
 }

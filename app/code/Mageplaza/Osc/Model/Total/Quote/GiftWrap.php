@@ -59,6 +59,7 @@ class GiftWrap extends AbstractTotal
 
     /**
      * GiftWrap constructor.
+     *
      * @param Session $checkoutSession
      * @param OscHelper $oscHelper
      * @param PriceCurrencyInterface $priceCurrency
@@ -67,11 +68,10 @@ class GiftWrap extends AbstractTotal
         Session $checkoutSession,
         OscHelper $oscHelper,
         PriceCurrencyInterface $priceCurrency
-    )
-    {
+    ) {
         $this->_checkoutSession = $checkoutSession;
-        $this->_oscHelper       = $oscHelper;
-        $this->priceCurrency    = $priceCurrency;
+        $this->_oscHelper = $oscHelper;
+        $this->priceCurrency = $priceCurrency;
 
         $this->setCode('osc_gift_wrap');
     }
@@ -82,25 +82,25 @@ class GiftWrap extends AbstractTotal
      * @param Quote $quote
      * @param ShippingAssignmentInterface $shippingAssignment
      * @param Total $total
+     *
      * @return $this
      */
     public function collect(
         Quote $quote,
         ShippingAssignmentInterface $shippingAssignment,
         Total $total
-    )
-    {
+    ) {
         parent::collect($quote, $shippingAssignment, $total);
 
-        if ($this->_oscHelper->isDisabledGiftWrap() ||
-            ($shippingAssignment->getShipping()->getAddress()->getAddressType() !== Address::TYPE_SHIPPING) ||
-            !$quote->getShippingAddress()->getUsedGiftWrap()
+        if ($this->_oscHelper->isDisabledGiftWrap()
+            || ($shippingAssignment->getShipping()->getAddress()->getAddressType() !== Address::TYPE_SHIPPING)
+            || !$quote->getShippingAddress()->getUsedGiftWrap()
         ) {
             return $this;
         }
 
         $baseOscGiftWrapAmount = $this->calculateGiftWrapAmount($quote);
-        $oscGiftWrapAmount     = $this->priceCurrency->convert($baseOscGiftWrapAmount, $quote->getStore());
+        $oscGiftWrapAmount = $this->priceCurrency->convert($baseOscGiftWrapAmount, $quote->getStore());
 
         $this->_addAmount($oscGiftWrapAmount);
         $this->_addBaseAmount($baseOscGiftWrapAmount);
@@ -113,14 +113,18 @@ class GiftWrap extends AbstractTotal
      *
      * @param \Magento\Quote\Model\Quote $quote
      * @param Address\Total $total
+     *
      * @return array
      */
     public function fetch(Quote $quote, Total $total)
     {
+        if ($this->_oscHelper->isDisabledGiftWrap() || !$quote->getShippingAddress()->getUsedGiftWrap()) {
+            return [];
+        }
         $amount = $total->getOscGiftWrapAmount();
 
         $baseInitAmount = $this->calculateGiftWrapAmount($quote);
-        $initAmount     = $this->priceCurrency->convert($baseInitAmount, $quote->getStore());
+        $initAmount = $this->priceCurrency->convert($baseInitAmount, $quote->getStore());
 
         return [
             'code'             => $this->getCode(),
@@ -132,6 +136,7 @@ class GiftWrap extends AbstractTotal
 
     /**
      * @param $quote
+     *
      * @return int|mixed
      */
     public function calculateGiftWrapAmount($quote)
@@ -144,7 +149,7 @@ class GiftWrap extends AbstractTotal
 
             $giftWrapType = $this->_oscHelper->getGiftWrapType();
             if ($giftWrapType == SourceGiftwrap::PER_ITEM) {
-                $giftWrapBaseAmount    = $baseOscGiftWrapAmount;
+                $giftWrapBaseAmount = $baseOscGiftWrapAmount;
                 $baseOscGiftWrapAmount = 0;
                 foreach ($quote->getAllVisibleItems() as $item) {
                     if ($item->getProduct()->isVirtual() || $item->getParentItem()) {

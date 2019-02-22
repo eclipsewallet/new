@@ -55,6 +55,7 @@ class GuestCheckoutManagement implements GuestCheckoutManagementInterface
 
     /**
      * GuestCheckoutManagement constructor.
+     *
      * @param QuoteIdMaskFactory $quoteIdMaskFactory
      * @param CheckoutManagementInterface $checkoutManagement
      * @param CartRepositoryInterface $cartRepository
@@ -65,12 +66,11 @@ class GuestCheckoutManagement implements GuestCheckoutManagementInterface
         CheckoutManagementInterface $checkoutManagement,
         CartRepositoryInterface $cartRepository,
         AccountManagementInterface $accountManagement
-    )
-    {
+    ) {
         $this->quoteIdMaskFactory = $quoteIdMaskFactory;
         $this->checkoutManagement = $checkoutManagement;
-        $this->cartRepository     = $cartRepository;
-        $this->accountManagement  = $accountManagement;
+        $this->cartRepository = $cartRepository;
+        $this->accountManagement = $accountManagement;
     }
 
     /**
@@ -125,8 +125,7 @@ class GuestCheckoutManagement implements GuestCheckoutManagementInterface
         \Magento\Checkout\Api\Data\ShippingInformationInterface $addressInformation,
         $customerAttributes = [],
         $additionInformation = []
-    )
-    {
+    ) {
         /** @var $quoteIdMask \Magento\Quote\Model\QuoteIdMask */
         $quoteIdMask = $this->quoteIdMaskFactory->create()->load($cartId, 'masked_id');
 

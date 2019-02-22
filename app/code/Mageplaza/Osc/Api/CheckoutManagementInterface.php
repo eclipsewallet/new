@@ -31,6 +31,7 @@ interface CheckoutManagementInterface
      * @param int $cartId
      * @param int $itemId
      * @param int $itemQty
+     *
      * @return \Mageplaza\Osc\Api\Data\OscDetailsInterface
      */
     public function updateItemQty($cartId, $itemId, $itemQty);
@@ -38,12 +39,14 @@ interface CheckoutManagementInterface
     /**
      * @param int $cartId
      * @param int $itemId
+     *
      * @return \Mageplaza\Osc\Api\Data\OscDetailsInterface
      */
     public function removeItemById($cartId, $itemId);
 
     /**
      * @param int $cartId
+     *
      * @return \Mageplaza\Osc\Api\Data\OscDetailsInterface
      */
     public function getPaymentTotalInformation($cartId);
@@ -51,6 +54,7 @@ interface CheckoutManagementInterface
     /**
      * @param int $cartId
      * @param bool $isUseGiftWrap
+     *
      * @return \Mageplaza\Osc\Api\Data\OscDetailsInterface
      */
     public function updateGiftWrap($cartId, $isUseGiftWrap);
@@ -60,6 +64,7 @@ interface CheckoutManagementInterface
      * @param \Magento\Checkout\Api\Data\ShippingInformationInterface $addressInformation
      * @param string[] $customerAttributes
      * @param string[] $additionInformation
+     *
      * @return bool
      */
     public function saveCheckoutInformation(

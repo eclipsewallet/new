@@ -27,8 +27,8 @@
     <body>
         <referenceBlock name="order_tab_info">
             <block class="Magento\Backend\Block\Template" name="osc_additional_content" template="Mageplaza_Osc::order/additional.phtml">
-                <block class="Mageplaza\Osc\Block\Order\View\Comment" name="order_comment" template="order/view/comment.phtml"/>
-                <block class="Mageplaza\Osc\Block\Order\View\Survey" name="survey" template="order/view/survey.phtml"/>
+                <block class="Mageplaza\Osc\Block\Order\View\Comment" name="order_comment" template="Mageplaza_Osc::order/view/comment.phtml"/>
+                <block class="Mageplaza\Osc\Block\Order\View\Survey" name="survey" template="Mageplaza_Osc::order/view/survey.phtml"/>
             </block>
         </referenceBlock>
         <referenceBlock name="order_totals">

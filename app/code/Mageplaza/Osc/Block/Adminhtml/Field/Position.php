@@ -48,6 +48,7 @@ class Position extends Container
 
     /**
      * Position constructor.
+     *
      * @param Context $context
      * @param OscHelper $oscHelper
      * @param array $data
@@ -56,8 +57,7 @@ class Position extends Container
         Context $context,
         OscHelper $oscHelper,
         array $data = []
-    )
-    {
+    ) {
         $this->_oscHelper = $oscHelper;
 
         parent::__construct($context, $data);

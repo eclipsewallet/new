@@ -4,8 +4,8 @@
 - User Guide: https://docs.mageplaza.com/one-step-checkout-m2/
 - Product page: https://www.mageplaza.com/magento-2-one-step-checkout-extension/
 - FAQs: https://www.mageplaza.com/faqs/
-- Get Support: https://mageplaza.freshdesk.com/ or support@mageplaza.com
-- Changelog: https://www.mageplaza.com/changelog/m2-one-step-checkout.txt
+- Get Support: https://www.mageplaza.com/contact.html or support@mageplaza.com
+- Changelog: https://www.mageplaza.com/releases/one-step-checkout
 - License agreement: https://www.mageplaza.com/LICENSE.txt
 
 
@@ -33,7 +33,6 @@ php bin/magento setup:static-content:deploy
 ```
 
 
-
 ## FAQs
 
 
@@ -46,7 +45,6 @@ A: There are 2 major Mageplaza Osc version: OSC v1.x and OSC v2.x . If you are u
 
 #### Q: My site is down
 A: Please follow this guide: https://www.mageplaza.com/blog/magento-site-down.html
-
 
 
 ## Support

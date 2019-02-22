@@ -70,7 +70,7 @@ class Collection extends AbstractCollection
     public function addFieldToFilter($field, $condition = null)
     {
         if ($field == 'status' && $condition['eq'] == 2) {
-            $field     = 'recovery';
+            $field = 'recovery';
             $condition = ['eq' => 1];
         }
 

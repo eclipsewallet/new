@@ -68,6 +68,7 @@ class Cart extends Action
 
     /**
      * Cart constructor.
+     *
      * @param \Magento\Framework\App\Action\Context $context
      * @param \Magento\Quote\Model\QuoteFactory $quoteFactory
      * @param \Mageplaza\AbandonedCart\Model\Token $tokenModel
@@ -84,15 +85,14 @@ class Cart extends Action
         Session $customerSession,
         Data $helperData,
         CheckoutSession $checkoutSession
-    )
-    {
+    ) {
         parent::__construct($context);
 
-        $this->tokenModel      = $tokenModel;
-        $this->quoteFactory    = $quoteFactory;
+        $this->tokenModel = $tokenModel;
+        $this->quoteFactory = $quoteFactory;
         $this->customerSession = $customerSession;
-        $this->logsFactory     = $logsFactory;
-        $this->helperData      = $helperData;
+        $this->logsFactory = $logsFactory;
+        $this->helperData = $helperData;
         $this->checkoutSession = $checkoutSession;
     }
 
@@ -146,6 +146,9 @@ class Cart extends Action
 
             return $this->goBack();
         }
+
+        $this->logsFactory->create()->updateRecovery($quoteId);
+        $this->messageManager->addSuccess(__('The recovery succeeded.'));
 
         return $this->goBack();
     }

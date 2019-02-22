@@ -204,24 +204,18 @@ define(
                     return true;
                 }
 
-                var countrycode = document.getElementsByName("country_id")[0].value;
-                if(countrycode!="TH"){
-                    postcodeElement.warn(null);
-                    validationResult = postcodeValidator.validate(postcodeElement.value(), countryId);
+                postcodeElement.warn(null);
+                validationResult = postcodeValidator.validate(postcodeElement.value(), countryId);
 
-                    if (!validationResult) {
-                        warnMessage = $t('Provided Zip/Postal Code seems to be invalid.');
+                if (!validationResult) {
+                    warnMessage = $t('Provided Zip/Postal Code seems to be invalid.');
 
-                        if (postcodeValidator.validatedPostCodeExample.length) {
-                            warnMessage += $t(' Example: ') + postcodeValidator.validatedPostCodeExample.join('; ') + '. ';
-                        }
-                        warnMessage += $t('If you believe it is the right one you can ignore this notice.');
-                        postcodeElement.warn(warnMessage);
+                    if (postcodeValidator.validatedPostCodeExample.length) {
+                        warnMessage += $t(' Example: ') + postcodeValidator.validatedPostCodeExample.join('; ') + '. ';
                     }
+                    warnMessage += $t('If you believe it is the right one you can ignore this notice.');
+                    postcodeElement.warn(warnMessage);
                 }
-                
-
-                
 
                 return validationResult;
             }

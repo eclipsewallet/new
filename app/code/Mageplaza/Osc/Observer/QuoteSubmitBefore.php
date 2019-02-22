@@ -38,6 +38,7 @@ class QuoteSubmitBefore implements ObserverInterface
 
     /**
      * @param \Magento\Checkout\Model\Session $checkoutSession
+     *
      * @codeCoverageIgnore
      */
     public function __construct(Session $checkoutSession)
@@ -47,6 +48,7 @@ class QuoteSubmitBefore implements ObserverInterface
 
     /**
      * @param \Magento\Framework\Event\Observer $observer
+     *
      * @return void
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */

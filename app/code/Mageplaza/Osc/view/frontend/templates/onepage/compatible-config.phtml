@@ -21,8 +21,7 @@
 
 /** @var \Mageplaza\Osc\Block\Checkout\CompatibleConfig $block */
 
-?>
-<?php if ($block->isEnableModulePostNL()) : ?>
+if ($block->isEnableModulePostNL()) : ?>
     <script type="text/javascript">
         require.config({
             config: {

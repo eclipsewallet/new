@@ -50,6 +50,7 @@ class Design extends Template
 
     /**
      * Design constructor.
+     *
      * @param Context $context
      * @param OscHelper $oscHelper
      * @param ThemeProviderInterface $themeProviderInterface
@@ -62,13 +63,12 @@ class Design extends Template
         ThemeProviderInterface $themeProviderInterface,
         CheckoutSession $checkoutSession,
         array $data = []
-    )
-    {
-        parent::__construct($context, $data);
-
-        $this->_oscHelper              = $oscHelper;
+    ) {
+        $this->_oscHelper = $oscHelper;
         $this->_themeProviderInterface = $themeProviderInterface;
-        $this->checkoutSession         = $checkoutSession;
+        $this->checkoutSession = $checkoutSession;
+
+        parent::__construct($context, $data);
     }
 
     /**

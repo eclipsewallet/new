@@ -37,6 +37,7 @@ class PaypalPrepareItems implements ObserverInterface
 
     /**
      * PaypalPrepareItems constructor.
+     *
      * @param Session $checkoutSession
      */
     public function __construct(Session $checkoutSession)
@@ -48,12 +49,13 @@ class PaypalPrepareItems implements ObserverInterface
      * Add gift wrap amount to payment total
      *
      * @param \Magento\Framework\Event\Observer $observer
+     *
      * @return void
      */
     public function execute(\Magento\Framework\Event\Observer $observer)
     {
         /** @var \Magento\Payment\Model\Cart $cart */
-        $cart     = $observer->getEvent()->getCart();
+        $cart = $observer->getEvent()->getCart();
         $giftWrap = $this->checkoutSession->getQuote()->getShippingAddress()->getOscGiftWrapAmount();
         if ($giftWrap > 0.0001) {
             $cart->addCustomItem(__('Gift Wrap'), 1, $giftWrap);

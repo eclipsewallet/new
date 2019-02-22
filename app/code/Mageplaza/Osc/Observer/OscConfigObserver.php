@@ -57,6 +57,7 @@ class OscConfigObserver implements ObserverInterface
 
     /**
      * OscConfigObserver constructor.
+     *
      * @param ModelConfig $modelConfig
      * @param MessageManager $messageManager
      * @param OscHelper $oscHelper
@@ -65,22 +66,23 @@ class OscConfigObserver implements ObserverInterface
         ModelConfig $modelConfig,
         MessageManager $messageManager,
         OscHelper $oscHelper
-    )
-    {
-        $this->_modelConfig    = $modelConfig;
+    ) {
+        $this->_modelConfig = $modelConfig;
         $this->_messageManager = $messageManager;
-        $this->_oscHelper      = $oscHelper;
+        $this->_oscHelper = $oscHelper;
     }
 
     /**
-     * @param \Magento\Framework\Event\Observer $observer
+     * @param Observer $observer
+     *
+     * @throws \Magento\Framework\Exception\FileSystemException
      */
     public function execute(Observer $observer)
     {
-        $scopeId            = 0;
-        $isGiftMessage      = !$this->_oscHelper->isDisabledGiftMessage();
+        $scopeId = 0;
+        $isGiftMessage = !$this->_oscHelper->isDisabledGiftMessage();
         $isGiftMessageItems = $this->_oscHelper->isEnableGiftMessageItems();
-        $isEnableTOC        = ($this->_oscHelper->disabledPaymentTOC() || $this->_oscHelper->disabledReviewTOC());
+        $isEnableTOC = ($this->_oscHelper->disabledPaymentTOC() || $this->_oscHelper->disabledReviewTOC());
         $this->_modelConfig
             ->saveConfig(
                 Message::XPATH_CONFIG_GIFT_MESSAGE_ALLOW_ORDER,
@@ -100,16 +102,5 @@ class OscConfigObserver implements ObserverInterface
                 ScopeConfigInterface::SCOPE_TYPE_DEFAULT,
                 $scopeId
             );
-
-        $isEnableGeoIP = $this->_oscHelper->isEnableGeoIP();
-        if ($isEnableGeoIP && !$this->_oscHelper->getAddressHelper()->checkHasLibrary()) {
-            $this->_modelConfig->saveConfig(
-                OscHelper::GEO_IP_IS_ENABLED,
-                false,
-                ScopeConfigInterface::SCOPE_TYPE_DEFAULT,
-                $scopeId
-            );
-            $this->_messageManager->addNoticeMessage(__("Notice: Please download GeoIp library before enable."));
-        }
     }
 }

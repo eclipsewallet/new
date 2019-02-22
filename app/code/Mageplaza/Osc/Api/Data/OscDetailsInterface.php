@@ -42,6 +42,7 @@ interface OscDetailsInterface
 
     /**
      * @param \Magento\Quote\Api\Data\ShippingMethodInterface[] $shippingMethods
+     *
      * @return $this
      */
     public function setShippingMethods($shippingMethods);
@@ -53,6 +54,7 @@ interface OscDetailsInterface
 
     /**
      * @param \Magento\Quote\Api\Data\PaymentMethodInterface[] $paymentMethods
+     *
      * @return $this
      */
     public function setPaymentMethods($paymentMethods);
@@ -64,6 +66,7 @@ interface OscDetailsInterface
 
     /**
      * @param \Magento\Quote\Api\Data\TotalsInterface $totals
+     *
      * @return $this
      */
     public function setTotals($totals);
@@ -75,6 +78,7 @@ interface OscDetailsInterface
 
     /**
      * @param $url
+     *
      * @return $this
      */
     public function setRedirectUrl($url);

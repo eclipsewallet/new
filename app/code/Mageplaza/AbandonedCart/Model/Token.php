@@ -21,6 +21,8 @@
 
 namespace Mageplaza\AbandonedCart\Model;
 
+use Magento\Customer\Api\Data\CustomerInterfaceFactory;
+use Magento\Framework\Api\DataObjectHelper;
 use Magento\Framework\App\ResourceConnection;
 use Magento\Framework\Stdlib\DateTime\DateTime;
 use Magento\Newsletter\Model\SubscriberFactory;
@@ -55,28 +57,44 @@ class Token
     protected $helper;
 
     /**
+     * @var \Magento\Customer\Api\Data\CustomerInterfaceFactory
+     */
+    private $customerFactory;
+
+    /**
+     * @var \Magento\Framework\Api\DataObjectHelper
+     */
+    private $dataObjectHelper;
+
+    /**
      * @param \Magento\Framework\Stdlib\DateTime\DateTime $date
      * @param ResourceConnection $resource
-     * @param SubscriberFactory $subscriberFactory
      * @param Data $helper
+     * @param SubscriberFactory $subscriberFactory
+     * @param \Magento\Customer\Api\Data\CustomerInterfaceFactory $customerFactory
+     * @param \Magento\Framework\Api\DataObjectHelper $dataObjectHelper
      */
     public function __construct(
         DateTime $date,
         ResourceConnection $resource,
         Data $helper,
-        SubscriberFactory $subscriberFactory
-    )
-    {
-        $this->resource          = $resource;
-        $this->date              = $date;
+        SubscriberFactory $subscriberFactory,
+        CustomerInterfaceFactory $customerFactory,
+        DataObjectHelper $dataObjectHelper
+    ) {
+        $this->resource = $resource;
+        $this->date = $date;
         $this->subscriberFactory = $subscriberFactory;
-        $this->helper            = $helper;
+        $this->helper = $helper;
+        $this->customerFactory = $customerFactory;
+        $this->dataObjectHelper = $dataObjectHelper;
     }
 
     /**
      * @param int $quoteId
      * @param string $configId
      * @param string $token
+     *
      * @return void
      */
     public function saveToken($quoteId, $configId, $token)
@@ -93,6 +111,7 @@ class Token
     /**
      * @param int|null $quoteId
      * @param string|null $token
+     *
      * @return bool
      */
     public function validateCartLink($quoteId = null, $token = null)
@@ -101,15 +120,15 @@ class Token
             return false;
         }
         $connection = $this->resource->getConnection();
-        $select     = $connection->select()
+        $select = $connection->select()
             ->from($this->resource->getTableName('mageplaza_abandonedcart_logs_token'))
             ->where('checkout_token = :checkout_token')
             ->where('quote_id = :quote_id');
-        $bind       = [
+        $bind = [
             'checkout_token' => $token,
             'quote_id'       => $quoteId
         ];
-        $result     = $connection->fetchOne($select, $bind);
+        $result = $connection->fetchOne($select, $bind);
         if (isset($result) && !empty($result)) {
             return true;
         }
@@ -120,24 +139,35 @@ class Token
     /**
      * @param \Magento\Quote\Model\Quote $quote
      * @param string $configId
+     *
      * @return bool
      */
     public function validateEmail($quote, $configId)
     {
         $customerEmail = $quote->getCustomerEmail();
-        $quoteId       = $quote->getId();
-        $storeId       = $quote->getStoreId();
+        $quoteId = $quote->getId();
+        $storeId = $quote->getStoreId();
 
         $connection = $this->resource->getConnection();
-        $select     = $connection->select()
+        $select = $connection->select()
             ->from($this->resource->getTableName('mageplaza_abandonedcart_logs_token'))
             ->where('config_id = :config_id')
             ->where('quote_id = :quote_id');
-        $hasSent    = $connection->fetchOne($select, ['config_id' => $configId, 'quote_id' => $quoteId]);
+        $hasSent = $connection->fetchOne($select, ['config_id' => $configId, 'quote_id' => $quoteId]);
 
         $customerSubscribed = true;
         if ($this->helper->onlySendToSubscribed($storeId)) {
-            $subscriber         = $this->subscriberFactory->create()->loadByEmail($customerEmail);
+            $subscriber = $this->subscriberFactory->create();
+            $customerData = ['store_id' => $storeId, 'email' => $customerEmail];
+
+            /** @var \Magento\Customer\Api\Data\CustomerInterface $customer */
+            $customer = $this->customerFactory->create();
+            $this->dataObjectHelper->populateWithArray(
+                $customer,
+                $customerData,
+                \Magento\Customer\Api\Data\CustomerInterface::class
+            );
+            $subscriber->addData($subscriber->getResource()->loadByCustomerData($customer));
             $customerSubscribed = $subscriber->isSubscribed();
         }
         if (!empty($hasSent) || !$customerSubscribed) {

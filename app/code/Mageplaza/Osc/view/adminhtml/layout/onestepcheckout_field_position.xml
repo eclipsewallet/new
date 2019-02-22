@@ -27,7 +27,7 @@
     </head>
     <body>
         <referenceContainer name="content">
-            <block class="Mageplaza\Osc\Block\Adminhtml\Field\Position" name="onestepcheckout.adminhtml.field.position" template="field/position.phtml"/>
+            <block class="Mageplaza\Osc\Block\Adminhtml\Field\Position" name="onestepcheckout.adminhtml.field.position" template="Mageplaza_Osc::field/position.phtml"/>
         </referenceContainer>
     </body>
 </page>

@@ -50,7 +50,7 @@ class CartRules implements ArrayInterface
      */
     public function toOptionArray()
     {
-        $option         = [['value' => '', 'label' => __('-- Please Select --')]];
+        $option = [['value' => '', 'label' => __('-- Please Select --')]];
         $ruleCollection = $this->ruleFac->create()->getCollection();
         foreach ($ruleCollection as $rule) {
             if ($rule->getIsActive() && $rule->getCouponType() == 2 && $rule->getUseAutoGeneration()) {

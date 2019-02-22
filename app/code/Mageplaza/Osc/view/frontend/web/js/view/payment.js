@@ -28,6 +28,7 @@ define(
         'Magento_Checkout/js/model/payment/additional-validators',
         'Mageplaza_Osc/js/model/checkout-data-resolver',
         'Mageplaza_Osc/js/model/payment-service',
+        'Magento_Customer/js/customer-data',
         'mage/translate'
     ],
     function (ko,
@@ -37,10 +38,12 @@ define(
               stepNavigator,
               additionalValidators,
               oscDataResolver,
-              oscPaymentService) {
+              oscPaymentService,
+              customerData) {
         'use strict';
 
         oscDataResolver.resolveDefaultPaymentMethod();
+        var isReload = true;
 
         return Component.extend({
             defaults: {
@@ -61,6 +64,18 @@ define(
                 quote.paymentMethod.subscribe(function () {
                     self.errorValidationMessage(false);
                 });
+
+                if ($('.page.messages')) {
+                    setTimeout(function () {
+                        $('.page.messages').remove()
+                    }, 8000);
+                }
+
+                if (isReload) {
+                    customerData.reload(['cart'], false);
+                    isReload = false;
+                }
+                this.customer = customerData.get('cart');
 
                 return this;
             },

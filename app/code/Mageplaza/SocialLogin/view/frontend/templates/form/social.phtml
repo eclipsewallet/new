@@ -22,6 +22,7 @@
 <?php $availableSocials = $block->getAvailableSocials(); ?>
 <?php if ($block->canShow() && sizeof($availableSocials)): ?>
     <div class="block social-login-authentication-channel account-social-login">
+        <h2 class="title" id="block-new-customer-heading" role="heading" aria-level="2"><span>Or Connect With</span></h2>
         <div class="block-content">
             <?php foreach ($availableSocials as $key => $social): ?>
                 <div class="margin-bottom10 margin-right10 actions-toolbar social-btn social-btn-actions-toolbar <?= $key ?>-login">

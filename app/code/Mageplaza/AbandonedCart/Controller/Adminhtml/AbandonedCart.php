@@ -90,15 +90,14 @@ abstract class AbandonedCart extends Action
         Logs $abandonedCartLog,
         LogsFactory $logsFactory,
         AbandonedCartModel $abandonedCartModel
-    )
-    {
+    ) {
         parent::__construct($context);
 
-        $this->resultPageFactory  = $resultPageFactory;
-        $this->jsonHelper         = $jsonHelper;
-        $this->logger             = $logger;
-        $this->abandonedCartLog   = $abandonedCartLog;
-        $this->logsFactory        = $logsFactory;
+        $this->resultPageFactory = $resultPageFactory;
+        $this->jsonHelper = $jsonHelper;
+        $this->logger = $logger;
+        $this->abandonedCartLog = $abandonedCartLog;
+        $this->logsFactory = $logsFactory;
         $this->abandonedCartModel = $abandonedCartModel;
     }
 

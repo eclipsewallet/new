@@ -14,54 +14,55 @@
  * version in the future.
  *
  * @category    Mageplaza
- * @package     Mageplaza_Osc
+ * @package     Mageplaza_GeoIP
  * @copyright   Copyright (c) Mageplaza (https://www.mageplaza.com/)
  * @license     https://www.mageplaza.com/LICENSE.txt
  */
 
-namespace Mageplaza\Osc\Block\Adminhtml\System\Config;
+namespace Mageplaza\GeoIP\Block\Adminhtml\System\Config;
 
 use Magento\Backend\Block\Template\Context;
 use Magento\Config\Block\System\Config\Form\Field;
 use Magento\Framework\Data\Form\Element\AbstractElement;
-use Mageplaza\Osc\Helper\Data as OscHelper;
+use Mageplaza\GeoIP\Helper\Data as HelperData;
 
 /**
  * Class Geoip
- * @package Mageplaza\Osc\Block\Adminhtml\System\Config
+ * @package Mageplaza\GeoIP\Block\Adminhtml\System\Config
  */
 class Geoip extends Field
 {
     /**
      * @var string
      */
-    protected $_template = 'Mageplaza_Osc::system/config/geoip.phtml';
+    protected $_template = 'Mageplaza_GeoIP::system/config/geoip.phtml';
 
     /**
-     * @type \Mageplaza\Osc\Helper\Data
+     * @var \Mageplaza\GeoIP\Helper\Data
      */
-    protected $_oscHelper;
+    protected $_helperData;
 
     /**
      * Geoip constructor.
      * @param \Magento\Backend\Block\Template\Context $context
-     * @param \Mageplaza\Osc\Helper\Data $oscHelper
+     * @param \Mageplaza\GeoIP\Helper\Data $helperData
      * @param array $data
      */
     public function __construct(
         Context $context,
-        OscHelper $oscHelper,
+        HelperData $helperData,
         array $data = []
     )
     {
-        $this->_oscHelper = $oscHelper;
+        $this->_helperData = $helperData;
+
         parent::__construct($context, $data);
     }
 
     /**
      * Remove scope label
      *
-     * @param  AbstractElement $element
+     * @param AbstractElement $element
      * @return string
      */
     public function render(AbstractElement $element)
@@ -74,7 +75,7 @@ class Geoip extends Field
     /**
      * Return element html
      *
-     * @param  AbstractElement $element
+     * @param AbstractElement $element
      * @return string
      */
     protected function _getElementHtml(AbstractElement $element)
@@ -89,7 +90,7 @@ class Geoip extends Field
      */
     public function getAjaxUrl()
     {
-        return $this->getUrl('onestepcheckout/system_config/geoip');
+        return $this->getUrl('mpgeoip/system_config/geoip');
     }
 
     /**
@@ -100,23 +101,21 @@ class Geoip extends Field
      */
     public function getButtonHtml()
     {
-        $button = $this->getLayout()->createBlock(
-            'Magento\Backend\Block\Widget\Button'
-        )->setData(
-            [
+        $button = $this->getLayout()->createBlock('Magento\Backend\Block\Widget\Button')
+            ->setData([
                 'id'    => 'geoip_button',
                 'label' => __('Download Library'),
-            ]
-        );
+            ]);
 
         return $button->toHtml();
     }
 
     /**
      * @return string
+     * @throws \Magento\Framework\Exception\FileSystemException
      */
     public function isDisplayIcon()
     {
-        return $this->_oscHelper->getAddressHelper()->checkHasLibrary() ? '' : 'hidden="hidden';
+        return $this->_helperData->getAddressHelper()->checkHasLibrary() ? '' : 'hidden="hidden';
     }
 }

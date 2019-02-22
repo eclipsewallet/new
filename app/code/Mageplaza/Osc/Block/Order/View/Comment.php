@@ -45,8 +45,7 @@ class Comment extends Template
         Context $context,
         Registry $registry,
         array $data = []
-    )
-    {
+    ) {
         $this->_coreRegistry = $registry;
 
         parent::__construct($context, $data);

@@ -48,14 +48,14 @@ class GiftWrap
      * @param \Magento\Quote\Model\Cart\TotalsConverter $subject
      * @param \Closure $proceed
      * @param array $addressTotals
+     *
      * @return mixed
      */
     public function aroundProcess(
         \Magento\Quote\Model\Cart\TotalsConverter $subject,
         \Closure $proceed,
         array $addressTotals = []
-    )
-    {
+    ) {
         $totalSegments = $proceed($addressTotals);
 
         if (!array_key_exists(self::GIFT_WRAP_CODE, $addressTotals)) {

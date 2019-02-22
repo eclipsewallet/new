@@ -43,15 +43,15 @@ class DefaultConfigProvider implements ConfigProviderInterface
 
     /**
      * DefaultConfigProvider constructor.
+     *
      * @param MpDtHelper $mpDtHelper
      * @param StoreManagerInterface $storeManager
      */
     public function __construct(
         MpDtHelper $mpDtHelper,
         StoreManagerInterface $storeManager
-    )
-    {
-        $this->mpDtHelper   = $mpDtHelper;
+    ) {
+        $this->mpDtHelper = $mpDtHelper;
         $this->storeManager = $storeManager;
     }
 

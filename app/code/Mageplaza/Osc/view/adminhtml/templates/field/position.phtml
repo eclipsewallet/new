@@ -18,11 +18,10 @@
  * @copyright   Copyright (c) Mageplaza (https://www.mageplaza.com/)
  * @license     https://www.mageplaza.com/LICENSE.txt
  */
-?>
-<?php
-$_sortedFields    = $block->getSortedFields();
+
+$_sortedFields = $block->getSortedFields();
 $_availableFields = $block->getAvailableFields();
-$_helper          = $block->getHelperData();
+$_helper = $block->getHelperData();
 ?>
 <div class="field-postion-content" id="field-position-sortable">
     <div id="position-save-messages">
@@ -43,7 +42,7 @@ $_helper          = $block->getHelperData();
                 </div>
                 <div class="field field-available">
                     <ul class="sortable-list ui-sortable">
-                        <?php foreach ($_availableFields as $field): ?>
+                        <?php foreach ($_availableFields as $field) : ?>
                             <li class="sortable-item" id="<?php echo $field->getId() ?>"
                                 code="<?php echo $field->getAttributeCode() ?>">
                                 <div class="attribute-label">
@@ -62,7 +61,7 @@ $_helper          = $block->getHelperData();
                 </div>
                 <div class="field field-sorted">
                     <ul class="sortable-list ui-sortable">
-                        <?php foreach ($_sortedFields as $field): ?>
+                        <?php foreach ($_sortedFields as $field) : ?>
                             <li class="sortable-item <?php echo $field->getColspan() == 12 ? 'wide' : '' ?>"
                                 id="<?php echo $field->getId() ?>"
                                 code="<?php echo $field->getAttributeCode() ?>">

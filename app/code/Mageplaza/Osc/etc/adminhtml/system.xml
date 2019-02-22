@@ -66,48 +66,45 @@
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                     <comment><![CDATA[Select Yes to allow the <strong>Billing Address</strong> block to appear in the Checkout Page, or No to imply that <strong>Billing Address</strong> and <strong>Shipping Address</strong> are the same.]]></comment>
                 </field>
-                <field id="auto_detect_address" sortOrder="101" type="select" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                <field id="auto_detect_address" translate="label comment" sortOrder="101" type="select" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
                     <label>Use Auto Suggestion Technology</label>
                     <source_model>Mageplaza\Osc\Model\System\Config\Source\AddressSuggest</source_model>
                     <comment><![CDATA[Select <strong>Google</strong> to use it for automatic address suggestion, or <strong>No</strong> to disable this feature.]]></comment>
                 </field>
-                <field id="google_api_key" sortOrder="102" type="text" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                <field id="google_api_key" translate="label comment" sortOrder="102" type="text" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
                     <label>Google Api Key</label>
-                    <comment>
-                        You should register a new key. Get Api key &lt;a
-                        href="https://developers.google.com/maps/documentation/javascript/get-api-key"
-                        target="_blank">here&lt;/a&gt;
-                    </comment>
+                    <comment><![CDATA[You should register a new key. Get Api key <a href="https://developers.google.com/maps/documentation/javascript/get-api-key" target="_blank">here</a>]]></comment>
                     <validate>required-entry</validate>
                     <depends>
                         <field id="auto_detect_address">google</field>
                     </depends>
                 </field>
-                <field id="google_specific_country" sortOrder="102" type="select" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="google_specific_country" translate="label comment" sortOrder="102" type="select" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Restrict the auto suggestion for a specific country</label>
                     <source_model>Magento\Directory\Model\Config\Source\Country</source_model>
                     <depends>
                         <field id="auto_detect_address">google</field>
                     </depends>
                 </field>
-                <field id="pca_website_key" sortOrder="102" type="text" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="pca_website_key" translate="label comment" sortOrder="102" type="text" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Capture+ Key</label>
-                    <comment>
-                        To set up a Capture+ account or these keys, please visit &lt;a
-                        href="http://www.pcapredict.com/en-us/address-capture-software/?utm_source=mageplaza.com&amp;utm_medium=one-step-checkout&amp;utm_campaign=one-step-checkout"
-                        target="_blank" style="margin-left:0;"&gt;Getting Started&lt;/a&gt; page
-                    </comment>
+                    <comment><![CDATA[To set up a Capture+ account or these keys, please visit <a href="http://www.pcapredict.com/en-us/address-capture-software/?utm_source=mageplaza.com&amp;utm_medium=one-step-checkout&amp;utm_campaign=one-step-checkout" target="_blank" style="margin-left:0;">Getting Started</a> page]]></comment>
                     <depends>
                         <field id="auto_detect_address">pca</field>
                     </depends>
                 </field>
-                <field id="pca_country_lookup" sortOrder="103" type="select" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="pca_country_lookup" translate="label comment" sortOrder="103" type="select" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>IP Country Lookup</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                     <comment>The default country will be set based on location of the customer.</comment>
                     <depends>
                         <field id="auto_detect_address">pca</field>
                     </depends>
+                </field>
+                <field id="geoip" translate="label comment" sortOrder="110" type="select" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Enable GeoIP</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment><![CDATA[You need install <a href="https://www.mageplaza.com/magento-2-geoip/?utm_source=mageplaza.com&amp;utm_medium=one-step-checkout&amp;utm_campaign=one-step-checkout" target="_blank">Mageplaza GeoIP Extension</a> to use this function.]]></comment>
                 </field>
             </group>
             <group id="display_configuration" translate="label comment" sortOrder="20" type="text" showInDefault="1" showInWebsite="1" showInStore="1">
@@ -260,7 +257,7 @@
                 </group>
                 <group id="seal_block" translate="label" showInDefault="1" sortOrder="130" showInWebsite="1" showInStore="1">
                     <label>Seal block</label>
-                    <field id="is_enabled_seal_block" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <field id="is_enabled_seal_block" translate="label comment" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
                         <label>Enable Seal Block</label>
                         <source_model>Mageplaza\Osc\Model\System\Config\Source\SealBlockPosition</source_model>
                         <comment>This seal will be displayed under Place Order button</comment>
@@ -359,25 +356,13 @@
                         <field id="page_design">material</field>
                     </depends>
                 </field>
-                <field id="place_order_button" sortOrder="30" type="text" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                <field id="place_order_button" translate="label comment" sortOrder="30" type="text" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
                     <label>Place Order button color</label>
                     <validate>jscolor {hash:true,refine:false}</validate>
                 </field>
                 <field id="custom_css" sortOrder="100" type="textarea" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Custom CSS</label>
                     <comment><![CDATA[Example: .step-title{background-color: #1979c3;}]]></comment>
-                </field>
-            </group>
-            <group id="geoip_configuration" translate="label comment" sortOrder="50" type="text" showInDefault="1" showInWebsite="1" showInStore="1">
-                <label>GeoIP Configuration</label>
-                <field id="is_enable_geoip" translate="label comment" sortOrder="1" type="select" showInDefault="1" showInWebsite="1" showInStore="1">
-                    <label>Enable GeoIP</label>
-                    <comment>Please download library before enable.</comment>
-                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-                </field>
-                <field id="download_library" translate="label comment" type="button" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="0">
-                    <frontend_model>Mageplaza\Osc\Block\Adminhtml\System\Config\Geoip</frontend_model>
-                    <label></label>
                 </field>
             </group>
         </section>

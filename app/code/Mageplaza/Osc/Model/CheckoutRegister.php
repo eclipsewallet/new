@@ -72,6 +72,7 @@ class CheckoutRegister
 
     /**
      * CheckoutRegister constructor.
+     *
      * @param Session $checkoutSession
      * @param Copy $objectCopyService
      * @param DataObjectHelper $dataObjectHelper
@@ -86,14 +87,13 @@ class CheckoutRegister
         AccountManagementInterface $accountManagement,
         CustomerManagement $customerManagement,
         Data $oscHelper
-    )
-    {
-        $this->checkoutSession    = $checkoutSession;
+    ) {
+        $this->checkoutSession = $checkoutSession;
         $this->_objectCopyService = $objectCopyService;
-        $this->dataObjectHelper   = $dataObjectHelper;
-        $this->accountManagement  = $accountManagement;
+        $this->dataObjectHelper = $dataObjectHelper;
+        $this->accountManagement = $accountManagement;
         $this->customerManagement = $customerManagement;
-        $this->_oscHelper         = $oscHelper;
+        $this->_oscHelper = $oscHelper;
     }
 
     /**
@@ -118,8 +118,10 @@ class CheckoutRegister
 
         /** Create account when checkout */
         if (isset($oscData['register']) && $oscData['register']
-            && isset($oscData['password']) && $oscData['password']
+            && isset($oscData['password'])
+            && $oscData['password']
         ) {
+            $this->checkoutSession->setIsCreatedAccountPaypalExpress(true);
             $quote->setCheckoutMethod(\Magento\Checkout\Model\Type\Onepage::METHOD_REGISTER)
                 ->setCustomerIsGuest(false)
                 ->setCustomerGroupId(null)
@@ -135,14 +137,15 @@ class CheckoutRegister
      * Prepare quote for customer registration and customer order submit
      *
      * @param \Magento\Quote\Model\Quote $quote
+     *
      * @return void
      */
-    protected function _prepareNewCustomerQuote(Quote $quote, $oscData)
+    public function _prepareNewCustomerQuote(Quote $quote, $oscData)
     {
-        $billing  = $quote->getBillingAddress();
+        $billing = $quote->getBillingAddress();
         $shipping = $quote->isVirtual() ? null : $quote->getShippingAddress();
 
-        $customer  = $quote->getCustomer();
+        $customer = $quote->getCustomer();
         $dataArray = $billing->getData();
         if (isset($oscData['customerAttributes']) && $oscData['customerAttributes']) {
             $dataArray = array_merge($dataArray, $oscData['customerAttributes']);
@@ -152,7 +155,7 @@ class CheckoutRegister
             $dataArray,
             '\Magento\Customer\Api\Data\CustomerInterface'
         );
-
+        $customer->setEmail($quote->getCustomerEmail());
         $quote->setCustomer($customer);
 
         /** Create customer */
@@ -195,6 +198,7 @@ class CheckoutRegister
 
     /**
      * @param \Magento\Quote\Model\Quote $quote
+     *
      * @return $this
      */
     public function validateAddressBeforeSubmit(\Magento\Quote\Model\Quote $quote)

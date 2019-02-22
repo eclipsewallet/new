@@ -95,6 +95,7 @@ class DefaultConfigProvider implements ConfigProviderInterface
 
     /**
      * DefaultConfigProvider constructor.
+     *
      * @param CheckoutSession $checkoutSession
      * @param PaymentMethodManagementInterface $paymentMethodManagement
      * @param ShippingMethodManagementInterface $shippingMethodManagement
@@ -104,7 +105,6 @@ class DefaultConfigProvider implements ConfigProviderInterface
      * @param ModuleManager $moduleManager
      * @param OscHelper $oscHelper
      * @param Block $cmsBlock
-     * @param UrlInterface $urlBuilder
      * @param StoreManagerInterface $storeManager
      */
     public function __construct(
@@ -118,18 +118,17 @@ class DefaultConfigProvider implements ConfigProviderInterface
         OscHelper $oscHelper,
         Block $cmsBlock,
         StoreManagerInterface $storeManager
-    )
-    {
-        $this->checkoutSession           = $checkoutSession;
-        $this->paymentMethodManagement   = $paymentMethodManagement;
-        $this->shippingMethodManagement  = $shippingMethodManagement;
+    ) {
+        $this->checkoutSession = $checkoutSession;
+        $this->paymentMethodManagement = $paymentMethodManagement;
+        $this->shippingMethodManagement = $shippingMethodManagement;
         $this->giftMessageConfigProvider = $configProvider;
-        $this->quoteItemRepository       = $quoteItemRepository;
-        $this->stockRegistry             = $stockRegistry;
-        $this->moduleManager             = $moduleManager;
-        $this->_oscHelper                = $oscHelper;
-        $this->cmsBlock                  = $cmsBlock;
-        $this->storeManager              = $storeManager;
+        $this->quoteItemRepository = $quoteItemRepository;
+        $this->stockRegistry = $stockRegistry;
+        $this->moduleManager = $moduleManager;
+        $this->_oscHelper = $oscHelper;
+        $this->cmsBlock = $cmsBlock;
+        $this->storeManager = $storeManager;
     }
 
     /**
@@ -181,7 +180,7 @@ class DefaultConfigProvider implements ConfigProviderInterface
             'isUsedMaterialDesign'    => $this->_oscHelper->isUsedMaterialDesign(),
             'isAmazonAccountLoggedIn' => false,
             'geoIpOptions'            => [
-                'isEnableGeoIp' => $this->_oscHelper->isEnableGeoIP(),
+                'isEnableGeoIp' => $this->_oscHelper->getAddressHelper()->isEnableGeoIP(),
                 'geoIpData'     => $this->_oscHelper->getAddressHelper()->getGeoIpData()
             ],
             'compatible'              => [
@@ -209,7 +208,7 @@ class DefaultConfigProvider implements ConfigProviderInterface
 
             $sealContent = $this->cmsBlock->setBlockId($blockId)->toHtml();
         } else if ($this->_oscHelper->isEnabledSealBlock() == 2) {
-            $sealImage       = $this->storeManager->getStore()->getBaseUrl(UrlInterface::URL_TYPE_MEDIA) . SealBlockImage::UPLOAD_DIR . $this->_oscHelper->getSealImage();
+            $sealImage = $this->storeManager->getStore()->getBaseUrl(UrlInterface::URL_TYPE_MEDIA) . SealBlockImage::UPLOAD_DIR . $this->_oscHelper->getSealImage();
             $sealDescription = $this->_oscHelper->getSealDescription();
 
             $sealContent = '<img src="' . $sealImage . '"><p>' . $sealDescription . '</p>';
@@ -227,7 +226,7 @@ class DefaultConfigProvider implements ConfigProviderInterface
     private function getPaymentMethods()
     {
         $paymentMethods = [];
-        $quote          = $this->checkoutSession->getQuote();
+        $quote = $this->checkoutSession->getQuote();
         if (!$quote->getIsVirtual()) {
             foreach ($this->paymentMethodManagement->getList($quote->getId()) as $paymentMethod) {
                 $paymentMethods[] = [

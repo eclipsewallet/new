@@ -46,7 +46,8 @@
 {{template config_path="design/email/header_template"}}
 
 <p class="greeting">{{trans "Hi %name! Great deals between us are not over yet!" name=$customer_name |raw}}</p>
-<p>{{trans "We care about your smile and your pleasure. Please let us give it more chances. %store_name wonders if this item list may recall your interest." store_name=$store.getFrontendName()}}</p>
+<p>{{trans "We care about your smile and your pleasure. Please let us give it more chances. %store_name wonders if this
+    item list may recall your interest." store_name=$store.getFrontendName()}}</p>
 
 {{layout handle="ace_email_quote_items" quote=$quote area="frontend"}}
 
@@ -61,7 +62,8 @@
 <p>{{trans "Products are not the only value we wish to deliver, but also your happiness."}}</p>
 <p>
     {{depend coupon_code}}
-    {{trans "How about we could offer you the coupon <b>%couponCode</b> in order to encourage you to complete the left shopping cart?" couponCode=$coupon_code |raw}}<br>
+    {{trans "How about we could offer you the coupon <b>%couponCode</b> in order to encourage you to complete the left
+    shopping cart?" couponCode=$coupon_code |raw}}<br>
     {{/depend}}
     {{depend to_date}}
     {{trans "Hurry up since this coupon is only valid until %to" to=$to_date}}

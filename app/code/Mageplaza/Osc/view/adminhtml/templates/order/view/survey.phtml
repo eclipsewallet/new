@@ -21,18 +21,17 @@
 
 // @codingStandardsIgnoreFile
 
-?>
-<?php if (!empty($surveyQuestion = $block->getSurveyQuestion()) && !empty($surveyAnswers = $block->getSurveyAnswers())): ?>
+if (!empty($surveyQuestion = $block->getSurveyQuestion()) && !empty($surveyAnswers = $block->getSurveyAnswers())): ?>
     <div class="admin__page-section-item order-osc-survey">
         <div class="admin__page-section-item-title">
             <span class="title"><?php echo __('Order Survey') ?></span>
         </div>
         <div class="admin__page-section-item-content">
             <div class="question">
-                <strong>Question: </strong><span><?php echo $surveyQuestion ?></span>
+                <strong><?= __('Question:') ?>&nbsp;</strong><span><?php echo $surveyQuestion ?></span>
             </div>
             <div class="answers">
-                <strong>Answers: </strong><span><?php echo $surveyAnswers ?></span>
+                <strong><?= __('Answers:') ?>&nbsp;</strong><span><?php echo $surveyAnswers ?></span>
             </div>
         </div>
     </div>

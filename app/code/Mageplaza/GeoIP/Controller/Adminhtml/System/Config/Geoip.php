@@ -14,68 +14,69 @@
  * version in the future.
  *
  * @category    Mageplaza
- * @package     Mageplaza_Osc
+ * @package     Mageplaza_GeoIP
  * @copyright   Copyright (c) Mageplaza (https://www.mageplaza.com/)
  * @license     https://www.mageplaza.com/LICENSE.txt
  */
 
-namespace Mageplaza\Osc\Controller\Adminhtml\System\Config;
+namespace Mageplaza\GeoIP\Controller\Adminhtml\System\Config;
 
 use Magento\Backend\App\Action;
 use Magento\Backend\App\Action\Context;
 use Magento\Framework\App\Filesystem\DirectoryList;
 use Magento\Framework\Controller\Result\JsonFactory;
-use Mageplaza\Osc\Helper\Data as OscHelper;
+use Mageplaza\GeoIP\Helper\Data as HelperData;
 
 /**
  * Class Geoip
- * @package Mageplaza\Osc\Controller\Adminhtml\System\Config
+ * @package Mageplaza\GeoIP\Controller\Adminhtml\System\Config
  */
 class Geoip extends Action
 {
     /**
-     * @type \Magento\Framework\Controller\Result\JsonFactory
+     * @var \Magento\Framework\Controller\Result\JsonFactory
      */
     protected $resultJsonFactory;
 
     /**
-     * @type \Magento\Framework\App\Filesystem\DirectoryList
+     * @var \Magento\Framework\App\Filesystem\DirectoryList
      */
     protected $_directoryList;
 
     /**
-     * @var OscHelper
+     * @var \Mageplaza\GeoIP\Helper\Data
      */
-    protected $_oscHelper;
+    protected $_helperData;
 
     /**
-     * @param Context $context
-     * @param JsonFactory $resultJsonFactory
-     * @param DirectoryList $directoryList
-     * @param OscHelper $oscHelper
+     * Geoip constructor.
+     * @param \Magento\Backend\App\Action\Context $context
+     * @param \Magento\Framework\Controller\Result\JsonFactory $resultJsonFactory
+     * @param \Magento\Framework\App\Filesystem\DirectoryList $directoryList
+     * @param \Mageplaza\GeoIP\Helper\Data $helperData
      */
     public function __construct(
         Context $context,
         JsonFactory $resultJsonFactory,
         DirectoryList $directoryList,
-        OscHelper $oscHelper
+        HelperData $helperData
     )
     {
         $this->resultJsonFactory = $resultJsonFactory;
         $this->_directoryList    = $directoryList;
-        $this->_oscHelper        = $oscHelper;
+        $this->_helperData       = $helperData;
 
         parent::__construct($context);
     }
 
     /**
-     * @return $this|\Magento\Framework\App\ResponseInterface|\Magento\Framework\Controller\ResultInterface
+     * @return $this
      */
     public function execute()
     {
         $status = false;
         try {
-            $path = $this->_directoryList->getPath('var') . '/Mageplaza/Osc/GeoIp';
+            $path = $this->_directoryList->getPath('var') . '/Mageplaza/GeoIp/GeoIp';
             if (!file_exists($path)) {
                 mkdir($path, 0777, true);
             }
@@ -91,7 +92,7 @@ class Geoip extends Action
                 @rmdir($path . '/' . $folder[0]);
             }
 
-            file_put_contents($path . '/GeoLite2-City.tar.gz', fopen($this->_oscHelper->getDownloadPath(), 'r'));
+            file_put_contents($path . '/GeoLite2-City.tar.gz', fopen($this->_helperData->getDownloadPath(), 'r'));
             $phar = new \PharData($path . '/GeoLite2-City.tar.gz');
             $phar->extractTo($path);
             $status  = true;

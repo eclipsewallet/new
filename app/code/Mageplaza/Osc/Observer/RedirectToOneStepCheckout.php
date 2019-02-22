@@ -44,20 +44,21 @@ class RedirectToOneStepCheckout implements ObserverInterface
 
     /**
      * RedirectToOneStepCheckout constructor.
+     *
      * @param UrlInterface $url
      * @param OscHelper $oscHelper
      */
     public function __construct(
         UrlInterface $url,
         OscHelper $oscHelper
-    )
-    {
-        $this->_url       = $url;
+    ) {
+        $this->_url = $url;
         $this->_oscHelper = $oscHelper;
     }
 
     /**
      * @param Observer $observer
+     *
      * @return void
      * @SuppressWarnings(PHPMD.CyclomaticComplexity)
      */

@@ -38,6 +38,7 @@ class PaypalExpressPlaceOrder implements ObserverInterface
 
     /**
      * PaypalExpressPlaceOrder constructor.
+     *
      * @param \Mageplaza\Osc\Model\CheckoutRegister $checkoutRegister
      */
     public function __construct(CheckoutRegister $checkoutRegister)
@@ -47,6 +48,7 @@ class PaypalExpressPlaceOrder implements ObserverInterface
 
     /**
      * @param \Magento\Framework\Event\Observer $observer
+     *
      * @return void
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */

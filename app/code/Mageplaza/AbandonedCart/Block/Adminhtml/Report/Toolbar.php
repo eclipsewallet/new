@@ -40,6 +40,7 @@ class Toolbar extends Template
 
     /**
      * Toolbar constructor.
+     *
      * @param \Magento\Backend\Block\Template\Context $context
      * @param \Magento\Framework\Stdlib\DateTime\DateTime $date
      * @param array $data
@@ -48,8 +49,7 @@ class Toolbar extends Template
         Context $context,
         DateTime $date,
         array $data = []
-    )
-    {
+    ) {
         $this->date = $date;
 
         parent::__construct($context, $data);

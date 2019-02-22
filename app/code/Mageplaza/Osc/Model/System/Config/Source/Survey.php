@@ -45,9 +45,9 @@ class Survey extends AbstractFieldArray
         Context $context,
         Factory $elementFactory,
         array $data = []
-    )
-    {
+    ) {
         $this->_elementFactory = $elementFactory;
+
         parent::__construct($context, $data);
     }
 
@@ -57,7 +57,7 @@ class Survey extends AbstractFieldArray
     protected function _construct()
     {
         $this->addColumn('value', ['label' => __('Options')]);
-        $this->_addAfter       = false;
+        $this->_addAfter = false;
         $this->_addButtonLabel = __('Add');
         parent::_construct();
     }

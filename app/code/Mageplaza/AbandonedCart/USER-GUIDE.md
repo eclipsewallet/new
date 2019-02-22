@@ -4,8 +4,8 @@
 - User Guide: https://docs.mageplaza.com/abandoned-cart-email/
 - Product page: https://www.mageplaza.com/magento-2-abandoned-cart-email/
 - FAQs: https://www.mageplaza.com/faqs/
-- Get Support: https://mageplaza.freshdesk.com/ or support@mageplaza.com
-- Changelog: https://www.mageplaza.com/changelog/m2-abandoned-cart-email.txt
+- Get Support: https://www.mageplaza.com/contact.html or support@mageplaza.com
+- Changelog: https://www.mageplaza.com/releases/abandoned-cart-email
 - License agreement: https://www.mageplaza.com/LICENSE.txt
 
 
@@ -17,6 +17,7 @@
 
 
 ## How to upgrade
+
 
 1. Backup
 

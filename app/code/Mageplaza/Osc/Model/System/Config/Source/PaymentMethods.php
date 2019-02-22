@@ -50,6 +50,7 @@ class PaymentMethods implements ArrayInterface
 
     /**
      * PaymentMethods constructor.
+     *
      * @param ScopeConfigInterface $scopeConfig
      * @param Factory $paymentMethodFactory
      * @param OscHelper $oscHelper
@@ -58,11 +59,10 @@ class PaymentMethods implements ArrayInterface
         ScopeConfigInterface $scopeConfig,
         Factory $paymentMethodFactory,
         OscHelper $oscHelper
-    )
-    {
-        $this->_scopeConfig          = $scopeConfig;
+    ) {
+        $this->_scopeConfig = $scopeConfig;
         $this->_paymentMethodFactory = $paymentMethodFactory;
-        $this->_oscHelper            = $oscHelper;
+        $this->_oscHelper = $oscHelper;
     }
 
     /**
@@ -90,7 +90,7 @@ class PaymentMethods implements ArrayInterface
      */
     public function getActiveMethods()
     {
-        $methods       = [];
+        $methods = [];
         $paymentConfig = $this->_scopeConfig->getValue('payment', ScopeInterface::SCOPE_STORE, null);
         if ($this->_oscHelper->isEnabledMultiSafepay()) {
             $paymentConfig = array_merge(

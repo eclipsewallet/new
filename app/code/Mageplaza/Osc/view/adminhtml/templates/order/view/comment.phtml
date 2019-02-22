@@ -21,8 +21,7 @@
 
 // @codingStandardsIgnoreFile
 
-?>
-<?php if ($commentHtml = $block->getOrderComment()): ?>
+if ($commentHtml = $block->getOrderComment()): ?>
     <div class="admin__page-section-item order-osc-comment">
         <div class="admin__page-section-item-title">
             <span class="title"><?php /* @escapeNotVerified */ echo __('Order Comment') ?></span>

@@ -73,10 +73,12 @@ define(
                 var customAttributes = {};
                 if (_.isObject(quote.billingAddress().customAttributes)) {
                     _.each(quote.billingAddress().customAttributes, function (attribute, key) {
-                        if (_.isObject(attribute)) {
-                            customAttributes[attribute.attribute_code] = attribute.value
-                        } else if (_.isString(attribute)) {
+                        if (_.isArray(attribute)) {
+                            customAttributes[key] = attribute.join(',')
+                        } else if (_.isString(attribute) || _.isNumber(attribute)) {
                             customAttributes[key] = attribute
+                        } else if (_.isObject(attribute)) {
+                            customAttributes[attribute.attribute_code] = attribute.value
                         }
                     });
                 }

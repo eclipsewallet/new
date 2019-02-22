@@ -48,6 +48,7 @@ class FrontControllerPlugin
     /**
      * @param \Magento\Framework\App\FrontControllerInterface $subject
      * @param \Magento\Framework\App\RequestInterface $request
+     *
      * @return void
      */
     public function beforeDispatch(FrontControllerInterface $subject, $request)

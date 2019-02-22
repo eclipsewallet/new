@@ -21,7 +21,7 @@
 
 namespace Mageplaza\Osc\Setup;
 
-use Magento\Cms\Model\BlockFactory;
+use Magento\Config\Model\ResourceModel\Config;
 use Magento\Framework\App\Filesystem\DirectoryList;
 use Magento\Framework\DB\Ddl\Table;
 use Magento\Framework\Filesystem;
@@ -51,11 +51,6 @@ class UpgradeData implements UpgradeDataInterface
     protected $salesSetupFactory;
 
     /**
-     * @var BlockFactory
-     */
-    protected $blockFactory;
-
-    /**
      * @var Filesystem
      */
     protected $fileSystem;
@@ -71,7 +66,7 @@ class UpgradeData implements UpgradeDataInterface
     protected $oscHelper;
 
     /**
-     * @var \Magento\Config\Model\ResourceModel\Config
+     * @var Config
      */
     protected $resourceConfig;
 
@@ -82,34 +77,31 @@ class UpgradeData implements UpgradeDataInterface
 
     /**
      * UpgradeData constructor.
+     *
      * @param QuoteSetupFactory $quoteSetupFactory
      * @param SalesSetupFactory $salesSetupFactory
-     * @param BlockFactory $blockFactory
      * @param Filesystem $filesystem
      * @param LoggerInterface $logger
      * @param OscHelper $oscHelper
-     * @param \Magento\Config\Model\ResourceModel\Config $resourceConfig
+     * @param Config $resourceConfig
      * @param StoreRepository $storeRepository
      */
     public function __construct(
         QuoteSetupFactory $quoteSetupFactory,
         SalesSetupFactory $salesSetupFactory,
-        BlockFactory $blockFactory,
         Filesystem $filesystem,
         LoggerInterface $logger,
         OscHelper $oscHelper,
-        \Magento\Config\Model\ResourceModel\Config $resourceConfig,
+        Config $resourceConfig,
         StoreRepository $storeRepository
-    )
-    {
+    ) {
         $this->quoteSetupFactory = $quoteSetupFactory;
         $this->salesSetupFactory = $salesSetupFactory;
-        $this->blockFactory      = $blockFactory;
-        $this->fileSystem        = $filesystem;
-        $this->logger            = $logger;
-        $this->oscHelper         = $oscHelper;
-        $this->resourceConfig    = $resourceConfig;
-        $this->storeRepository   = $storeRepository;
+        $this->fileSystem = $filesystem;
+        $this->logger = $logger;
+        $this->oscHelper = $oscHelper;
+        $this->resourceConfig = $resourceConfig;
+        $this->storeRepository = $storeRepository;
     }
 
     /**
@@ -157,7 +149,7 @@ class UpgradeData implements UpgradeDataInterface
             $this->insertBlock($setup);
         }
         if (version_compare($context->getVersion(), '2.1.5') < 0) {
-            $this->updateSealBlock();
+            $this->updateSealBlock($setup);
             $this->copyDefaultSeal();
         }
 
@@ -166,15 +158,21 @@ class UpgradeData implements UpgradeDataInterface
 
     /**
      * @param ModuleDataSetupInterface $setup
+     *
      * @return $this
      */
     private function insertBlock($setup)
     {
-        $blocks       = $this->getDataBlock();
-        $blockFactory = $this->blockFactory->create();
+        $connection = $setup->getConnection();
+        $blocks = $this->getDataBlock();
         foreach ($blocks as $block) {
-            $setup->getConnection()->delete($setup->getTable('cms_block'), ['identifier = ?' => $block['identifier']]);
-            $blockFactory->load($block['identifier'], 'identifier')->setData($block)->save();
+            $connection->delete($setup->getTable('cms_block'), ['identifier = ?' => $block['identifier']]);
+            $connection->insert($setup->getTable('cms_block'), $block);
+
+            $select = $connection->select()->from($setup->getTable('cms_block'))->where('identifier = ?', $block['identifier']);
+            $newBlock = $connection->fetchRow($select);
+
+            $connection->insert($setup->getTable('cms_block_store'), ['block_id' => $newBlock['block_id'], 'store_id' => 0]);
         }
 
         return $this;
@@ -185,7 +183,8 @@ class UpgradeData implements UpgradeDataInterface
      */
     private function getDataBlock()
     {
-        $sealContent = '
+        $sealContent
+            = '
             <div class="osc-trust-seals" style="text-align: center;">
                 <div class="trust-seals-badges">
                     <a href="https://en.wikipedia.org/wiki/Trust_seal" target="_blank">
@@ -202,17 +201,18 @@ class UpgradeData implements UpgradeDataInterface
                 'title'      => __('One Step Checkout Seal Content'),
                 'identifier' => 'osc-seal-content',
                 'content'    => $sealContent,
-                'stores'     => [0],
                 'is_active'  => 1
             ]
         ];
     }
 
     /**
+     * @param ModuleDataSetupInterface $setup
+     *
      * @throws \Magento\Framework\Exception\LocalizedException
      * @throws \Zend_Serializer_Exception
      */
-    private function updateSealBlock()
+    private function updateSealBlock($setup)
     {
         $stores = $this->storeRepository->getList();
 
@@ -229,24 +229,30 @@ class UpgradeData implements UpgradeDataInterface
                 }
 
                 $this->saveConfig(
+                    $setup,
                     'osc/display_configuration/seal_block/is_enabled_seal_block',
                     1,
                     $store['store_id'] ? 'stores' : 'default',
-                    $store['store_id']);
+                    $store['store_id']
+                );
 
                 if (isset($blockId)) {
                     $this->saveConfig(
+                        $setup,
                         'osc/display_configuration/seal_block/seal_static_block',
                         $blockId,
                         $store['store_id'] ? 'stores' : 'default',
-                        $store['store_id']);
+                        $store['store_id']
+                    );
                 }
 
                 $this->saveConfig(
+                    $setup,
                     'osc/block_configuration/list',
                     $this->oscHelper->serialize($config),
                     $store['store_id'] ? 'stores' : 'default',
-                    $store['store_id']);
+                    $store['store_id']
+                );
             }
         }
     }
@@ -254,17 +260,19 @@ class UpgradeData implements UpgradeDataInterface
     /**
      * Save config value
      *
+     * @param ModuleDataSetupInterface $setup
      * @param string $path
      * @param string $value
      * @param string $scope
      * @param int $scopeId
+     *
      * @return $this
      * @throws \Magento\Framework\Exception\LocalizedException
      */
-    private function saveConfig($path, $value, $scope, $scopeId)
+    private function saveConfig($setup, $path, $value, $scope, $scopeId)
     {
-        $connection = $this->resourceConfig->getConnection();
-        $select     = $connection->select()->from(
+        $connection = $setup->getConnection();
+        $select = $connection->select()->from(
             $this->resourceConfig->getMainTable()
         )->where(
             'path = ?',
@@ -276,7 +284,7 @@ class UpgradeData implements UpgradeDataInterface
             'scope_id = ?',
             $scopeId
         );
-        $row        = $connection->fetchRow($select);
+        $row = $connection->fetchRow($select);
 
         $newData = ['scope' => $scope, 'scope_id' => $scopeId, 'path' => $path, 'value' => $value];
 
@@ -290,6 +298,9 @@ class UpgradeData implements UpgradeDataInterface
         return $this;
     }
 
+    /**
+     * Copy default seal images
+     */
     private function copyDefaultSeal()
     {
         try {
@@ -298,7 +309,7 @@ class UpgradeData implements UpgradeDataInterface
             $mediaDirectory->create('mageplaza/osc/seal/default');
             $targetPath = $mediaDirectory->getAbsolutePath('mageplaza/osc/seal/default/seal.png');
 
-            $DS      = DIRECTORY_SEPARATOR;
+            $DS = DIRECTORY_SEPARATOR;
             $oriPath = dirname(__DIR__) . $DS . 'view' . $DS . 'base' . $DS . 'web' . $DS . 'css' . $DS . 'images' . $DS . 'seal.png';
 
             $mediaDirectory->getDriver()->copy($oriPath, $targetPath);

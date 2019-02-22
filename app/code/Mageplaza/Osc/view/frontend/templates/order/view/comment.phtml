@@ -18,8 +18,8 @@
  * @copyright   Copyright (c) Mageplaza (https://www.mageplaza.com/)
  * @license     https://www.mageplaza.com/LICENSE.txt
  */
-?>
-<?php if ($commentHtml = $block->getOrderComment()): ?>
+
+if ($commentHtml = $block->getOrderComment()) : ?>
     <div class="box box-order-comment">
         <strong class="box-title">
             <span><?php echo __('Order Comment') ?></span>

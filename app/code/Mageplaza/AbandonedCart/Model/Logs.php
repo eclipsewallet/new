@@ -39,6 +39,7 @@ class Logs extends AbstractModel
 
     /**
      * Logs constructor.
+     *
      * @param \Magento\Framework\Model\Context $context
      * @param \Magento\Framework\Registry $registry
      * @param \Magento\Email\Model\TemplateFactory $templateFactory
@@ -47,8 +48,7 @@ class Logs extends AbstractModel
         Context $context,
         Registry $registry,
         TemplateFactory $templateFactory
-    )
-    {
+    ) {
         $this->templateFactory = $templateFactory;
 
         parent::__construct($context, $registry);
@@ -90,6 +90,7 @@ class Logs extends AbstractModel
 
     /**
      * @param $quoteId
+     *
      * @return $this
      */
     public function updateRecovery($quoteId)

@@ -67,6 +67,7 @@ class Email extends AbstractFieldArray
 
     /**
      * Email constructor.
+     *
      * @param \Magento\Backend\Block\Template\Context $context
      * @param \Magento\Framework\Data\Form\Element\Factory $elementFactory
      * @param \Magento\Email\Model\ResourceModel\Template\CollectionFactory $templatesFactory
@@ -83,13 +84,12 @@ class Email extends AbstractFieldArray
         Config $emailConfig,
         Yesno $yesno,
         array $data = []
-    )
-    {
-        $this->elementFactory   = $elementFactory;
-        $this->emailIdentity    = $emailIdentity;
+    ) {
+        $this->elementFactory = $elementFactory;
+        $this->emailIdentity = $emailIdentity;
         $this->templatesFactory = $templatesFactory;
-        $this->emailConfig      = $emailConfig;
-        $this->yesnoSource      = $yesno;
+        $this->emailConfig = $emailConfig;
+        $this->yesnoSource = $yesno;
 
         parent::__construct($context, $data);
     }
@@ -106,7 +106,7 @@ class Email extends AbstractFieldArray
         $this->addColumn('template', ['label' => __('Email template')]);
         $this->addColumn('coupon', ['label' => __('Has coupon')]);
 
-        $this->_addAfter       = false;
+        $this->_addAfter = false;
         $this->_addButtonLabel = __('More');
 
         parent::_construct();
@@ -116,6 +116,7 @@ class Email extends AbstractFieldArray
      * Render array cell for prototypeJS template
      *
      * @param string $columnName
+     *
      * @return mixed|string
      * @throws \Exception
      */
@@ -157,7 +158,7 @@ class Email extends AbstractFieldArray
      */
     private function getEmailTemplateOption()
     {
-        $collection   = $this->templatesFactory->create()->load();
+        $collection = $this->templatesFactory->create()->load();
         $emailOptions = $collection->toOptionArray();
 
         $templateIds = [

@@ -30,6 +30,7 @@ class OrderViewTabInfo
     /**
      * @param \Magento\Sales\Block\Adminhtml\Order\View\Tab\Info $subject
      * @param $result
+     *
      * @return string
      */
     public function afterGetGiftOptionsHtml(\Magento\Sales\Block\Adminhtml\Order\View\Tab\Info $subject, $result)

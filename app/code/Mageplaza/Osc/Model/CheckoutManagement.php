@@ -129,6 +129,7 @@ class CheckoutManagement implements CheckoutManagementInterface
 
     /**
      * CheckoutManagement constructor.
+     *
      * @param CartRepositoryInterface $cartRepository
      * @param OscDetailsFactory $oscDetailsFactory
      * @param ShippingMethodManagementInterface $shippingMethodManagement
@@ -161,23 +162,22 @@ class CheckoutManagement implements CheckoutManagementInterface
         TotalsCollector $totalsCollector,
         AddressInterface $addressInterface,
         ShippingMethodConverter $shippingMethodConverter
-    )
-    {
-        $this->cartRepository                = $cartRepository;
-        $this->oscDetailsFactory             = $oscDetailsFactory;
-        $this->shippingMethodManagement      = $shippingMethodManagement;
-        $this->paymentMethodManagement       = $paymentMethodManagement;
-        $this->cartTotalsRepository          = $cartTotalsRepository;
-        $this->_urlBuilder                   = $urlBuilder;
-        $this->checkoutSession               = $checkoutSession;
+    ) {
+        $this->cartRepository = $cartRepository;
+        $this->oscDetailsFactory = $oscDetailsFactory;
+        $this->shippingMethodManagement = $shippingMethodManagement;
+        $this->paymentMethodManagement = $paymentMethodManagement;
+        $this->cartTotalsRepository = $cartTotalsRepository;
+        $this->_urlBuilder = $urlBuilder;
+        $this->checkoutSession = $checkoutSession;
         $this->shippingInformationManagement = $shippingInformationManagement;
-        $this->oscHelper                     = $oscHelper;
-        $this->giftMessage                   = $giftMessage;
-        $this->giftMessageManagement         = $giftMessageManager;
-        $this->_customerSession              = $customerSession;
-        $this->_totalsCollector              = $totalsCollector;
-        $this->_addressInterface             = $addressInterface;
-        $this->_shippingMethodConverter      = $shippingMethodConverter;
+        $this->oscHelper = $oscHelper;
+        $this->giftMessage = $giftMessage;
+        $this->giftMessageManagement = $giftMessageManager;
+        $this->_customerSession = $customerSession;
+        $this->_totalsCollector = $totalsCollector;
+        $this->_addressInterface = $addressInterface;
+        $this->_shippingMethodConverter = $shippingMethodConverter;
     }
 
     /**
@@ -190,7 +190,7 @@ class CheckoutManagement implements CheckoutManagementInterface
         }
 
         /** @var \Magento\Quote\Model\Quote $quote */
-        $quote     = $this->cartRepository->getActive($cartId);
+        $quote = $this->cartRepository->getActive($cartId);
         $quoteItem = $quote->getItemById($itemId);
         if (!$quoteItem) {
             throw new NoSuchEntityException(
@@ -214,7 +214,7 @@ class CheckoutManagement implements CheckoutManagementInterface
     public function removeItemById($cartId, $itemId)
     {
         /** @var \Magento\Quote\Model\Quote $quote */
-        $quote     = $this->cartRepository->getActive($cartId);
+        $quote = $this->cartRepository->getActive($cartId);
         $quoteItem = $quote->getItemById($itemId);
         if (!$quoteItem) {
             throw new NoSuchEntityException(
@@ -264,6 +264,7 @@ class CheckoutManagement implements CheckoutManagementInterface
      * Response data to update osc block
      *
      * @param Quote $quote
+     *
      * @return \Mageplaza\Osc\Api\Data\OscDetailsInterface
      * @throws NoSuchEntityException
      */
@@ -293,8 +294,7 @@ class CheckoutManagement implements CheckoutManagementInterface
         ShippingInformationInterface $addressInformation,
         $customerAttributes = [],
         $additionInformation = []
-    )
-    {
+    ) {
         try {
             $additionInformation['customerAttributes'] = $customerAttributes;
             $this->checkoutSession->setOscData($additionInformation);
@@ -315,11 +315,12 @@ class CheckoutManagement implements CheckoutManagementInterface
 
     /**
      * @param \Magento\Quote\Model\Quote $quote
+     *
      * @return array
      */
     public function getShippingMethods(Quote $quote)
     {
-        $result          = [];
+        $result = [];
         $shippingAddress = $quote->getShippingAddress();
         $shippingAddress->addData($this->_addressInterface->getData());
         $shippingAddress->setCollectShippingRates(true);
@@ -337,6 +338,7 @@ class CheckoutManagement implements CheckoutManagementInterface
     /**
      * @param $cartId
      * @param $additionInformation
+     *
      * @throws CouldNotSaveException
      * @throws NoSuchEntityException
      */

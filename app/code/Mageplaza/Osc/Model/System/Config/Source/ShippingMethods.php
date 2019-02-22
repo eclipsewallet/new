@@ -50,9 +50,8 @@ class ShippingMethods implements ArrayInterface
         StoreConfig $scopeConfig,
         CarrierConfig $carrierConfig,
         array $data = []
-    )
-    {
-        $this->_scopeConfig   = $scopeConfig;
+    ) {
+        $this->_scopeConfig = $scopeConfig;
         $this->_carrierConfig = $carrierConfig;
     }
 
@@ -67,7 +66,7 @@ class ShippingMethods implements ArrayInterface
                 'value' => '',
             ],
         ];
-        $carrierMethodsList         = $this->_carrierConfig->getActiveCarriers();
+        $carrierMethodsList = $this->_carrierConfig->getActiveCarriers();
         ksort($carrierMethodsList);
         foreach ($carrierMethodsList as $carrierMethodCode => $carrierModel) {
             foreach ($carrierModel->getAllowedMethods() as $shippingMethodCode => $shippingMethodTitle) {
@@ -83,6 +82,7 @@ class ShippingMethods implements ArrayInterface
 
     /**
      * @param $shippingMethodCode
+     *
      * @return mixed
      */
     protected function _getShippingMethodTitle($shippingMethodCode)

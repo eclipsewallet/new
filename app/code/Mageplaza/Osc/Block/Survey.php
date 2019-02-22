@@ -43,6 +43,7 @@ class Survey extends Template
 
     /**
      * Survey constructor.
+     *
      * @param Template\Context $context
      * @param OscHelper $oscHelper
      * @param Session $checkoutSession
@@ -53,12 +54,12 @@ class Survey extends Template
         OscHelper $oscHelper,
         Session $checkoutSession,
         array $data = []
-    )
-    {
-        $this->_oscHelper       = $oscHelper;
+    ) {
+        $this->_oscHelper = $oscHelper;
         $this->_checkoutSession = $checkoutSession;
 
         parent::__construct($context, $data);
+
         $this->getLastOrderId();
     }
 

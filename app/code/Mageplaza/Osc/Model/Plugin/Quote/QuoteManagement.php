@@ -36,6 +36,7 @@ class QuoteManagement
 
     /**
      * QuoteManagement constructor.
+     *
      * @param \Mageplaza\Osc\Model\CheckoutRegister $checkoutRegister
      */
     public function __construct(\Mageplaza\Osc\Model\CheckoutRegister $checkoutRegister)
@@ -47,6 +48,7 @@ class QuoteManagement
      * @param \Magento\Quote\Model\QuoteManagement $subject
      * @param QuoteEntity $quote
      * @param array $orderData
+     *
      * @return array
      */
     public function beforeSubmit(\Magento\Quote\Model\QuoteManagement $subject, QuoteEntity $quote, $orderData = [])

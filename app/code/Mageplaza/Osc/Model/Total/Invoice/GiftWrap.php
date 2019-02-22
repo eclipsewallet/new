@@ -32,6 +32,7 @@ class GiftWrap extends AbstractTotal
 {
     /**
      * @param \Magento\Sales\Model\Order\Invoice $invoice
+     *
      * @return $this
      */
     public function collect(Invoice $invoice)
@@ -41,7 +42,7 @@ class GiftWrap extends AbstractTotal
             return $this;
         }
 
-        $totalGiftWrapAmount     = 0;
+        $totalGiftWrapAmount = 0;
         $totalBaseGiftWrapAmount = 0;
 
         if ($order->getGiftWrapType() == \Mageplaza\Osc\Model\System\Config\Source\Giftwrap::PER_ITEM) {
@@ -53,12 +54,12 @@ class GiftWrap extends AbstractTotal
                 $rate = $item->getQty() / $orderItem->getQtyOrdered();
 
                 $totalBaseGiftWrapAmount += $orderItem->getBaseOscGiftWrapAmount() * $rate;
-                $totalGiftWrapAmount     += $orderItem->getOscGiftWrapAmount() * $rate;
+                $totalGiftWrapAmount += $orderItem->getOscGiftWrapAmount() * $rate;
             }
         } else {
             $invoiceCollections = $order->getInvoiceCollection();
             if ($invoiceCollections->getSize() == 0) {
-                $totalGiftWrapAmount     = $order->getOscGiftWrapAmount();
+                $totalGiftWrapAmount = $order->getOscGiftWrapAmount();
                 $totalBaseGiftWrapAmount = $order->getBaseOscGiftWrapAmount();
             }
         }

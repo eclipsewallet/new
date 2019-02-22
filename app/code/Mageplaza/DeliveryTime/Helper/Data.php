@@ -33,6 +33,7 @@ class Data extends AbstractData
 
     /**
      * @param null $store
+     *
      * @return bool
      */
     public function isDisabled($store = null)
@@ -42,7 +43,9 @@ class Data extends AbstractData
 
     /**
      * Delivery Time
+     *
      * @param null $store
+     *
      * @return bool
      */
     public function isEnabledDeliveryTime($store = null)
@@ -52,7 +55,9 @@ class Data extends AbstractData
 
     /**
      * House Security Code
+     *
      * @param null $store
+     *
      * @return bool
      */
     public function isEnabledHouseSecurityCode($store = null)
@@ -64,6 +69,7 @@ class Data extends AbstractData
      * Delivery Comment
      *
      * @param null $store
+     *
      * @return mixed
      */
     public function isEnabledDeliveryComment($store = null)
@@ -73,7 +79,9 @@ class Data extends AbstractData
 
     /**
      * Date Format
+     *
      * @param null $store
+     *
      * @return string
      */
     public function getDateFormat($store = null)
@@ -85,7 +93,9 @@ class Data extends AbstractData
 
     /**
      * Days Off
+     *
      * @param null $store
+     *
      * @return bool|mixed
      */
     public function getDaysOff($store = null)
@@ -95,7 +105,9 @@ class Data extends AbstractData
 
     /**
      * Date Off
+     *
      * @param null $store
+     *
      * @return mixed
      * @throws \Zend_Serializer_Exception
      */
@@ -106,7 +118,9 @@ class Data extends AbstractData
 
     /**
      * Delivery Time
+     *
      * @param null $store
+     *
      * @return mixed
      * @throws \Zend_Serializer_Exception
      */

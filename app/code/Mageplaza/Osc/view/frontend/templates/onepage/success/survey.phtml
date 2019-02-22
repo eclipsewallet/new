@@ -18,8 +18,8 @@
  * @copyright   Copyright (c) Mageplaza (https://www.mageplaza.com/)
  * @license     https://www.mageplaza.com/LICENSE.txt
  */
-?>
-<?php if ($block->isEnableSurvey() && !empty($block->getSurveyQuestion()) && count($block->getAllSurveyAnswer()) > 0): ?>
+
+if ($block->isEnableSurvey() && !empty($block->getSurveyQuestion()) && count($block->getAllSurveyAnswer()) > 0) : ?>
     <div id="survey">
         <div id="survey-message"></div>
         <div class="survey-content">
@@ -43,12 +43,12 @@
         </div>
     </div>
     <script type="text/x-magento-init">
-		{
-			"#survey": {
-				"Mageplaza_Osc/js/view/survey":{
-					"url": "<?php echo $block->getUrl("onestepcheckout/survey/save/"); ?>"
-				}
-			}
-		}
+        {
+            "#survey": {
+                "Mageplaza_Osc/js/view/survey":{
+                    "url": "<?php echo $block->getUrl("onestepcheckout/survey/save/"); ?>"
+                }
+            }
+        }
     </script>
 <?php endif; ?>

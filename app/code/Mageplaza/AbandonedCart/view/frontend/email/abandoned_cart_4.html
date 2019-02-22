@@ -45,7 +45,8 @@
 
 {{template config_path="design/email/header_template"}}
 
-<p>{{trans "Have a nice day %name! I noticed that you have added several of great items but haven’t complete the checkout yet? So I want to make sure if below is your forgotten wishlist" name=$customer_name |raw}}</p>
+<p>{{trans "Have a nice day %name! I noticed that you have added several of great items but haven’t complete the
+    checkout yet? So I want to make sure if below is your forgotten wishlist" name=$customer_name |raw}}</p>
 
 {{layout handle="ace_email_quote_items" quote=$quote area="frontend"}}
 
@@ -59,12 +60,14 @@
 
 <p>
     {{depend coupon_code}}
-    {{trans "How about receiving the coupon <b>%couponCode</b> discount to enlighten your day with us?" couponCode=$coupon_code |raw}}<br>
+    {{trans "How about receiving the coupon <b>%couponCode</b> discount to enlighten your day with us?"
+    couponCode=$coupon_code |raw}}<br>
     {{/depend}}
     {{depend to_date}}
     {{trans "It’ll be available to %to" to=$to_date}}
     {{/depend}}
 </p>
-<p>{{trans "Thanks for thinking about %store_name‘s offers again. We hope to see your response soon." store_name=$store.getFrontendName()}}</p>
+<p>{{trans "Thanks for thinking about %store_name‘s offers again. We hope to see your response soon."
+    store_name=$store.getFrontendName()}}</p>
 
 {{template config_path="design/email/footer_template"}}

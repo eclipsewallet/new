@@ -36,20 +36,22 @@ class AgreementsValidator extends \Magento\CheckoutAgreements\Model\AgreementsVa
 
     /**
      * AgreementsValidator constructor.
+     *
      * @param OscHelper $oscHelper
      * @param null $list
      */
     public function __construct(
         OscHelper $oscHelper,
         $list = null
-    )
-    {
-        parent::__construct($list);
+    ) {
         $this->_oscHelper = $oscHelper;
+
+        parent::__construct($list);
     }
 
     /**
      * @param array $agreementIds
+     *
      * @return bool
      */
     public function isValid($agreementIds = [])

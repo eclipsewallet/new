@@ -26,12 +26,14 @@
 .clear, .clearer {
     clear: both;
 }
+
 .clearer {
     display: block;
     font-size: 0;
     height: 0;
     line-height: 0;
 }
+
 .field-wrapper .field ul .suggest-position {
     height: 40px;
     float: left;
@@ -40,6 +42,7 @@
     margin: 1%;
     padding: 0;
 }
+
 /*
 ------------------------------------------------------------------- */
 
@@ -48,6 +51,7 @@
 .column {
     width: 49%;
 }
+
 .field-wrapper .field {
     background: #fafafa;
     width: 100%;
@@ -55,17 +59,20 @@
     text-align: center;
     min-height: 50px;
 }
+
 .field-wrapper .field ul {
     display: inline-block;
     padding: 2% 0;
     width: 100%;
     min-height: 450px;
 }
+
 .field-wrapper .field ul li {
     /*float: left;*/
     margin: 1%;
     width: 48%;
 }
+
 .field-wrapper .field ul li .attribute-label {
     border: 1px solid #cccccc;
     text-align: center;
@@ -75,51 +82,67 @@
     height: 20px !important;
     box-sizing: content-box;
 }
+
 .available-wrapper .ui-resizable-handle {
     display: none !important;
 }
+
 .ui-resizable-s {
     display: none !important;
 }
+
 /*Billing field*/
 .sorted-wrapper .field ul li.wide {
     width: 98%;
 }
+
 /* Containment area */
 
 #containment {
     padding: 0 30px;
     margin-top: 20px;
 }
+
 .ui-resizable-border {
     border: 1px dotted #cccccc;
 }
+
 .field-title {
     font-weight: 600;
     background-position: 12px 12px;
     background-repeat: no-repeat;
     padding: 10px;
 }
+
 .field-title h2 {
     margin: 0 0 0 35px;
     color: #ffffff !important;
 }
+
 .field-title.available h2 {
     margin: 0 0 0 20px;
 }
+
 .field-title.sorted-title {
     background-image: url(images/billing_title.png);
 }
+
 .field-title.available {
     background-image: url(images/next.png);
 }
+
 .f-left, .left {
     float: left;
 }
+
 .f-right, .right {
     float: right;
 }
-ul.sortable-list {list-style: none !important;}
+
+ul.sortable-list {
+    list-style: none !important;
+}
+
 /** Additional Content*/
 .order-osc-additional .admin__page-section-item {
     float: left;

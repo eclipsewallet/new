@@ -87,6 +87,7 @@ class OscDetails extends AbstractExtensibleModel implements OscDetailsInterface
 
     /**
      * @param $url
+     *
      * @return $this
      */
     public function setRedirectUrl($url)

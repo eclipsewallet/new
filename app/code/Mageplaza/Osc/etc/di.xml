@@ -23,7 +23,6 @@
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
     <preference for="Mageplaza\Osc\Api\CheckoutManagementInterface" type="Mageplaza\Osc\Model\CheckoutManagement"/>
     <preference for="Mageplaza\Osc\Api\GuestCheckoutManagementInterface" type="Mageplaza\Osc\Model\GuestCheckoutManagement"/>
-
     <type name="Magento\Customer\Model\Address">
         <plugin name="setShouldIgnoreValidation" type="Mageplaza\Osc\Model\Plugin\Customer\Address"/>
     </type>
@@ -35,5 +34,11 @@
     </type>
     <type name="Magento\Checkout\Model\TotalsInformationManagement">
         <plugin name="saveShipingMethodOnCalculate" type="Mageplaza\Osc\Model\Plugin\Checkout\TotalsInformationManagement"/>
+    </type>
+    <type name="Magento\Quote\Model\ShippingMethodManagement">
+        <plugin name="saveCountryId" type="Mageplaza\Osc\Model\Plugin\ShippingMethodManagement"/>
+    </type>
+    <type name="Magento\Quote\Model\Quote">
+        <plugin name="getItemById_Osc" type="Mageplaza\Osc\Model\Plugin\Quote"/>
     </type>
 </config>

@@ -1,3 +1,5 @@
+<?xml version="1.0"?>
+<!--
 /**
  * Mageplaza
  *
@@ -13,16 +15,15 @@
  * version in the future.
  *
  * @category    Mageplaza
- * @package     Mageplaza_Osc
+ * @package     Mageplaza_GeoIP
  * @copyright   Copyright (c) Mageplaza (https://www.mageplaza.com/)
  * @license     https://www.mageplaza.com/LICENSE.txt
  */
-
-.admin__menu #menu-magento-backend-stores .item-osc.parent.level-1 > strong:before {
-  //content: @icon-mageplaza__content;
-  content: '\e900';
-  //font-family: @icons-mageplaza__font-name;
-  font-family: 'Mageplaza Icons';
-  font-size: 1.5rem;
-  margin-right: .8rem;
-}
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:App/etc/routes.xsd">
+    <router id="admin">
+        <route id="mpgeoip" frontName="mpgeoip">
+            <module name="Mageplaza_GeoIP"/>
+        </route>
+    </router>
+</config>

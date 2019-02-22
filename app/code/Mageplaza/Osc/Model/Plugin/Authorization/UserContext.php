@@ -43,21 +43,22 @@ class UserContext
 
     /**
      * UserContext constructor.
+     *
      * @param OscHelper $oscHelper
      * @param Session $checkoutSession
      */
     public function __construct(
         OscHelper $oscHelper,
         Session $checkoutSession
-    )
-    {
-        $this->_oscHelper       = $oscHelper;
+    ) {
+        $this->_oscHelper = $oscHelper;
         $this->_checkoutSession = $checkoutSession;
     }
 
     /**
      * @param UserContextInterface $userContext
      * @param $result
+     *
      * @return int
      */
     public function afterGetUserType(UserContextInterface $userContext, $result)
@@ -72,6 +73,7 @@ class UserContext
     /**
      * @param UserContextInterface $userContext
      * @param $result
+     *
      * @return int
      */
     public function afterGetUserId(UserContextInterface $userContext, $result)

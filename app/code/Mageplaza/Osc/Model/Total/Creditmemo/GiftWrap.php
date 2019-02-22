@@ -32,6 +32,7 @@ class GiftWrap extends AbstractTotal
 {
     /**
      * @param Creditmemo $creditmemo
+     *
      * @return $this
      */
     public function collect(Creditmemo $creditmemo)
@@ -41,7 +42,7 @@ class GiftWrap extends AbstractTotal
             return $this;
         }
 
-        $totalGiftWrapAmount     = 0;
+        $totalGiftWrapAmount = 0;
         $totalBaseGiftWrapAmount = 0;
         if ($order->getGiftWrapType() == \Mageplaza\Osc\Model\System\Config\Source\Giftwrap::PER_ITEM) {
             foreach ($creditmemo->getAllItems() as $item) {
@@ -52,10 +53,10 @@ class GiftWrap extends AbstractTotal
                 $rate = $item->getQty() / $orderItem->getQtyOrdered();
 
                 $totalBaseGiftWrapAmount += $orderItem->getBaseOscGiftWrapAmount() * $rate;
-                $totalGiftWrapAmount     += $orderItem->getOscGiftWrapAmount() * $rate;
+                $totalGiftWrapAmount += $orderItem->getOscGiftWrapAmount() * $rate;
             }
         } else if ($this->isLast($creditmemo)) {
-            $totalGiftWrapAmount     = $order->getOscGiftWrapAmount();
+            $totalGiftWrapAmount = $order->getOscGiftWrapAmount();
             $totalBaseGiftWrapAmount = $order->getBaseOscGiftWrapAmount();
         }
 
@@ -72,6 +73,7 @@ class GiftWrap extends AbstractTotal
      * check credit memo is last or not
      *
      * @param Creditmemo $creditmemo
+     *
      * @return boolean
      */
     public function isLast($creditmemo)

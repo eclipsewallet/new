@@ -21,19 +21,26 @@
 
 namespace Mageplaza\Osc\Observer;
 
+use Magento\Catalog\Model\ProductFactory;
 use Magento\Checkout\Model\Session;
 use Magento\Customer\Api\AccountManagementInterface;
 use Magento\Customer\Model\AccountManagement;
 use Magento\Customer\Model\Session as CustomerSession;
 use Magento\Customer\Model\Url;
-use Magento\Framework\App\ObjectManager;
+use Magento\Downloadable\Model\Link\Purchased\Item;
+use Magento\Downloadable\Model\Link\Purchased\ItemFactory;
+use Magento\Downloadable\Model\Link\PurchasedFactory;
+use Magento\Downloadable\Model\Product\Type;
+use Magento\Downloadable\Model\ResourceModel\Link\Purchased\Item\CollectionFactory;
+use Magento\Framework\App\Config\ScopeConfigInterface;
+use Magento\Framework\DataObject\Copy;
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
 use Magento\Framework\Message\ManagerInterface;
-use Magento\Framework\Stdlib\Cookie\CookieMetadataFactory;
-use Magento\Framework\Stdlib\Cookie\PhpCookieManager;
 use Magento\Newsletter\Model\SubscriberFactory;
+use Magento\Sales\Model\Order;
 use Magento\Sales\Model\Order\CustomerManagement;
+use Magento\Store\Model\ScopeInterface;
 
 /**
  * Class QuoteSubmitSuccess
@@ -77,13 +84,53 @@ class QuoteSubmitSuccess implements ObserverInterface
     protected $customerManagement;
 
     /**
+     * Core store config
+     *
+     * @var \Magento\Framework\App\Config\ScopeConfigInterface
+     */
+    protected $_scopeConfig;
+
+    /**
+     * @var \Magento\Downloadable\Model\Link\PurchasedFactory
+     */
+    protected $_purchasedFactory;
+
+    /**
+     * @var \Magento\Catalog\Model\ProductFactory
+     */
+    protected $_productFactory;
+
+    /**
+     * @var \Magento\Downloadable\Model\Link\Purchased\ItemFactory
+     */
+    protected $_itemFactory;
+
+    /**
+     * @var \Magento\Framework\DataObject\Copy
+     */
+    protected $_objectCopyService;
+
+    /**
+     * @var \Magento\Downloadable\Model\ResourceModel\Link\Purchased\Item\CollectionFactory
+     */
+    protected $_itemsFactory;
+
+    /**
+     * QuoteSubmitSuccess constructor.
+     *
      * @param \Magento\Checkout\Model\Session $checkoutSession
      * @param \Magento\Customer\Api\AccountManagementInterface $accountManagement
      * @param \Magento\Customer\Model\Url $customerUrl
      * @param \Magento\Framework\Message\ManagerInterface $messageManager
      * @param \Magento\Customer\Model\Session $customerSession
      * @param \Magento\Newsletter\Model\SubscriberFactory $subscriberFactory
-     * @param CustomerManagement $customerManagement
+     * @param \Magento\Sales\Model\Order\CustomerManagement $customerManagement
+     * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
+     * @param \Magento\Downloadable\Model\Link\PurchasedFactory $purchasedFactory
+     * @param \Magento\Catalog\Model\ProductFactory $productFactory
+     * @param \Magento\Downloadable\Model\Link\Purchased\ItemFactory $itemFactory
+     * @param \Magento\Downloadable\Model\ResourceModel\Link\Purchased\Item\CollectionFactory $itemsFactory
+     * @param \Magento\Framework\DataObject\Copy $objectCopyService
      */
     public function __construct(
         Session $checkoutSession,
@@ -92,20 +139,32 @@ class QuoteSubmitSuccess implements ObserverInterface
         ManagerInterface $messageManager,
         CustomerSession $customerSession,
         SubscriberFactory $subscriberFactory,
-        CustomerManagement $customerManagement
-    )
-    {
-        $this->checkoutSession    = $checkoutSession;
-        $this->accountManagement  = $accountManagement;
-        $this->_customerUrl       = $customerUrl;
-        $this->messageManager     = $messageManager;
-        $this->_customerSession   = $customerSession;
-        $this->subscriberFactory  = $subscriberFactory;
+        CustomerManagement $customerManagement,
+        ScopeConfigInterface $scopeConfig,
+        PurchasedFactory $purchasedFactory,
+        ProductFactory $productFactory,
+        ItemFactory $itemFactory,
+        CollectionFactory $itemsFactory,
+        Copy $objectCopyService
+    ) {
+        $this->checkoutSession = $checkoutSession;
+        $this->accountManagement = $accountManagement;
+        $this->_customerUrl = $customerUrl;
+        $this->messageManager = $messageManager;
+        $this->_customerSession = $customerSession;
+        $this->subscriberFactory = $subscriberFactory;
         $this->customerManagement = $customerManagement;
+        $this->_scopeConfig = $scopeConfig;
+        $this->_purchasedFactory = $purchasedFactory;
+        $this->_productFactory = $productFactory;
+        $this->_itemFactory = $itemFactory;
+        $this->_itemsFactory = $itemsFactory;
+        $this->_objectCopyService = $objectCopyService;
     }
 
     /**
      * @param Observer $observer
+     *
      * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function execute(Observer $observer)
@@ -116,9 +175,15 @@ class QuoteSubmitSuccess implements ObserverInterface
 
         $oscData = $this->checkoutSession->getOscData();
         if (isset($oscData['register']) && $oscData['register']
-            && isset($oscData['password']) && $oscData['password']
+            && isset($oscData['password'])
+            && $oscData['password']
         ) {
-            $customer = $this->customerManagement->create($order->getId());
+            if ($this->checkoutSession->getIsCreatedAccountPaypalExpress()) {
+                $customer = $quote->getCustomer();
+                $this->checkoutSession->unsIsCreatedAccountPaypalExpress();
+            } else {
+                $customer = $this->customerManagement->create($order->getId());
+            }
 
             /* Set customer Id for address */
             if ($customer->getId()) {
@@ -128,9 +193,9 @@ class QuoteSubmitSuccess implements ObserverInterface
                 }
             }
 
-            if ($customer->getId() &&
-                $this->accountManagement->getConfirmationStatus($customer->getId())
-                === AccountManagement::ACCOUNT_CONFIRMATION_REQUIRED) {
+            if ($customer->getId()
+                && $this->accountManagement->getConfirmationStatus($customer->getId())
+                   === AccountManagement::ACCOUNT_CONFIRMATION_REQUIRED) {
                 $url = $this->_customerUrl->getEmailConfirmationUrl($customer->getEmail());
                 $this->messageManager->addSuccessMessage(
                 // @codingStandardsIgnoreStart
@@ -143,13 +208,26 @@ class QuoteSubmitSuccess implements ObserverInterface
             } else {
                 $this->_customerSession->loginById($customer->getId());
             }
+
+            $isDownloadable = false;
+            foreach ($quote->getAllItems() as $item) {
+                if ($item->getProductType() == Type::TYPE_DOWNLOADABLE) {
+                    $isDownloadable = true;
+                    break;
+                }
+            }
+            if ($isDownloadable) {
+                foreach ($order->getAllItems() as $item) {
+                    $this->saveDownloadableOrderItem($item, $order);
+                }
+            }
         }
 
         if (isset($oscData['is_subscribed']) && $oscData['is_subscribed']) {
             if (!$this->_customerSession->isLoggedIn()) {
                 $subscribedEmail = $quote->getBillingAddress()->getEmail();
             } else {
-                $customer        = $this->_customerSession->getCustomer();
+                $customer = $this->_customerSession->getCustomer();
                 $subscribedEmail = $customer->getEmail();
             }
 
@@ -165,22 +243,142 @@ class QuoteSubmitSuccess implements ObserverInterface
     }
 
     /**
-     * Retrieve cookie manager
+     * @param $orderItem
+     * @param $order
      *
-     * @return \Magento\Framework\Stdlib\Cookie\PhpCookieManager
+     * @return $this
+     * @throws \Exception
      */
-    private function getCookieManager()
+    public function saveDownloadableOrderItem($orderItem, $order)
     {
-        return ObjectManager::getInstance()->get(PhpCookieManager::class);
+        if (!$orderItem->getId()) {
+            //order not saved in the database
+            return $this;
+        }
+        if ($orderItem->getProductType() != Type::TYPE_DOWNLOADABLE) {
+            return $this;
+        }
+        $product = $orderItem->getProduct();
+        $purchasedLink = $this->_createPurchasedModel()->load($orderItem->getId(), 'order_item_id');
+        if ($purchasedLink->getId()) {
+            return $this;
+        }
+        if (!$product) {
+            $product = $this->_createProductModel()->setStoreId(
+                $orderItem->getOrder()->getStoreId()
+            )->load(
+                $orderItem->getProductId()
+            );
+        }
+
+        if ($product->getTypeId() == Type::TYPE_DOWNLOADABLE) {
+            $links = $product->getTypeInstance()->getLinks($product);
+            if ($linkIds = $orderItem->getProductOptionByCode('links')) {
+                $linkPurchased = $this->_createPurchasedModel();
+                $linkPurchased->setCustomerId(15);
+                $this->_objectCopyService->copyFieldsetToTarget(
+                    \downloadable_sales_copy_order::class,
+                    'to_downloadable',
+                    $orderItem->getOrder(),
+                    $linkPurchased
+                );
+                $this->_objectCopyService->copyFieldsetToTarget(
+                    \downloadable_sales_copy_order_item::class,
+                    'to_downloadable',
+                    $orderItem,
+                    $linkPurchased
+                );
+                $linkSectionTitle = $product->getLinksTitle() ? $product
+                    ->getLinksTitle() : $this
+                    ->_scopeConfig
+                    ->getValue(
+                        \Magento\Downloadable\Model\Link::XML_PATH_LINKS_TITLE,
+                        ScopeInterface::SCOPE_STORE
+                    );
+                $linkPurchased->setLinkSectionTitle($linkSectionTitle)->save();
+                foreach ($linkIds as $linkId) {
+                    if (isset($links[$linkId])) {
+                        $linkPurchasedItem = $this->_createPurchasedItemModel()->setPurchasedId(
+                            $linkPurchased->getId()
+                        )->setOrderItemId(
+                            $orderItem->getId()
+                        );
+
+                        $this->_objectCopyService->copyFieldsetToTarget(
+                            \downloadable_sales_copy_link::class,
+                            'to_purchased',
+                            $links[$linkId],
+                            $linkPurchasedItem
+                        );
+                        $linkHash = strtr(
+                            base64_encode(
+                                microtime() . $linkPurchased->getId() . $orderItem->getId() . $product->getId()
+                            ),
+                            '+/=',
+                            '-_,'
+                        );
+                        $numberOfDownloads = $links[$linkId]->getNumberOfDownloads() * $orderItem->getQtyOrdered();
+
+                        switch ($order->getState()) {
+                            case Order::STATE_PENDING_PAYMENT:
+                                $status = Item::LINK_STATUS_PENDING_PAYMENT;
+                                break;
+                            case Order::STATE_PAYMENT_REVIEW:
+                                $status = Item::LINK_STATUS_PAYMENT_REVIEW;
+                                break;
+                            case Order::STATE_COMPLETE:
+                                $status = Item::LINK_STATUS_AVAILABLE;
+                                break;
+                            default:
+                                $status = Item::LINK_STATUS_PENDING;
+                        }
+
+                        $linkPurchasedItem->setLinkHash(
+                            $linkHash
+                        )->setNumberOfDownloadsBought(
+                            $numberOfDownloads
+                        )->setStatus(
+                            $status
+                        )->setCreatedAt(
+                            $orderItem->getCreatedAt()
+                        )->setUpdatedAt(
+                            $orderItem->getUpdatedAt()
+                        )->save();
+                    }
+                }
+            }
+        }
     }
 
     /**
-     * Retrieve cookie metadata factory
-     *
-     * @return \Magento\Framework\Stdlib\Cookie\CookieMetadataFactory
+     * @return \Magento\Downloadable\Model\Link\Purchased
      */
-    private function getCookieMetadataFactory()
+    protected function _createPurchasedModel()
     {
-        return ObjectManager::getInstance()->get(CookieMetadataFactory::class);
+        return $this->_purchasedFactory->create();
+    }
+
+    /**
+     * @return \Magento\Catalog\Model\Product
+     */
+    protected function _createProductModel()
+    {
+        return $this->_productFactory->create();
+    }
+
+    /**
+     * @return \Magento\Downloadable\Model\Link\Purchased\Item
+     */
+    protected function _createPurchasedItemModel()
+    {
+        return $this->_itemFactory->create();
+    }
+
+    /**
+     * @return \Magento\Downloadable\Model\ResourceModel\Link\Purchased\Item\Collection
+     */
+    protected function _createItemsCollection()
+    {
+        return $this->_itemsFactory->create();
     }
 }

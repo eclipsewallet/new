@@ -24,4 +24,7 @@
     <type name="Magento\Framework\App\FrontControllerInterface">
         <plugin name="mageplaza_abandonedcart-front-controller-plugin" type="Mageplaza\AbandonedCart\Plugin\App\FrontControllerPlugin"/>
     </type>
+    <type name="Magento\Framework\Data\Form\FormKey\Validator">
+        <plugin name="mageplaza_abadonedcart-validator-plugin" type="Mageplaza\AbandonedCart\Plugin\Data\Form\FormKey\ValidatorPlugin"/>
+    </type>
 </config>

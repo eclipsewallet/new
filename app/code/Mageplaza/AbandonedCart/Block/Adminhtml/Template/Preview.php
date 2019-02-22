@@ -45,8 +45,7 @@ class Preview extends Widget
         Context $context,
         LogsFactory $logsFactory,
         array $data = []
-    )
-    {
+    ) {
         parent::__construct($context, $data);
 
         $this->logsFactory = $logsFactory;

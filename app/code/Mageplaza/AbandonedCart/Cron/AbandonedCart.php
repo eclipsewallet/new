@@ -42,15 +42,15 @@ class AbandonedCart
 
     /**
      * AbandonedCart constructor.
+     *
      * @param \Psr\Log\LoggerInterface $logger
      * @param \Mageplaza\AbandonedCart\Model\AbandonedCart $abandonedCartModel
      */
     public function __construct(
         LoggerInterface $logger,
         AbandonedCartModel $abandonedCartModel
-    )
-    {
-        $this->logger             = $logger;
+    ) {
+        $this->logger = $logger;
         $this->abandonedCartModel = $abandonedCartModel;
     }
 

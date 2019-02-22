@@ -54,9 +54,8 @@ class DeliveryInformation extends Template
         Registry $registry,
         MpDtHelper $mpDtHelper,
         array $data = []
-    )
-    {
-        $this->registry   = $registry;
+    ) {
+        $this->registry = $registry;
         $this->mpDtHelper = $mpDtHelper;
 
         parent::__construct($context, $data);

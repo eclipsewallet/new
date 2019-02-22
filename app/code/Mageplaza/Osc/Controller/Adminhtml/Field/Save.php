@@ -55,12 +55,11 @@ class Save extends Action
         Context $context,
         Config $resourceConfig,
         ReinitableConfigInterface $config
-    )
-    {
-        parent::__construct($context);
-
+    ) {
         $this->resourceConfig = $resourceConfig;
-        $this->_appConfig     = $config;
+        $this->_appConfig = $config;
+
+        parent::__construct($context);
     }
 
     /**

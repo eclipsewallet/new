@@ -51,6 +51,7 @@ class StaticBlock extends Template
 
     /**
      * StaticBlock constructor.
+     *
      * @param Context $context
      * @param OscHelper $oscHelper
      * @param CheckoutSession $checkoutSession
@@ -63,13 +64,12 @@ class StaticBlock extends Template
         CheckoutSession $checkoutSession,
         BlockRepositoryInterface $blockRepository,
         array $data = []
-    )
-    {
-        parent::__construct($context, $data);
-
-        $this->_oscHelper      = $oscHelper;
+    ) {
+        $this->_oscHelper = $oscHelper;
         $this->checkoutSession = $checkoutSession;
         $this->blockRepository = $blockRepository;
+
+        parent::__construct($context, $data);
     }
 
     /**

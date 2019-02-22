@@ -34,9 +34,7 @@ class Data extends AbstractData
     const CONFIG_PATH_DISPLAY   = 'display_configuration';
     const CONFIG_PATH_DESIGN    = 'design_configuration';
     const CONFIG_PATH_BLOCK     = 'block_configuration';
-    const CONFIG_PATH_GEOIP     = 'geoip_configuration';
     const SORTED_FIELD_POSITION = 'osc/field/position';
-    const GEO_IP_IS_ENABLED     = 'osc/geoip_configuration/is_enable_geoip';
 
     /**
      * @var bool Osc Method Register
@@ -61,27 +59,16 @@ class Data extends AbstractData
     }
 
     /**
-     * @param string $field
-     * @param null $storeId
-     * @return mixed
-     */
-    public function getModuleConfig($field = '', $storeId = null)
-    {
-        $field = ($field !== '') ? '/' . $field : '';
-
-        return $this->getConfigValue(static::CONFIG_MODULE_PATH . $field, $storeId);
-    }
-
-    /**
      * Check the current page is osc
      *
      * @param null $store
+     *
      * @return bool
      */
     public function isOscPage($store = null)
     {
         $moduleEnable = $this->isEnabled($store);
-        $isOscModule  = ($this->_request->getRouteName() == 'onestepcheckout');
+        $isOscModule = ($this->_request->getRouteName() == 'onestepcheckout');
 
         return $moduleEnable && $isOscModule;
     }
@@ -106,6 +93,7 @@ class Data extends AbstractData
      * One step checkout page title
      *
      * @param null $store
+     *
      * @return mixed
      */
     public function getCheckoutTitle($store = null)
@@ -118,6 +106,7 @@ class Data extends AbstractData
      * One step checkout page description
      *
      * @param null $store
+     *
      * @return mixed
      */
     public function getCheckoutDescription($store = null)
@@ -129,6 +118,7 @@ class Data extends AbstractData
      * Get magento default country
      *
      * @param null $store
+     *
      * @return mixed
      */
     public function getDefaultCountryId($store = null)
@@ -140,6 +130,7 @@ class Data extends AbstractData
      * Default shipping method
      *
      * @param null $store
+     *
      * @return mixed
      */
     public function getDefaultShippingMethod($store = null)
@@ -151,6 +142,7 @@ class Data extends AbstractData
      * Default payment method
      *
      * @param null $store
+     *
      * @return mixed
      */
     public function getDefaultPaymentMethod($store = null)
@@ -163,22 +155,21 @@ class Data extends AbstractData
      *
      * @param $quote
      * @param null $store
+     *
      * @return bool
      */
     public function getAllowGuestCheckout($quote, $store = null)
     {
         $allowGuestCheckout = boolval($this->getConfigGeneral('allow_guest_checkout', $store));
 
-        if ($this->scopeConfig->isSetFlag(
+        $flag = $this->scopeConfig->isSetFlag(
             \Magento\Downloadable\Observer\IsAllowedGuestCheckoutObserver::XML_PATH_DISABLE_GUEST_CHECKOUT,
             \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
             $store
-        )
-        ) {
+        );
+        if ($flag) {
             foreach ($quote->getAllItems() as $item) {
-                if (($product = $item->getProduct())
-                    && $product->getTypeId() == \Magento\Downloadable\Model\Product\Type::TYPE_DOWNLOADABLE
-                ) {
+                if (($product = $item->getProduct()) && $product->getTypeId() == \Magento\Downloadable\Model\Product\Type::TYPE_DOWNLOADABLE) {
                     return false;
                 }
             }
@@ -189,7 +180,9 @@ class Data extends AbstractData
 
     /**
      * Redirect To OneStepCheckout
+     *
      * @param null $store
+     *
      * @return bool
      */
     public function isRedirectToOneStepCheckout($store = null)
@@ -201,6 +194,7 @@ class Data extends AbstractData
      * Show billing address
      *
      * @param null $store
+     *
      * @return mixed
      */
     public function getShowBillingAddress($store = null)
@@ -212,6 +206,7 @@ class Data extends AbstractData
      * Google api key
      *
      * @param null $store
+     *
      * @return mixed
      */
     public function getGoogleApiKey($store = null)
@@ -223,6 +218,7 @@ class Data extends AbstractData
      * Google restric country
      *
      * @param null $store
+     *
      * @return mixed
      */
     public function getGoogleSpecificCountry($store = null)
@@ -244,7 +240,9 @@ class Data extends AbstractData
 
     /**
      * Get auto detected address
+     *
      * @param null $store
+     *
      * @return null|'google'|'pca'
      */
     public function getAutoDetectedAddress($store = null)
@@ -256,6 +254,7 @@ class Data extends AbstractData
      * Login link will be hide if this function return true
      *
      * @param null $store
+     *
      * @return bool
      */
     public function isDisableAuthentication($store = null)
@@ -267,6 +266,7 @@ class Data extends AbstractData
      *
      * @param $code
      * @param null $store
+     *
      * @return mixed
      */
     public function getDisplayConfig($code = '', $store = null)
@@ -280,6 +280,7 @@ class Data extends AbstractData
      * Item detail will be hided if this function return 'true'
      *
      * @param null $store
+     *
      * @return bool
      */
     public function isDisabledReviewCartSection($store = null)
@@ -291,6 +292,7 @@ class Data extends AbstractData
      * Item list toggle will be shown if this function return 'true'
      *
      * @param null $store
+     *
      * @return bool
      */
     public function isShowItemListToggle($store = null)
@@ -302,6 +304,7 @@ class Data extends AbstractData
      * Product image will be hided if this function return 'true'
      *
      * @param null $store
+     *
      * @return bool
      */
     public function isHideProductImage($store = null)
@@ -313,6 +316,7 @@ class Data extends AbstractData
      * Coupon will be hided if this function return 'true'
      *
      * @param null $store
+     *
      * @return mixed
      */
     public function disabledPaymentCoupon($store = null)
@@ -324,6 +328,7 @@ class Data extends AbstractData
      * Coupon will be hided if this function return 'true'
      *
      * @param null $store
+     *
      * @return mixed
      */
     public function disabledReviewCoupon($store = null)
@@ -335,6 +340,7 @@ class Data extends AbstractData
      * Comment will be hided if this function return 'true'
      *
      * @param null $store
+     *
      * @return mixed
      */
     public function isDisabledComment($store = null)
@@ -344,6 +350,7 @@ class Data extends AbstractData
 
     /**
      * @param null $store
+     *
      * @return mixed
      */
     public function getShowTOC($store = null)
@@ -353,6 +360,7 @@ class Data extends AbstractData
 
     /**
      * @param null $store
+     *
      * @return mixed
      */
     public function isEnabledTOC($store = null)
@@ -364,6 +372,7 @@ class Data extends AbstractData
      * Term and condition checkbox in payment block will be hided if this function return 'true'
      *
      * @param null $store
+     *
      * @return mixed
      */
     public function disabledPaymentTOC($store = null)
@@ -375,6 +384,7 @@ class Data extends AbstractData
      * Term and condition checkbox in review will be hided if this function return 'true'
      *
      * @param null $store
+     *
      * @return mixed
      */
     public function disabledReviewTOC($store = null)
@@ -386,6 +396,7 @@ class Data extends AbstractData
      * GiftMessage will be hided if this function return 'true'
      *
      * @param null $store
+     *
      * @return mixed
      */
     public function isDisabledGiftMessage($store = null)
@@ -395,7 +406,9 @@ class Data extends AbstractData
 
     /**
      * Gift message items
+     *
      * @param null $store
+     *
      * @return bool
      */
     public function isEnableGiftMessageItems($store = null)
@@ -407,12 +420,13 @@ class Data extends AbstractData
      * Gift wrap block will be hided if this function return 'true'
      *
      * @param null $store
+     *
      * @return mixed
      */
     public function isDisabledGiftWrap($store = null)
     {
         $giftWrapEnabled = $this->getDisplayConfig('is_enabled_gift_wrap', $store);
-        $giftWrapAmount  = $this->getOrderGiftwrapAmount();
+        $giftWrapAmount = $this->getOrderGiftwrapAmount();
 
         return !$giftWrapEnabled || ($giftWrapAmount < 0);
     }
@@ -421,6 +435,7 @@ class Data extends AbstractData
      * Gift wrap amount
      *
      * @param null $store
+     *
      * @return mixed
      */
     public function getOrderGiftWrapAmount($store = null)
@@ -443,6 +458,7 @@ class Data extends AbstractData
      * Gift wrap type
      *
      * @param null $store
+     *
      * @return mixed
      */
     public function getGiftWrapType($store = null)
@@ -465,6 +481,7 @@ class Data extends AbstractData
      * Newsleter block will be hided if this function return 'true'
      *
      * @param null $store
+     *
      * @return mixed
      */
     public function isDisabledNewsletter($store = null)
@@ -476,6 +493,7 @@ class Data extends AbstractData
      * Is newsleter subcribed default
      *
      * @param null $store
+     *
      * @return mixed
      */
     public function isSubscribedByDefault($store = null)
@@ -485,7 +503,9 @@ class Data extends AbstractData
 
     /**
      * Social Login On Checkout Page
+     *
      * @param null $store
+     *
      * @return bool
      */
     public function isDisabledSocialLoginOnCheckout($store = null)
@@ -495,7 +515,9 @@ class Data extends AbstractData
 
     /**
      * Survey
+     *
      * @param null $store
+     *
      * @return bool
      */
     public function isDisableSurvey($store = null)
@@ -505,7 +527,9 @@ class Data extends AbstractData
 
     /**
      * Survey Question
+     *
      * @param null $store
+     *
      * @return mixed
      */
     public function getSurveyQuestion($store = null)
@@ -515,6 +539,7 @@ class Data extends AbstractData
 
     /**
      * @param null $stores
+     *
      * @return mixed
      * @throws \Zend_Serializer_Exception
      */
@@ -525,7 +550,9 @@ class Data extends AbstractData
 
     /**
      * Allow Customer Add Other Option
+     *
      * @param null $stores
+     *
      * @return mixed
      */
     public function isAllowCustomerAddOtherOption($stores = null)
@@ -535,6 +562,7 @@ class Data extends AbstractData
 
     /**
      * @param null $stores
+     *
      * @return mixed
      */
     public function isEnabledSealBlock($stores = null)
@@ -544,6 +572,7 @@ class Data extends AbstractData
 
     /**
      * @param null $stores
+     *
      * @return mixed
      */
     public function getSealStaticBlock($stores = null)
@@ -553,6 +582,7 @@ class Data extends AbstractData
 
     /**
      * @param null $stores
+     *
      * @return mixed
      */
     public function getSealImage($stores = null)
@@ -562,6 +592,7 @@ class Data extends AbstractData
 
     /**
      * @param null $stores
+     *
      * @return mixed
      */
     public function getSealDescription($stores = null)
@@ -573,6 +604,7 @@ class Data extends AbstractData
      * Get layout tempate: 1 or 2 or 3 columns
      *
      * @param null $store
+     *
      * @return string
      */
     public function getLayoutTemplate($store = null)
@@ -584,6 +616,7 @@ class Data extends AbstractData
      *
      * @param string $code
      * @param null $store
+     *
      * @return mixed
      */
     public function getDesignConfig($code = '', $store = null)
@@ -605,6 +638,7 @@ class Data extends AbstractData
      *
      * @param string $code
      * @param null $store
+     *
      * @return mixed
      */
     public function getStaticBlockConfig($code = '', $store = null)
@@ -616,6 +650,7 @@ class Data extends AbstractData
 
     /**
      * @param null $store
+     *
      * @return bool
      */
     public function isEnableStaticBlock($store = null)
@@ -625,31 +660,13 @@ class Data extends AbstractData
 
     /**
      * @param null $stores
+     *
      * @return mixed
      * @throws \Zend_Serializer_Exception
      */
     public function getStaticBlockList($stores = null)
     {
         return $this->unserialize($this->getStaticBlockConfig('list', $stores));
-    }
-
-    /***************************** GeoIP Configuration *****************************
-     *
-     * @param null $store
-     * @return mixed
-     */
-    public function isEnableGeoIP($store = null)
-    {
-        return boolval($this->getModuleConfig(self::CONFIG_PATH_GEOIP . '/is_enable_geoip', $store));
-    }
-
-    /**
-     * @param null $store
-     * @return mixed
-     */
-    public function getDownloadPath($store = null)
-    {
-        return $this->getModuleConfig(self::CONFIG_PATH_GEOIP . '/download_path', $store);
     }
 
     /***************************** Compatible Modules *****************************
@@ -675,6 +692,14 @@ class Data extends AbstractData
     public function isEnableAmazonPay()
     {
         return $this->isModuleOutputEnabled('Amazon_Payment');
+    }
+
+    /**
+     * @return bool
+     */
+    public function isEnableCustomerAttributes()
+    {
+        return $this->isModuleOutputEnabled('Mageplaza_CustomerAttributes');
     }
 
     /**

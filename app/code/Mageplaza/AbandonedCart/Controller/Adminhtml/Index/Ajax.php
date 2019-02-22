@@ -35,14 +35,14 @@ class Ajax extends AbandonedCart
     public function execute()
     {
         $resultPage = $this->resultPageFactory->create();
-        $fromDate   = $this->getRequest()->getParam('from');
-        $toDate     = $this->getRequest()->getParam('to');
-        $result     = ['status' => false];
+        $fromDate = $this->getRequest()->getParam('from');
+        $toDate = $this->getRequest()->getParam('to');
+        $result = ['status' => false];
         try {
             if ($fromDate && $toDate && strtotime($fromDate) <= strtotime($toDate)) {
-                $data       = $this->abandonedCartLog->loadReportData($fromDate, $toDate, $this->getRequest()->getParam('dimension'));
+                $data = $this->abandonedCartLog->loadReportData($fromDate, $toDate, $this->getRequest()->getParam('dimension'));
                 $reportData = json_encode($data);
-                $html       = $resultPage->getLayout()
+                $html = $resultPage->getLayout()
                     ->createBlock('Magento\Backend\Block\Template')
                     ->setTemplate('Mageplaza_AbandonedCart::report/content.phtml')
                     ->setReportData($reportData)

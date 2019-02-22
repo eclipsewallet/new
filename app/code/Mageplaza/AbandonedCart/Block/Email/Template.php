@@ -56,6 +56,7 @@ class Template extends \Magento\Framework\View\Element\Template
 
     /**
      * Template constructor.
+     *
      * @param \Magento\Catalog\Block\Product\Context $context
      * @param \Magento\Catalog\Api\ProductRepositoryInterface $productRepository
      * @param \Magento\Directory\Model\PriceCurrency $priceCurrency
@@ -68,14 +69,13 @@ class Template extends \Magento\Framework\View\Element\Template
         PriceCurrency $priceCurrency,
         ModuleHelper $helperData,
         array $data = []
-    )
-    {
+    ) {
         parent::__construct($context, $data);
 
         $this->_productRepository = $productRepository;
-        $this->imageHelper        = $context->getImageHelper();
-        $this->priceCurrency      = $priceCurrency;
-        $this->helperData         = $helperData;
+        $this->imageHelper = $context->getImageHelper();
+        $this->priceCurrency = $priceCurrency;
+        $this->helperData = $helperData;
     }
 
     /**
@@ -98,13 +98,14 @@ class Template extends \Magento\Framework\View\Element\Template
      * Get subtotal in quote
      *
      * @param bool $inclTax
+     *
      * @return float|string
      */
     public function getSubtotal($inclTax = false)
     {
         $subtotal = 0;
         if ($quote = $this->getQuote()) {
-            $address  = $quote->isVirtual() ? $quote->getBillingAddress() : $quote->getShippingAddress();
+            $address = $quote->isVirtual() ? $quote->getBillingAddress() : $quote->getShippingAddress();
             $subtotal = $inclTax ? $address->getSubtotalInclTax() : $address->getSubtotal();
         }
 
@@ -115,11 +116,14 @@ class Template extends \Magento\Framework\View\Element\Template
      * Get image url in quote
      *
      * @param $_item
+     *
      * @return string
      */
     public function getProductImage($_item)
     {
-        $imageUrl = $this->imageHelper->init($_item->getProduct(), 'category_page_grid', ['height' => 100, 'width' => 100])->getUrl();
+        $productId = $_item->getProductId();
+        $product = $this->_productRepository->getById($productId);
+        $imageUrl = $this->_storeManager->getStore()->getBaseUrl(\Magento\Framework\UrlInterface::URL_TYPE_MEDIA) . 'catalog/product' . $product->getImage();
 
         return str_replace('\\', '/', $imageUrl);
     }
@@ -128,6 +132,7 @@ class Template extends \Magento\Framework\View\Element\Template
      * Get item price in quote
      *
      * @param $_item
+     *
      * @return float|string
      */
     public function getProductPrice($_item)

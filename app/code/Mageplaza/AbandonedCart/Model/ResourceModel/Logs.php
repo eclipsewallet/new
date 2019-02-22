@@ -69,12 +69,11 @@ class Logs extends AbstractDb
         DateTime $date,
         Timezone $timeZone,
         Data $helperData
-    )
-    {
-        $this->date               = $date;
-        $this->timeZone           = $timeZone;
+    ) {
+        $this->date = $date;
+        $this->timeZone = $timeZone;
         $this->resourceConnection = $context->getResources();
-        $this->helperData         = $helperData;
+        $this->helperData = $helperData;
 
         parent::__construct($context);
     }
@@ -104,11 +103,12 @@ class Logs extends AbstractDb
 
     /**
      * @param $quoteId
+     *
      * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function updateRecovery($quoteId)
     {
-        $bind  = ['recovery' => true];
+        $bind = ['recovery' => true];
         $where = ['quote_id = ?' => $quoteId];
         $this->getConnection()->update($this->getMainTable(), $bind, $where);
     }
@@ -116,6 +116,7 @@ class Logs extends AbstractDb
     /**
      *
      * @param string $date
+     *
      * @return string
      */
     private function convertDate($date)
@@ -127,6 +128,7 @@ class Logs extends AbstractDb
      * @param $fromDate
      * @param $toDate
      * @param null $dimension
+     *
      * @return array
      * @throws \Magento\Framework\Exception\LocalizedException
      */
@@ -136,19 +138,19 @@ class Logs extends AbstractDb
 
         $numbers = $this->helperData->getRangeNumbers($fromDate, $toDate, $dimension);
         if ($dimension == 'month') {
-            $level    = ' month';
+            $level = ' month';
             $fromDate = $this->date->date('Y-m-01', $fromDate);
         } else {
             $level = ' days';
         }
 
         for ($number = 0; $number <= $numbers; $number++) {
-            $date       = $this->date->date('Y-m-d', $fromDate . '+' . $number . $level);
-            $nextDate   = $this->date->date('Y-m-d', $date . '+1' . $level);
+            $date = $this->date->date('Y-m-d', $fromDate . '+' . $number . $level);
+            $nextDate = $this->date->date('Y-m-d', $date . '+1' . $level);
             $dateFormat = $this->date->date('Y-M-d', $date);
 
             if ($dimension == 'month') {
-                $date       = $this->date->date('Y-m-01', $date);
+                $date = $this->date->date('Y-m-01', $date);
                 $dateFormat = $this->date->date('Y-M', $date);
             }
 
@@ -167,6 +169,7 @@ class Logs extends AbstractDb
     /**
      * @param $fromDate
      * @param $toDate
+     *
      * @return array
      * @throws \Magento\Framework\Exception\LocalizedException
      */
@@ -177,15 +180,15 @@ class Logs extends AbstractDb
         $numbers = $this->helperData->getRangeNumbers($fromDate, $toDate);
 
         for ($number = 0; $number <= $numbers; $number++) {
-            $date       = $this->date->date('Y-m-d', $fromDate . '+' . $number . ' day');
-            $nextDate   = $this->date->date('Y-m-d', $date . '+1 day');
+            $date = $this->date->date('Y-m-d', $fromDate . '+' . $number . ' day');
+            $nextDate = $this->date->date('Y-m-d', $date . '+1 day');
             $dateFormat = $this->date->date('Y-M-d', $date);
 
-            $result['date'][]          = $dateFormat;
+            $result['date'][] = $dateFormat;
             $result['abandonedCart'][] = $this->getAbandonedCart($date, $nextDate);
-            $result['sent'][]          = $this->getLogData($date, $nextDate);
-            $result['recovery'][]      = $this->getLogData($date, $nextDate, 'recovery');
-            $result['error'][]         = $this->getLogData($date, $nextDate, 'error');
+            $result['sent'][] = $this->getLogData($date, $nextDate);
+            $result['recovery'][] = $this->getLogData($date, $nextDate, 'recovery');
+            $result['error'][] = $this->getLogData($date, $nextDate, 'error');
         }
 
         return $result;
@@ -194,12 +197,13 @@ class Logs extends AbstractDb
     /**
      * @param string $date
      * @param string $nextDate
+     *
      * @return int
      */
     private function getAbandonedCart($date, $nextDate)
     {
-        $adapter  = $this->resourceConnection->getConnection();
-        $select   = $adapter->select()
+        $adapter = $this->resourceConnection->getConnection();
+        $select = $adapter->select()
             ->from($this->resourceConnection->getTableName('quote'))
             ->where('(created_at >= ? AND updated_at = "0000-00-00 00:00:00") OR updated_at >= ?', $this->convertDate($date))
             ->where('(created_at < ? AND updated_at = "0000-00-00 00:00:00") OR updated_at < ?', $this->convertDate($nextDate))
@@ -224,13 +228,14 @@ class Logs extends AbstractDb
      * @param $date
      * @param $nextDate
      * @param null $column
+     *
      * @return int
      * @throws \Magento\Framework\Exception\LocalizedException
      */
     private function getLogData($date, $nextDate, $column = null)
     {
         $adapter = $this->resourceConnection->getConnection();
-        $select  = $adapter->select()
+        $select = $adapter->select()
             ->from($this->getMainTable())
             ->where('display = ?', true)
             ->where('updated_at >= ?', $this->convertDate($date))
